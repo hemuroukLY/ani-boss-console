@@ -1,0 +1,10 @@
+node_modules
+dist
+.tanstack
+*.log
+.env.local
+.env.*.local
+.pnpm-store
+.gitnexus
+CLAUDE.md
+.claude
