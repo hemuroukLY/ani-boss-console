@@ -1,8 +1,8 @@
 @layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 :root {
-  font-family: Inter, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   color: #1d2129;
   background: #f7f8fa;
 }
@@ -42,6 +42,7 @@ button {
   font-size: 17px;
   font-weight: 800;
   white-space: nowrap;
+  text-decoration: none;
 }
 .brand-mark {
   display: grid;
@@ -90,7 +91,7 @@ button {
   height: 3px;
   border-radius: 3px 3px 0 0;
   background: #0079d3;
-  content: '';
+  content: "";
 }
 .top-actions {
   display: flex;
@@ -155,6 +156,7 @@ button {
   border-radius: 5px;
   color: #4e5969;
   background: transparent;
+  text-decoration: none;
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
@@ -219,123 +221,6 @@ button {
 .breadcrumb strong {
   color: #4e5969;
   font-weight: 500;
-}
-.page-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-.page-heading h1 {
-  margin: 0 0 6px;
-  font-size: 24px;
-}
-.page-heading p,
-.card-toolbar p {
-  margin: 0;
-  color: #86909c;
-  font-size: 13px;
-}
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
-  gap: 14px;
-  margin-bottom: 16px;
-}
-.summary-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 120px;
-  padding: 18px 20px;
-  border: 1px solid #e5e6eb;
-  border-radius: 7px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-}
-.summary-card span {
-  color: #4e5969;
-  font-size: 13px;
-}
-.summary-card strong {
-  margin: 10px 0 6px;
-  font-size: 28px;
-  line-height: 1;
-}
-.summary-card small {
-  color: #00a854;
-}
-.summary-card:nth-child(3) small {
-  color: #ff7d00;
-}
-.data-card {
-  overflow: hidden;
-  border: 1px solid #e5e6eb;
-  border-radius: 7px;
-  background: #fff;
-}
-.card-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 78px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f2f3f5;
-}
-.card-toolbar h2 {
-  margin: 0 0 5px;
-  font-size: 16px;
-}
-.toolbar-actions {
-  display: flex;
-  gap: 10px;
-}
-.toolbar-actions .arco-input-group-wrapper {
-  width: 230px;
-}
-.table-head,
-.table-row {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr 0.8fr 1.2fr 90px;
-  align-items: center;
-  min-height: 52px;
-  padding: 0 20px;
-  column-gap: 16px;
-}
-.table-head {
-  min-height: 42px;
-  color: #86909c;
-  background: #f7f8fa;
-  font-size: 12px;
-}
-.table-row {
-  border-top: 1px solid #f2f3f5;
-  color: #4e5969;
-  font-size: 13px;
-}
-.table-row strong {
-  color: #1d2129;
-}
-.placeholder-page {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  min-height: calc(100% - 40px);
-  color: #86909c;
-  text-align: center;
-}
-.placeholder-page .placeholder-icon {
-  margin-bottom: 16px;
-  color: #c9cdd4;
-  font-size: 44px;
-}
-.placeholder-page h1 {
-  margin: 0 0 8px;
-  color: #4e5969;
-  font-size: 20px;
-}
-.placeholder-page p {
-  margin: 0;
-  font-size: 14px;
 }
 .status-page {
   display: grid;

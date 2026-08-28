@@ -9,38 +9,149 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TenantsRouteImport } from './routes/tenants'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TenantsIndexRouteImport } from './routes/tenants/index'
+import { Route as TenantsTenantIdRouteImport } from './routes/tenants/$tenantId'
+import { Route as OverviewKbRouteImport } from './routes/overview/kb'
+import { Route as OverviewInferenceRouteImport } from './routes/overview/inference'
+import { Route as OverviewGpuRouteImport } from './routes/overview/gpu'
+import { Route as OverviewCapacityRouteImport } from './routes/overview/capacity'
+import { Route as OverviewAlertsRouteImport } from './routes/overview/alerts'
 
+const TenantsRoute = TenantsRouteImport.update({
+  id: '/tenants',
+  path: '/tenants',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TenantsIndexRoute = TenantsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TenantsRoute,
+} as any)
+const TenantsTenantIdRoute = TenantsTenantIdRouteImport.update({
+  id: '/$tenantId',
+  path: '/$tenantId',
+  getParentRoute: () => TenantsRoute,
+} as any)
+const OverviewKbRoute = OverviewKbRouteImport.update({
+  id: '/overview/kb',
+  path: '/overview/kb',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewInferenceRoute = OverviewInferenceRouteImport.update({
+  id: '/overview/inference',
+  path: '/overview/inference',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewGpuRoute = OverviewGpuRouteImport.update({
+  id: '/overview/gpu',
+  path: '/overview/gpu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewCapacityRoute = OverviewCapacityRouteImport.update({
+  id: '/overview/capacity',
+  path: '/overview/capacity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewAlertsRoute = OverviewAlertsRouteImport.update({
+  id: '/overview/alerts',
+  path: '/overview/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/tenants': typeof TenantsRouteWithChildren
+  '/overview/alerts': typeof OverviewAlertsRoute
+  '/overview/capacity': typeof OverviewCapacityRoute
+  '/overview/gpu': typeof OverviewGpuRoute
+  '/overview/inference': typeof OverviewInferenceRoute
+  '/overview/kb': typeof OverviewKbRoute
+  '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/tenants/': typeof TenantsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/overview/alerts': typeof OverviewAlertsRoute
+  '/overview/capacity': typeof OverviewCapacityRoute
+  '/overview/gpu': typeof OverviewGpuRoute
+  '/overview/inference': typeof OverviewInferenceRoute
+  '/overview/kb': typeof OverviewKbRoute
+  '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/tenants': typeof TenantsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/tenants': typeof TenantsRouteWithChildren
+  '/overview/alerts': typeof OverviewAlertsRoute
+  '/overview/capacity': typeof OverviewCapacityRoute
+  '/overview/gpu': typeof OverviewGpuRoute
+  '/overview/inference': typeof OverviewInferenceRoute
+  '/overview/kb': typeof OverviewKbRoute
+  '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/tenants/': typeof TenantsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/tenants'
+    | '/overview/alerts'
+    | '/overview/capacity'
+    | '/overview/gpu'
+    | '/overview/inference'
+    | '/overview/kb'
+    | '/tenants/$tenantId'
+    | '/tenants/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/overview/alerts'
+    | '/overview/capacity'
+    | '/overview/gpu'
+    | '/overview/inference'
+    | '/overview/kb'
+    | '/tenants/$tenantId'
+    | '/tenants'
+  id:
+    | '__root__'
+    | '/'
+    | '/tenants'
+    | '/overview/alerts'
+    | '/overview/capacity'
+    | '/overview/gpu'
+    | '/overview/inference'
+    | '/overview/kb'
+    | '/tenants/$tenantId'
+    | '/tenants/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TenantsRoute: typeof TenantsRouteWithChildren
+  OverviewAlertsRoute: typeof OverviewAlertsRoute
+  OverviewCapacityRoute: typeof OverviewCapacityRoute
+  OverviewGpuRoute: typeof OverviewGpuRoute
+  OverviewInferenceRoute: typeof OverviewInferenceRoute
+  OverviewKbRoute: typeof OverviewKbRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tenants': {
+      id: '/tenants'
+      path: '/tenants'
+      fullPath: '/tenants'
+      preLoaderRoute: typeof TenantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +159,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tenants/': {
+      id: '/tenants/'
+      path: '/'
+      fullPath: '/tenants/'
+      preLoaderRoute: typeof TenantsIndexRouteImport
+      parentRoute: typeof TenantsRoute
+    }
+    '/tenants/$tenantId': {
+      id: '/tenants/$tenantId'
+      path: '/$tenantId'
+      fullPath: '/tenants/$tenantId'
+      preLoaderRoute: typeof TenantsTenantIdRouteImport
+      parentRoute: typeof TenantsRoute
+    }
+    '/overview/kb': {
+      id: '/overview/kb'
+      path: '/overview/kb'
+      fullPath: '/overview/kb'
+      preLoaderRoute: typeof OverviewKbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview/inference': {
+      id: '/overview/inference'
+      path: '/overview/inference'
+      fullPath: '/overview/inference'
+      preLoaderRoute: typeof OverviewInferenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview/gpu': {
+      id: '/overview/gpu'
+      path: '/overview/gpu'
+      fullPath: '/overview/gpu'
+      preLoaderRoute: typeof OverviewGpuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview/capacity': {
+      id: '/overview/capacity'
+      path: '/overview/capacity'
+      fullPath: '/overview/capacity'
+      preLoaderRoute: typeof OverviewCapacityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview/alerts': {
+      id: '/overview/alerts'
+      path: '/overview/alerts'
+      fullPath: '/overview/alerts'
+      preLoaderRoute: typeof OverviewAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface TenantsRouteChildren {
+  TenantsTenantIdRoute: typeof TenantsTenantIdRoute
+  TenantsIndexRoute: typeof TenantsIndexRoute
+}
+
+const TenantsRouteChildren: TenantsRouteChildren = {
+  TenantsTenantIdRoute: TenantsTenantIdRoute,
+  TenantsIndexRoute: TenantsIndexRoute,
+}
+
+const TenantsRouteWithChildren =
+  TenantsRoute._addFileChildren(TenantsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TenantsRoute: TenantsRouteWithChildren,
+  OverviewAlertsRoute: OverviewAlertsRoute,
+  OverviewCapacityRoute: OverviewCapacityRoute,
+  OverviewGpuRoute: OverviewGpuRoute,
+  OverviewInferenceRoute: OverviewInferenceRoute,
+  OverviewKbRoute: OverviewKbRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
