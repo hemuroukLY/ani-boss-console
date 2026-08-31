@@ -1,11 +1,13 @@
 import {
-  Button,
-  Dropdown,
   Menu,
-  Space,
-  Table,
   Tag,
 } from "@arco-design/web-react";
+import {
+  DataTable,
+  ListRowActionButton,
+  ListRowActions,
+  ListRowMore,
+} from "@/components/common";
 import type { TenantAdminAction } from "@/features/tenant-management/TenantManagementProvider";
 import {
   tenantAdminStatusMeta,
@@ -33,89 +35,72 @@ export function AdministratorTable({
   onConfirmAction,
 }: AdministratorTableProps) {
   const renderMoreMenu = (admin: TenantAdmin) => (
-    <Menu>
+    <Menu
+      onClickMenuItem={(key) => {
+        if (key === "resend-invite") {
+          onConfirmAction(
+            admin,
+            "resend_invite",
+            "重发邀请",
+            `确认向 ${admin.email} 重新发送邀请？`,
+            "邀请已重新发送",
+          );
+        } else if (key === "accept-invite") {
+          onConfirmAction(
+            admin,
+            "accept_invite",
+            "模拟接受邀请",
+            `确认模拟 ${admin.email} 接受邀请并同步为租户成员？`,
+            "邀请已接受，管理员已激活",
+          );
+        } else if (key === "impersonate") {
+          onConfirmAction(
+            admin,
+            "impersonate",
+            "运维模拟登录",
+            `确认以 ${admin.email} 的身份进入租户 Console？`,
+            "模拟登录会话已创建",
+          );
+        } else if (key === "reset-password") {
+          onOpenPassword(admin);
+        } else if (key === "transfer-owner") {
+          onConfirmAction(
+            admin,
+            "transfer_owner",
+            "移交所有者",
+            `确认将租户所有者移交给 ${admin.email}？现有所有者将降为租户管理员。`,
+            "租户所有者已移交",
+          );
+        } else if (key === "change-role") {
+          onOpenRole(admin);
+        }
+      }}
+    >
       {admin.status === "invited" ? (
         <>
-          <Menu.Item
-            key="resend-invite"
-            onClick={() =>
-              onConfirmAction(
-                admin,
-                "resend_invite",
-                "重发邀请",
-                `确认向 ${admin.email} 重新发送邀请？`,
-                "邀请已重新发送",
-              )
-            }
-          >
-            重发邀请
-          </Menu.Item>
-          <Menu.Item
-            key="accept-invite"
-            onClick={() =>
-              onConfirmAction(
-                admin,
-                "accept_invite",
-                "模拟接受邀请",
-                `确认模拟 ${admin.email} 接受邀请并同步为租户成员？`,
-                "邀请已接受，管理员已激活",
-              )
-            }
-          >
-            模拟接受
-          </Menu.Item>
+          <Menu.Item key="resend-invite">重发邀请</Menu.Item>
+          <Menu.Item key="accept-invite">模拟接受</Menu.Item>
         </>
       ) : null}
       {admin.status === "active" ? (
         <>
-          <Menu.Item
-            key="impersonate"
-            onClick={() =>
-              onConfirmAction(
-                admin,
-                "impersonate",
-                "运维模拟登录",
-                `确认以 ${admin.email} 的身份进入租户 Console？`,
-                "模拟登录会话已创建",
-              )
-            }
-          >
-            模拟登录
-          </Menu.Item>
-          <Menu.Item key="reset-password" onClick={() => onOpenPassword(admin)}>
-            重置密码
-          </Menu.Item>
+          <Menu.Item key="impersonate">模拟登录</Menu.Item>
+          <Menu.Item key="reset-password">重置密码</Menu.Item>
           {admin.role !== "租户所有者" ? (
-            <Menu.Item
-              key="transfer-owner"
-              onClick={() =>
-                onConfirmAction(
-                  admin,
-                  "transfer_owner",
-                  "移交所有者",
-                  `确认将租户所有者移交给 ${admin.email}？现有所有者将降为租户管理员。`,
-                  "租户所有者已移交",
-                )
-              }
-            >
-              移交所有者
-            </Menu.Item>
+            <Menu.Item key="transfer-owner">移交所有者</Menu.Item>
           ) : null}
         </>
       ) : null}
-      <Menu.Item key="change-role" onClick={() => onOpenRole(admin)}>
-        改角色
-      </Menu.Item>
+      <Menu.Item key="change-role">改角色</Menu.Item>
     </Menu>
   );
 
   return (
-    <Table
+    <DataTable
       rowKey="id"
       pagination={false}
       data={admins}
       noDataElement="暂无管理员"
-      scroll={{ x: 1180 }}
       columns={[
         {
           title: "管理员",
@@ -153,10 +138,9 @@ export function AdministratorTable({
           width: 150,
           fixed: "right",
           render: (_, admin: TenantAdmin) => (
-            <Space size={4}>
+            <ListRowActions>
               {admin.status === "disabled" ? (
-                <Button
-                  type="text"
+                <ListRowActionButton
                   onClick={() =>
                     onConfirmAction(
                       admin,
@@ -168,10 +152,9 @@ export function AdministratorTable({
                   }
                 >
                   启用
-                </Button>
+                </ListRowActionButton>
               ) : (
-                <Button
-                  type="text"
+                <ListRowActionButton
                   status="danger"
                   onClick={() =>
                     onConfirmAction(
@@ -185,12 +168,10 @@ export function AdministratorTable({
                   }
                 >
                   禁用
-                </Button>
+                </ListRowActionButton>
               )}
-              <Dropdown trigger="click" droplist={renderMoreMenu(admin)}>
-                <Button type="text">更多</Button>
-              </Dropdown>
-            </Space>
+              <ListRowMore droplist={renderMoreMenu(admin)} />
+            </ListRowActions>
           ),
         },
       ]}

@@ -58,6 +58,14 @@ export interface TenantInvoice {
   issuedAt: string;
 }
 
+export interface TenantBillingOperation {
+  id: string;
+  operation: string;
+  message: string;
+  createdAt: string;
+  by: string;
+}
+
 export interface TenantBilling {
   id: string;
   tenantId: string;
@@ -72,6 +80,7 @@ export interface TenantBilling {
   usageBreakdown: TenantUsageCost[];
   adjustments: TenantBillingAdjustment[];
   invoices: TenantInvoice[];
+  operations: TenantBillingOperation[];
   updatedAt: string;
 }
 
@@ -143,6 +152,8 @@ export interface TenantQuotaPackage {
   status: "enabled" | "draft";
   planCode: string;
   isTrial: boolean;
+  description?: string;
+  updatedAt?: string;
   defaultTrialDays?: number;
   limits: TenantQuotaLimits;
 }
@@ -761,6 +772,29 @@ export const initialTenantBillings: TenantBilling[] = initialTenants.map(
       usageBreakdown: getTenantUsageBreakdown(tenant.usage),
       adjustments: preset.adjustments,
       invoices: preset.invoices,
+      operations: [
+        ...preset.adjustments.map((adjustment) => ({
+          id: `operation-${adjustment.id}`,
+          operation: "授信调账",
+          message: `${adjustment.amountUsd > 0 ? "+" : ""}${adjustment.amountUsd} USD · ${adjustment.reason}`,
+          createdAt: adjustment.at,
+          by: adjustment.by,
+        })),
+        ...preset.invoices.map((invoice) => ({
+          id: `operation-${invoice.id}`,
+          operation: "生成账单",
+          message: `${invoice.no} · ${invoice.amountUsd} USD`,
+          createdAt: `${invoice.issuedAt} 00:00`,
+          by: "finance",
+        })),
+        {
+          id: `billing-operation-${tenant.id}-created`,
+          operation: "开通计费账户",
+          message: `创建 ${tenant.name} 计费账户`,
+          createdAt: tenant.createdAt,
+          by: "system",
+        },
+      ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
       updatedAt: "2026-07-31 23:59",
     };
   },

@@ -24,12 +24,15 @@ const topNavigation: Array<{ label: string; to?: "/" | "/tenants" }> = [
 
 type AppRoute =
   | "/"
-  | "/overview/capacity"
-  | "/overview/gpu"
-  | "/overview/inference"
-  | "/overview/kb"
-  | "/overview/alerts"
-  | "/tenants";
+  | "/overview-capacity"
+  | "/overview-gpu"
+  | "/overview-inference"
+  | "/overview-kb"
+  | "/overview-alerts"
+  | "/tenants"
+  | "/tenants-quotas"
+  | "/tenants-admins"
+  | "/tenants-billing";
 
 interface NavigationItem {
   label: string;
@@ -38,15 +41,18 @@ interface NavigationItem {
 
 const overviewNavigation: readonly NavigationItem[] = [
   { label: "运营总览", to: "/" },
-  { label: "资源池与容量态势", to: "/overview/capacity" },
-  { label: "GPU 资源池态势", to: "/overview/gpu" },
-  { label: "AI 服务运营态势", to: "/overview/inference" },
-  { label: "知识库运营态势", to: "/overview/kb" },
-  { label: "平台告警与待处理", to: "/overview/alerts" },
+  { label: "资源池与容量态势", to: "/overview-capacity" },
+  { label: "GPU 资源池态势", to: "/overview-gpu" },
+  { label: "AI 服务运营态势", to: "/overview-inference" },
+  { label: "知识库运营态势", to: "/overview-kb" },
+  { label: "平台告警与待处理", to: "/overview-alerts" },
 ] as const;
 
 const tenantNavigation: readonly NavigationItem[] = [
   { label: "租户列表", to: "/tenants" },
+  { label: "配额策略", to: "/tenants-quotas" },
+  { label: "租户管理员", to: "/tenants-admins" },
+  { label: "租户计费与用量", to: "/tenants-billing" },
 ];
 
 export function AppShell() {
@@ -54,16 +60,19 @@ export function AppShell() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
-  const isTenantManagement =
-    pathname === "/tenants" || pathname.startsWith("/tenants/");
+  const isTenantManagement = tenantNavigation.some(
+    (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+  );
   const currentTopNavigation = isTenantManagement ? "租户管理" : "平台运营总览";
   const sideNavigation = isTenantManagement
     ? tenantNavigation
     : overviewNavigation;
   const currentPage =
-    sideNavigation.find(
-      (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
-    )?.label ?? sideNavigation[0].label;
+    [...sideNavigation]
+      .sort((a, b) => b.to.length - a.to.length)
+      .find(
+        (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+      )?.label ?? sideNavigation[0].label;
 
   return (
     <PlatformOverviewProvider>
@@ -113,6 +122,7 @@ export function AppShell() {
                     <Link
                       key={item.to}
                       to={item.to}
+                      activeOptions={{ exact: true }}
                       className={clsx(
                         "side-item",
                         item.label === currentPage && "active",

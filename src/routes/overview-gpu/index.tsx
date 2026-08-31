@@ -6,7 +6,7 @@ import { Panel } from "@/components/platform-overview/Panel";
 import { SoftList } from "@/components/platform-overview/SoftList";
 import { SoftRow } from "@/components/platform-overview/SoftList/SoftRow";
 
-export const Route = createFileRoute("/overview/gpu")({
+export const Route = createFileRoute("/overview-gpu/")({
   component: GpuPoolRoute,
 });
 

@@ -1,4 +1,5 @@
-import { Table, Tag, Typography } from "@arco-design/web-react";
+import { Tag, Typography } from "@arco-design/web-react";
+import { DataTable } from "@/components/common";
 import {
   tenantLifecycleEventMeta,
   type TenantLifecycleEvent,
@@ -16,7 +17,7 @@ export function LifecycleHistorySection({
       <Typography.Title heading={6} className="!mb-4">
         生命周期记录
       </Typography.Title>
-      <Table
+      <DataTable
         rowKey="id"
         pagination={false}
         data={events}

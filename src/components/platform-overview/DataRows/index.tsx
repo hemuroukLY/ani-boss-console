@@ -1,4 +1,4 @@
-import { Table } from "@arco-design/web-react";
+import { DataTable } from "@/components/common";
 
 export function DataRows({ rows }: { rows: readonly (readonly string[])[] }) {
   const columnCount = Math.max(0, ...rows.map((row) => row.length));
@@ -15,13 +15,12 @@ export function DataRows({ rows }: { rows: readonly (readonly string[])[] }) {
   }));
 
   return (
-    <Table
+    <DataTable
       rowKey="key"
       columns={columns}
       data={data}
       pagination={false}
       border={false}
-      scroll={{ x: 720 }}
     />
   );
 }

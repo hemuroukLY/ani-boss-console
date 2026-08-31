@@ -1,0 +1,28 @@
+.listNameCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.listName {
+  width: fit-content;
+  color: #0079d3;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.listName :global(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.listName :global(a:hover) {
+  color: #0066b3;
+  text-decoration: none;
+}
+
+.listNameSecondary {
+  color: #86909c;
+  font-size: 12px;
+  line-height: 16px;
+}

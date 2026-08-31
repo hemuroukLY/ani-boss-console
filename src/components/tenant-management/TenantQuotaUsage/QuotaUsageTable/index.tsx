@@ -1,4 +1,5 @@
-import { Progress, Table, Typography } from "@arco-design/web-react";
+import { Progress, Typography } from "@arco-design/web-react";
+import { DataTable } from "@/components/common";
 import type { Tenant } from "@/features/tenant-management/model";
 import { formatQuotaValue, getUsagePercent } from "../formatters";
 
@@ -88,7 +89,7 @@ export function QuotaUsageTable({ tenant }: QuotaUsageTableProps) {
       <Typography.Title heading={6} className="!mb-4">
         配额与用量
       </Typography.Title>
-      <Table
+      <DataTable
         rowKey="key"
         pagination={false}
         data={rows}

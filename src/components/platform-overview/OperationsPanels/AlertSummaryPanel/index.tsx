@@ -21,7 +21,7 @@ export function AlertSummaryPanel({
     <Panel
       title="平台告警摘要"
       action="全部 →"
-      onAction={() => navigate({ to: "/overview/alerts" })}
+      onAction={() => navigate({ to: "/overview-alerts" })}
     >
       <SoftList>
         {alerts.map((item) => (

@@ -12,12 +12,18 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TenantsRouteImport } from './routes/tenants'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TenantsIndexRouteImport } from './routes/tenants/index'
+import { Route as TenantsQuotasIndexRouteImport } from './routes/tenants-quotas/index'
+import { Route as TenantsBillingIndexRouteImport } from './routes/tenants-billing/index'
+import { Route as TenantsAdminsIndexRouteImport } from './routes/tenants-admins/index'
+import { Route as OverviewKbIndexRouteImport } from './routes/overview-kb/index'
+import { Route as OverviewInferenceIndexRouteImport } from './routes/overview-inference/index'
+import { Route as OverviewGpuIndexRouteImport } from './routes/overview-gpu/index'
+import { Route as OverviewCapacityIndexRouteImport } from './routes/overview-capacity/index'
+import { Route as OverviewAlertsIndexRouteImport } from './routes/overview-alerts/index'
 import { Route as TenantsTenantIdRouteImport } from './routes/tenants/$tenantId'
-import { Route as OverviewKbRouteImport } from './routes/overview/kb'
-import { Route as OverviewInferenceRouteImport } from './routes/overview/inference'
-import { Route as OverviewGpuRouteImport } from './routes/overview/gpu'
-import { Route as OverviewCapacityRouteImport } from './routes/overview/capacity'
-import { Route as OverviewAlertsRouteImport } from './routes/overview/alerts'
+import { Route as TenantsQuotasPlanCodeRouteImport } from './routes/tenants-quotas/$planCode'
+import { Route as TenantsBillingTenantIdRouteImport } from './routes/tenants-billing/$tenantId'
+import { Route as TenantsAdminsAdminIdRouteImport } from './routes/tenants-admins/$adminId'
 
 const TenantsRoute = TenantsRouteImport.update({
   id: '/tenants',
@@ -34,68 +40,116 @@ const TenantsIndexRoute = TenantsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TenantsRoute,
 } as any)
+const TenantsQuotasIndexRoute = TenantsQuotasIndexRouteImport.update({
+  id: '/tenants-quotas/',
+  path: '/tenants-quotas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TenantsBillingIndexRoute = TenantsBillingIndexRouteImport.update({
+  id: '/tenants-billing/',
+  path: '/tenants-billing/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TenantsAdminsIndexRoute = TenantsAdminsIndexRouteImport.update({
+  id: '/tenants-admins/',
+  path: '/tenants-admins/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewKbIndexRoute = OverviewKbIndexRouteImport.update({
+  id: '/overview-kb/',
+  path: '/overview-kb/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewInferenceIndexRoute = OverviewInferenceIndexRouteImport.update({
+  id: '/overview-inference/',
+  path: '/overview-inference/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewGpuIndexRoute = OverviewGpuIndexRouteImport.update({
+  id: '/overview-gpu/',
+  path: '/overview-gpu/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewCapacityIndexRoute = OverviewCapacityIndexRouteImport.update({
+  id: '/overview-capacity/',
+  path: '/overview-capacity/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewAlertsIndexRoute = OverviewAlertsIndexRouteImport.update({
+  id: '/overview-alerts/',
+  path: '/overview-alerts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TenantsTenantIdRoute = TenantsTenantIdRouteImport.update({
   id: '/$tenantId',
   path: '/$tenantId',
   getParentRoute: () => TenantsRoute,
 } as any)
-const OverviewKbRoute = OverviewKbRouteImport.update({
-  id: '/overview/kb',
-  path: '/overview/kb',
+const TenantsQuotasPlanCodeRoute = TenantsQuotasPlanCodeRouteImport.update({
+  id: '/tenants-quotas/$planCode',
+  path: '/tenants-quotas/$planCode',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OverviewInferenceRoute = OverviewInferenceRouteImport.update({
-  id: '/overview/inference',
-  path: '/overview/inference',
+const TenantsBillingTenantIdRoute = TenantsBillingTenantIdRouteImport.update({
+  id: '/tenants-billing/$tenantId',
+  path: '/tenants-billing/$tenantId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OverviewGpuRoute = OverviewGpuRouteImport.update({
-  id: '/overview/gpu',
-  path: '/overview/gpu',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OverviewCapacityRoute = OverviewCapacityRouteImport.update({
-  id: '/overview/capacity',
-  path: '/overview/capacity',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OverviewAlertsRoute = OverviewAlertsRouteImport.update({
-  id: '/overview/alerts',
-  path: '/overview/alerts',
+const TenantsAdminsAdminIdRoute = TenantsAdminsAdminIdRouteImport.update({
+  id: '/tenants-admins/$adminId',
+  path: '/tenants-admins/$adminId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tenants': typeof TenantsRouteWithChildren
-  '/overview/alerts': typeof OverviewAlertsRoute
-  '/overview/capacity': typeof OverviewCapacityRoute
-  '/overview/gpu': typeof OverviewGpuRoute
-  '/overview/inference': typeof OverviewInferenceRoute
-  '/overview/kb': typeof OverviewKbRoute
+  '/tenants-admins/$adminId': typeof TenantsAdminsAdminIdRoute
+  '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
+  '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
   '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/overview-alerts': typeof OverviewAlertsIndexRoute
+  '/overview-capacity': typeof OverviewCapacityIndexRoute
+  '/overview-gpu': typeof OverviewGpuIndexRoute
+  '/overview-inference': typeof OverviewInferenceIndexRoute
+  '/overview-kb': typeof OverviewKbIndexRoute
+  '/tenants-admins': typeof TenantsAdminsIndexRoute
+  '/tenants-billing': typeof TenantsBillingIndexRoute
+  '/tenants-quotas': typeof TenantsQuotasIndexRoute
   '/tenants/': typeof TenantsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/overview/alerts': typeof OverviewAlertsRoute
-  '/overview/capacity': typeof OverviewCapacityRoute
-  '/overview/gpu': typeof OverviewGpuRoute
-  '/overview/inference': typeof OverviewInferenceRoute
-  '/overview/kb': typeof OverviewKbRoute
+  '/tenants-admins/$adminId': typeof TenantsAdminsAdminIdRoute
+  '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
+  '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
   '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/overview-alerts': typeof OverviewAlertsIndexRoute
+  '/overview-capacity': typeof OverviewCapacityIndexRoute
+  '/overview-gpu': typeof OverviewGpuIndexRoute
+  '/overview-inference': typeof OverviewInferenceIndexRoute
+  '/overview-kb': typeof OverviewKbIndexRoute
+  '/tenants-admins': typeof TenantsAdminsIndexRoute
+  '/tenants-billing': typeof TenantsBillingIndexRoute
+  '/tenants-quotas': typeof TenantsQuotasIndexRoute
   '/tenants': typeof TenantsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/tenants': typeof TenantsRouteWithChildren
-  '/overview/alerts': typeof OverviewAlertsRoute
-  '/overview/capacity': typeof OverviewCapacityRoute
-  '/overview/gpu': typeof OverviewGpuRoute
-  '/overview/inference': typeof OverviewInferenceRoute
-  '/overview/kb': typeof OverviewKbRoute
+  '/tenants-admins/$adminId': typeof TenantsAdminsAdminIdRoute
+  '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
+  '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
   '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/overview-alerts/': typeof OverviewAlertsIndexRoute
+  '/overview-capacity/': typeof OverviewCapacityIndexRoute
+  '/overview-gpu/': typeof OverviewGpuIndexRoute
+  '/overview-inference/': typeof OverviewInferenceIndexRoute
+  '/overview-kb/': typeof OverviewKbIndexRoute
+  '/tenants-admins/': typeof TenantsAdminsIndexRoute
+  '/tenants-billing/': typeof TenantsBillingIndexRoute
+  '/tenants-quotas/': typeof TenantsQuotasIndexRoute
   '/tenants/': typeof TenantsIndexRoute
 }
 export interface FileRouteTypes {
@@ -103,44 +157,68 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/tenants'
-    | '/overview/alerts'
-    | '/overview/capacity'
-    | '/overview/gpu'
-    | '/overview/inference'
-    | '/overview/kb'
+    | '/tenants-admins/$adminId'
+    | '/tenants-billing/$tenantId'
+    | '/tenants-quotas/$planCode'
     | '/tenants/$tenantId'
+    | '/overview-alerts'
+    | '/overview-capacity'
+    | '/overview-gpu'
+    | '/overview-inference'
+    | '/overview-kb'
+    | '/tenants-admins'
+    | '/tenants-billing'
+    | '/tenants-quotas'
     | '/tenants/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/overview/alerts'
-    | '/overview/capacity'
-    | '/overview/gpu'
-    | '/overview/inference'
-    | '/overview/kb'
+    | '/tenants-admins/$adminId'
+    | '/tenants-billing/$tenantId'
+    | '/tenants-quotas/$planCode'
     | '/tenants/$tenantId'
+    | '/overview-alerts'
+    | '/overview-capacity'
+    | '/overview-gpu'
+    | '/overview-inference'
+    | '/overview-kb'
+    | '/tenants-admins'
+    | '/tenants-billing'
+    | '/tenants-quotas'
     | '/tenants'
   id:
     | '__root__'
     | '/'
     | '/tenants'
-    | '/overview/alerts'
-    | '/overview/capacity'
-    | '/overview/gpu'
-    | '/overview/inference'
-    | '/overview/kb'
+    | '/tenants-admins/$adminId'
+    | '/tenants-billing/$tenantId'
+    | '/tenants-quotas/$planCode'
     | '/tenants/$tenantId'
+    | '/overview-alerts/'
+    | '/overview-capacity/'
+    | '/overview-gpu/'
+    | '/overview-inference/'
+    | '/overview-kb/'
+    | '/tenants-admins/'
+    | '/tenants-billing/'
+    | '/tenants-quotas/'
     | '/tenants/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TenantsRoute: typeof TenantsRouteWithChildren
-  OverviewAlertsRoute: typeof OverviewAlertsRoute
-  OverviewCapacityRoute: typeof OverviewCapacityRoute
-  OverviewGpuRoute: typeof OverviewGpuRoute
-  OverviewInferenceRoute: typeof OverviewInferenceRoute
-  OverviewKbRoute: typeof OverviewKbRoute
+  TenantsAdminsAdminIdRoute: typeof TenantsAdminsAdminIdRoute
+  TenantsBillingTenantIdRoute: typeof TenantsBillingTenantIdRoute
+  TenantsQuotasPlanCodeRoute: typeof TenantsQuotasPlanCodeRoute
+  OverviewAlertsIndexRoute: typeof OverviewAlertsIndexRoute
+  OverviewCapacityIndexRoute: typeof OverviewCapacityIndexRoute
+  OverviewGpuIndexRoute: typeof OverviewGpuIndexRoute
+  OverviewInferenceIndexRoute: typeof OverviewInferenceIndexRoute
+  OverviewKbIndexRoute: typeof OverviewKbIndexRoute
+  TenantsAdminsIndexRoute: typeof TenantsAdminsIndexRoute
+  TenantsBillingIndexRoute: typeof TenantsBillingIndexRoute
+  TenantsQuotasIndexRoute: typeof TenantsQuotasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -166,6 +244,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantsIndexRouteImport
       parentRoute: typeof TenantsRoute
     }
+    '/tenants-quotas/': {
+      id: '/tenants-quotas/'
+      path: '/tenants-quotas'
+      fullPath: '/tenants-quotas'
+      preLoaderRoute: typeof TenantsQuotasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tenants-billing/': {
+      id: '/tenants-billing/'
+      path: '/tenants-billing'
+      fullPath: '/tenants-billing'
+      preLoaderRoute: typeof TenantsBillingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tenants-admins/': {
+      id: '/tenants-admins/'
+      path: '/tenants-admins'
+      fullPath: '/tenants-admins'
+      preLoaderRoute: typeof TenantsAdminsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview-kb/': {
+      id: '/overview-kb/'
+      path: '/overview-kb'
+      fullPath: '/overview-kb'
+      preLoaderRoute: typeof OverviewKbIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview-inference/': {
+      id: '/overview-inference/'
+      path: '/overview-inference'
+      fullPath: '/overview-inference'
+      preLoaderRoute: typeof OverviewInferenceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview-gpu/': {
+      id: '/overview-gpu/'
+      path: '/overview-gpu'
+      fullPath: '/overview-gpu'
+      preLoaderRoute: typeof OverviewGpuIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview-capacity/': {
+      id: '/overview-capacity/'
+      path: '/overview-capacity'
+      fullPath: '/overview-capacity'
+      preLoaderRoute: typeof OverviewCapacityIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview-alerts/': {
+      id: '/overview-alerts/'
+      path: '/overview-alerts'
+      fullPath: '/overview-alerts'
+      preLoaderRoute: typeof OverviewAlertsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tenants/$tenantId': {
       id: '/tenants/$tenantId'
       path: '/$tenantId'
@@ -173,39 +307,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantsTenantIdRouteImport
       parentRoute: typeof TenantsRoute
     }
-    '/overview/kb': {
-      id: '/overview/kb'
-      path: '/overview/kb'
-      fullPath: '/overview/kb'
-      preLoaderRoute: typeof OverviewKbRouteImport
+    '/tenants-quotas/$planCode': {
+      id: '/tenants-quotas/$planCode'
+      path: '/tenants-quotas/$planCode'
+      fullPath: '/tenants-quotas/$planCode'
+      preLoaderRoute: typeof TenantsQuotasPlanCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/overview/inference': {
-      id: '/overview/inference'
-      path: '/overview/inference'
-      fullPath: '/overview/inference'
-      preLoaderRoute: typeof OverviewInferenceRouteImport
+    '/tenants-billing/$tenantId': {
+      id: '/tenants-billing/$tenantId'
+      path: '/tenants-billing/$tenantId'
+      fullPath: '/tenants-billing/$tenantId'
+      preLoaderRoute: typeof TenantsBillingTenantIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/overview/gpu': {
-      id: '/overview/gpu'
-      path: '/overview/gpu'
-      fullPath: '/overview/gpu'
-      preLoaderRoute: typeof OverviewGpuRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/overview/capacity': {
-      id: '/overview/capacity'
-      path: '/overview/capacity'
-      fullPath: '/overview/capacity'
-      preLoaderRoute: typeof OverviewCapacityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/overview/alerts': {
-      id: '/overview/alerts'
-      path: '/overview/alerts'
-      fullPath: '/overview/alerts'
-      preLoaderRoute: typeof OverviewAlertsRouteImport
+    '/tenants-admins/$adminId': {
+      id: '/tenants-admins/$adminId'
+      path: '/tenants-admins/$adminId'
+      fullPath: '/tenants-admins/$adminId'
+      preLoaderRoute: typeof TenantsAdminsAdminIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -227,11 +347,17 @@ const TenantsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TenantsRoute: TenantsRouteWithChildren,
-  OverviewAlertsRoute: OverviewAlertsRoute,
-  OverviewCapacityRoute: OverviewCapacityRoute,
-  OverviewGpuRoute: OverviewGpuRoute,
-  OverviewInferenceRoute: OverviewInferenceRoute,
-  OverviewKbRoute: OverviewKbRoute,
+  TenantsAdminsAdminIdRoute: TenantsAdminsAdminIdRoute,
+  TenantsBillingTenantIdRoute: TenantsBillingTenantIdRoute,
+  TenantsQuotasPlanCodeRoute: TenantsQuotasPlanCodeRoute,
+  OverviewAlertsIndexRoute: OverviewAlertsIndexRoute,
+  OverviewCapacityIndexRoute: OverviewCapacityIndexRoute,
+  OverviewGpuIndexRoute: OverviewGpuIndexRoute,
+  OverviewInferenceIndexRoute: OverviewInferenceIndexRoute,
+  OverviewKbIndexRoute: OverviewKbIndexRoute,
+  TenantsAdminsIndexRoute: TenantsAdminsIndexRoute,
+  TenantsBillingIndexRoute: TenantsBillingIndexRoute,
+  TenantsQuotasIndexRoute: TenantsQuotasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

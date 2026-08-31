@@ -1,4 +1,9 @@
-import { Button, Space, Table, Tag, Typography } from "@arco-design/web-react";
+import { Tag, Typography } from "@arco-design/web-react";
+import {
+  DataTable,
+  ListRowActionButton,
+  ListRowActions,
+} from "@/components/common";
 import type { AlertItem } from "@/features/platform-overview/model";
 import { LevelTag } from "../../LevelTag";
 
@@ -9,12 +14,11 @@ interface AlertTableProps {
 
 export function AlertTable({ rows, onUpdate }: AlertTableProps) {
   return (
-    <Table
+    <DataTable
       rowKey="id"
       data={rows}
       pagination={false}
       border={false}
-      scroll={{ x: 1120 }}
       noDataElement="暂无平台告警"
       columns={[
         {
@@ -69,22 +73,18 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
           fixed: "right" as const,
           render: (_: unknown, item: AlertItem) =>
             item.status === "待处理" ? (
-              <Space size="mini">
-                <Button
-                  type="text"
-                  size="mini"
+              <ListRowActions>
+                <ListRowActionButton
                   onClick={() => onUpdate(item.id, "已处理")}
                 >
                   处理
-                </Button>
-                <Button
-                  type="text"
-                  size="mini"
+                </ListRowActionButton>
+                <ListRowActionButton
                   onClick={() => onUpdate(item.id, "已忽略")}
                 >
                   忽略
-                </Button>
-              </Space>
+                </ListRowActionButton>
+              </ListRowActions>
             ) : null,
         },
       ]}

@@ -1,15 +1,15 @@
-import { Table, Tag } from "@arco-design/web-react";
+import { Tag } from "@arco-design/web-react";
+import { DataTable } from "@/components/common";
 import { DeviceActions } from "./DeviceActions";
 import { devices, deviceStatusColor, type Device } from "./model";
 
 export function GpuDeviceTable() {
   return (
-    <Table
+    <DataTable
       rowKey="id"
       data={devices}
       pagination={false}
       border={false}
-      scroll={{ x: 1120 }}
       columns={[
         { title: "设备 ID", dataIndex: "id", width: 120 },
         { title: "节点 / 设备", dataIndex: "location", width: 150 },

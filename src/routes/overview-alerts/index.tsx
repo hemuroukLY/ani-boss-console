@@ -4,7 +4,7 @@ import { OverviewPageHeader } from "@/components/platform-overview/OverviewPageH
 import { PlatformAlertTable } from "@/components/platform-overview/PlatformAlertTable";
 import { usePlatformOverview } from "@/features/platform-overview/PlatformOverviewProvider";
 
-export const Route = createFileRoute("/overview/alerts")({
+export const Route = createFileRoute("/overview-alerts/")({
   component: AlertsRoute,
 });
 

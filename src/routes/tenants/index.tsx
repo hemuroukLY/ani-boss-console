@@ -6,7 +6,7 @@ import {
   ListPageFrame,
   ListPageHeader,
   ListToolbar,
-} from "@/components/common/ListPageFrame";
+} from "@/components/common";
 import { TenantCreateDrawer } from "@/components/tenant-management/TenantCreateDrawer";
 import {
   TenantFilters,

@@ -12,7 +12,7 @@ import {
   DetailPageFrame,
   type DetailInfoCard,
   type DetailTab,
-} from "@/components/common/DetailPageFrame";
+} from "@/components/common";
 import { TenantAdministrators } from "@/components/tenant-management/TenantAdministrators";
 import { TenantBillingSummary } from "@/components/tenant-management/TenantBillingSummary";
 import { TenantIdentitySecurity } from "@/components/tenant-management/TenantIdentitySecurity";

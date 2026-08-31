@@ -3,10 +3,10 @@ import {
   Input,
   Select,
   Space,
-  Table,
   Tag,
   Typography,
 } from "@arco-design/web-react";
+import { DataTable } from "@/components/common";
 import type {
   Tenant,
   TenantOperationStatus,
@@ -110,7 +110,7 @@ export function TenantOperationHistory({
         />
       </Space>
 
-      <Table
+      <DataTable
         rowKey="id"
         data={data}
         pagination={false}

@@ -28,7 +28,7 @@ export function OperationsMetrics({
           value={String(pendingAlertCount)}
           hint={`严重 ${severePendingCount} · 全部告警`}
           tone="warning"
-          onClick={() => navigate({ to: "/overview/alerts" })}
+          onClick={() => navigate({ to: "/overview-alerts" })}
         />
       </section>
       <section className="mb-4 grid grid-cols-4 gap-3.5">
@@ -36,14 +36,14 @@ export function OperationsMetrics({
           label="GPU 空闲/总量"
           value="46/128"
           hint="去容量态势"
-          onClick={() => navigate({ to: "/overview/capacity" })}
+          onClick={() => navigate({ to: "/overview-capacity" })}
         />
         <Metric label="可开通区域" value="2/3" hint="区域开放状态" />
         <Metric
           label="GPU 资源池"
           value="3"
           hint="正常 2 · 维护中 1"
-          onClick={() => navigate({ to: "/overview/gpu" })}
+          onClick={() => navigate({ to: "/overview-gpu" })}
         />
         <Metric label="镜像配额" value="1" hint="待审批扩容申请" />
       </section>

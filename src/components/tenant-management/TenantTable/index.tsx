@@ -1,13 +1,19 @@
 import {
-  Button,
   Link,
+  Menu,
+  Modal,
   Popconfirm,
-  Space,
-  Table,
   Tag,
   Typography,
 } from "@arco-design/web-react";
 import { useNavigate } from "@tanstack/react-router";
+import {
+  ListDataTable,
+  ListNameCell,
+  ListRowActionButton,
+  ListRowActions,
+  ListRowMore,
+} from "@/components/common";
 import {
   tenantStatusMeta,
   type Tenant,
@@ -31,27 +37,30 @@ export function TenantTable({
   const navigate = useNavigate();
   const columns = [
     {
-      title: "租户",
+      title: "租户 / 显示名",
       dataIndex: "name",
-      width: 150,
+      width: 220,
       fixed: "left" as const,
       render: (_: unknown, tenant: Tenant) => (
-        <Link
-          href={`/tenants/${tenant.id}`}
-          className="font-medium"
-          onClick={(event) => {
-            event.preventDefault();
-            void navigate({
-              to: "/tenants/$tenantId",
-              params: { tenantId: tenant.id },
-            });
-          }}
-        >
-          {tenant.name}
-        </Link>
+        <ListNameCell
+          name={
+            <Link
+              href={`/tenants/${tenant.id}`}
+              onClick={(event) => {
+                event.preventDefault();
+                void navigate({
+                  to: "/tenants/$tenantId",
+                  params: { tenantId: tenant.id },
+                });
+              }}
+            >
+              {tenant.name}
+            </Link>
+          }
+          secondary={tenant.displayName || "—"}
+        />
       ),
     },
-    { title: "显示名", dataIndex: "displayName", width: 180 },
     {
       title: "状态",
       dataIndex: "status",
@@ -86,51 +95,60 @@ export function TenantTable({
     { title: "开通时间", dataIndex: "createdAt", width: 170 },
     {
       title: "操作",
-      width: 300,
+      width: 150,
       fixed: "right" as const,
-      render: (_: unknown, tenant: Tenant) => (
-        <Space size="mini">
-          {tenant.status !== "disabled" ? (
-            <Popconfirm
-              title={`确认${tenant.status === "suspended" ? "解冻" : "冻结"}租户 ${tenant.name}？`}
-              onOk={() => onToggleStatus(tenant)}
-            >
-              <Button type="text" size="mini">
-                {tenant.status === "suspended" ? "解冻" : "冻结"}
-              </Button>
-            </Popconfirm>
-          ) : null}
-          <Button type="text" size="mini" onClick={() => onQuota(tenant)}>
-            配额
-          </Button>
-          <Button type="text" size="mini" onClick={() => onAdmins(tenant)}>
-            管理员
-          </Button>
-          {tenant.status !== "disabled" ? (
-            <Popconfirm
-              title={`禁用 ${tenant.name} 后不可还原，确认继续？`}
-              okButtonProps={{ status: "danger" }}
-              onOk={() => onDisable(tenant)}
-            >
-              <Button type="text" size="mini" status="danger">
-                禁用
-              </Button>
-            </Popconfirm>
-          ) : null}
-        </Space>
-      ),
+      render: (_: unknown, tenant: Tenant) => {
+        const moreMenu = (
+          <Menu
+            onClickMenuItem={(key) => {
+              if (key === "quota") {
+                onQuota(tenant);
+              } else if (key === "admins") {
+                onAdmins(tenant);
+              } else if (key === "disable") {
+                Modal.confirm({
+                  title: `禁用 ${tenant.name} 后不可还原，确认继续？`,
+                  okButtonProps: { status: "danger" },
+                  onOk: () => onDisable(tenant),
+                });
+              }
+            }}
+          >
+            <Menu.Item key="quota">配额</Menu.Item>
+            <Menu.Item key="admins">管理员</Menu.Item>
+            {tenant.status !== "disabled" ? (
+              <Menu.Item key="disable">禁用</Menu.Item>
+            ) : null}
+          </Menu>
+        );
+
+        return (
+          <ListRowActions>
+            {tenant.status !== "disabled" ? (
+              <Popconfirm
+                title={`确认${tenant.status === "suspended" ? "解冻" : "冻结"}租户 ${tenant.name}？`}
+                onOk={() => onToggleStatus(tenant)}
+              >
+                <ListRowActionButton>
+                  {tenant.status === "suspended" ? "解冻" : "冻结"}
+                </ListRowActionButton>
+              </Popconfirm>
+            ) : null}
+            <ListRowMore droplist={moreMenu} />
+          </ListRowActions>
+        );
+      },
     },
   ];
 
   return (
-    <Table
+    <ListDataTable
       rowKey="id"
       columns={columns}
       data={data}
       border={false}
-      scroll={{ x: 1380 }}
       pagination={{ pageSize: 10, showTotal: true, hideOnSinglePage: true }}
-      noDataElement="暂无符合条件的租户"
+      emptyText="暂无符合条件的租户"
     />
   );
 }

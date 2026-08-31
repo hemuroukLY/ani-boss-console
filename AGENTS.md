@@ -13,7 +13,9 @@
 
 ## 路由与页面组织
 
-- 项目使用 TanStack Router 文件路由，所有 URL 路由入口必须位于 `src/routes/`，目录和文件名必须按实际 URL 层级组织。
+- 项目使用 TanStack Router 文件路由，所有 URL 路由入口必须位于 `src/routes/`。
+- `src/routes/` 下的业务模块必须直接位于根层级，不得仅因菜单分类或业务归属再嵌套一层分类目录；模块之间不存在真实路由父子关系时，必须使用连字符连接语义并作为独立根级路由（例如 `tenants-billing/index.tsx`），不得使用 `tenants.billing` 点号嵌套或 `tenants/billing` 目录嵌套；只有模块自身的 index、详情等子路由才放入对应模块目录。
+- 业务页面路由必须使用 `<page-name>/index.tsx` 目录入口，不得使用 `<page-name>.tsx` 平铺页面文件；仅 `__root.tsx`、根 `index.tsx` 以及确实承载子路由布局的父 route 文件可例外。
 - 单一路由使用的页面组件必须直接定义在对应 route 文件中，通过 `createFileRoute` 的 `component` 属性注册；禁止新增或恢复 `src/features/*/pages`、独立 `pages` 目录或仅用于转发页面组件的薄 route 文件。
 - 项目已在 TanStack Router Vite 插件中启用 `autoCodeSplitting: true`；路由 UI 应交由插件自动拆分，除非存在明确的特殊拆包需求，否则不得额外创建 `.lazy.tsx` 或手动封装动态导入。
 - 被两个或以上路由复用的页面主体或 UI 片段必须抽取到 `src/components/<scope>/<ComponentName>/index.tsx`，route 文件只负责路由参数、路由上下文、页面数据编排和组合这些组件。
@@ -24,11 +26,14 @@
 ## 组件与样式
 
 - `src/components/` 必须按页面作用域（page scope）组织，每个组件使用独立目录：`src/components/<scope>/<ComponentName>/index.tsx`。
+- `src/components/common/index.ts` 是公共组件的唯一对外导出层；`common` 目录内部引用其他公共组件时必须使用相对路径，目录外代码必须统一从 `@/components/common` 导入，不得绕过公共层引用具体组件子目录。
 - 组件私有样式必须与组件同目录，命名为 `index.css`、`index.less`、`index.module.css` 或 `index.module.less`。
 - 子组件使用 `src/components/<scope>/<ComponentName>/<SubComponentName>/index.tsx` 组织。
 - 禁止在 scope 目录直接平铺 `<ComponentName>.tsx`、`<ComponentName>.module.css` 或其他组件实现、私有样式文件。
 - 开发页面或交互前，必须先确认项目中是否已有可复用组件；项目内没有合适组件时，再确认 Arco Design 是否提供可直接使用的组件。
+- 涉及任何第三方开源库（包括但不限于 Arco Design）的 API、属性、类型、配置、布局或交互行为时，必须先通过 Context7 查询与项目当前依赖版本匹配的文档并依据查询结果实现；不得根据训练数据、记忆或经验猜测用法，且不得使用已弃用或过时的 API。
 - 只有项目现有组件和 Arco Design 均无法满足需求时，才允许封装自定义组件，避免重复实现已有能力。
+- 业务代码不得直接使用 Arco Design 的 `Table`；普通组件、详情页和嵌入式表格统一使用 `DataTable`，标准列表页统一使用 `ListDataTable`，两者分别承载基础表格行为和列表页专属布局与空态。
 - 项目已安装 `echarts` 和 `echarts-for-react`；图表及数据可视化场景必须优先通过 `echarts-for-react` 使用 ECharts 实现，不得在已有能力可满足时自行绘制或重复封装图表组件。
 - 项目已安装 `clsx`；动态或条件类名必须优先使用 `clsx` 组合，不得手动使用模板字符串、字符串拼接或嵌套条件表达式拼接类名。
 - 样式编写优先使用 Tailwind CSS；仅在 Tailwind CSS 确实无法合理实现时，才新增 Less 或 CSS 样式。
@@ -54,7 +59,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **ani-boss-console** (216 symbols, 356 relationships, 11 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ani-boss-console** (715 symbols, 1457 relationships, 52 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 

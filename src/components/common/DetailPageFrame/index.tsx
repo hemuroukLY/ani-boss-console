@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@arco-design/web-react";
 import { IconLeft } from "@arco-design/web-react/icon";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 export interface DetailBreadcrumbItem {
   label: ReactNode;
@@ -41,6 +41,7 @@ interface DetailPageFrameProps {
   actions?: ReactNode;
   cards: DetailInfoCard[];
   tabs?: DetailTab[];
+  tabExtra?: ReactNode | ((activeTabKey: string) => ReactNode);
   defaultTabKey?: string;
   onBack?: () => void;
 }
@@ -55,9 +56,14 @@ export function DetailPageFrame({
   actions,
   cards,
   tabs,
+  tabExtra,
   defaultTabKey,
   onBack,
 }: DetailPageFrameProps) {
+  const [activeTabKey, setActiveTabKey] = useState(
+    defaultTabKey ?? tabs?.[0]?.key ?? "",
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -137,6 +143,12 @@ export function DetailPageFrame({
           <Card className="min-w-0 rounded-lg [&_.arco-card-body]:p-0">
             <Tabs
               defaultActiveTab={defaultTabKey ?? tabs[0].key}
+              extra={
+                typeof tabExtra === "function"
+                  ? tabExtra(activeTabKey)
+                  : tabExtra
+              }
+              onChange={setActiveTabKey}
               className="px-5"
             >
               {tabs.map((tab) => (

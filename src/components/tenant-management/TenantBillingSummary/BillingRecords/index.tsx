@@ -1,5 +1,6 @@
-import { Table, Tag, Typography } from "@arco-design/web-react";
+import { Tag, Typography } from "@arco-design/web-react";
 import clsx from "clsx";
+import { DataTable } from "@/components/common";
 import type {
   TenantBilling,
   TenantBillingAdjustment,
@@ -15,7 +16,7 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
         <Typography.Title heading={6} className="!mb-4">
           用量费用明细
         </Typography.Title>
-        <Table
+        <DataTable
           rowKey="metric"
           pagination={false}
           data={billing.usageBreakdown}
@@ -42,7 +43,7 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
         <Typography.Title heading={6} className="!mb-4">
           调账记录
         </Typography.Title>
-        <Table
+        <DataTable
           rowKey="id"
           pagination={false}
           data={billing.adjustments}
@@ -74,7 +75,7 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
         <Typography.Title heading={6} className="!mb-4">
           发票记录
         </Typography.Title>
-        <Table
+        <DataTable
           rowKey="id"
           pagination={false}
           data={billing.invoices}

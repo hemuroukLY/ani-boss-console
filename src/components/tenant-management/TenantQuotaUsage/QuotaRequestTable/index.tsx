@@ -1,4 +1,9 @@
-import { Button, Space, Table, Tag, Typography } from "@arco-design/web-react";
+import { Button, Tag, Typography } from "@arco-design/web-react";
+import {
+  DataTable,
+  ListRowActionButton,
+  ListRowActions,
+} from "@/components/common";
 import type { TenantQuotaRequest } from "@/features/tenant-management/model";
 import { formatNumber } from "../formatters";
 
@@ -31,7 +36,7 @@ export function QuotaRequestTable({
           代客申请
         </Button>
       </div>
-      <Table
+      <DataTable
         rowKey="id"
         pagination={false}
         data={requests}
@@ -75,20 +80,20 @@ export function QuotaRequestTable({
           {
             title: "操作",
             width: 150,
+            fixed: "right",
             render: (_, request: TenantQuotaRequest) =>
               request.status === "pending" ? (
-                <Space>
-                  <Button type="text" onClick={() => onApprove(request)}>
+                <ListRowActions>
+                  <ListRowActionButton onClick={() => onApprove(request)}>
                     通过
-                  </Button>
-                  <Button
-                    type="text"
+                  </ListRowActionButton>
+                  <ListRowActionButton
                     status="danger"
                     onClick={() => onReject(request)}
                   >
                     驳回
-                  </Button>
-                </Space>
+                  </ListRowActionButton>
+                </ListRowActions>
               ) : (
                 "—"
               ),

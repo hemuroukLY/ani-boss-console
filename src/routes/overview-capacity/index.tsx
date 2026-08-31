@@ -7,7 +7,7 @@ import { SoftList } from "@/components/platform-overview/SoftList";
 import { SoftRow } from "@/components/platform-overview/SoftList/SoftRow";
 import { regions } from "@/features/platform-overview/model";
 
-export const Route = createFileRoute("/overview/capacity")({
+export const Route = createFileRoute("/overview-capacity/")({
   component: CapacityOverviewRoute,
 });
 
@@ -26,7 +26,7 @@ function CapacityOverviewRoute() {
           label="GPU 总量"
           value="128"
           hint="全部区域合计"
-          onClick={() => navigate({ to: "/overview/gpu" })}
+          onClick={() => navigate({ to: "/overview-gpu" })}
         />
         <Metric label="GPU 空闲" value="46" hint="当前可分配" />
         <Metric label="租户数" value="38" hint="已归属租户" />

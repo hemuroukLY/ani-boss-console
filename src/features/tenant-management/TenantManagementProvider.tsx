@@ -16,9 +16,11 @@ import {
   type TenantAdmin,
   type TenantAdminRole,
   type TenantBilling,
+  type TenantBillingOperation,
   type TenantDraft,
   type TenantLifecycleEvent,
   type TenantOperation,
+  type TenantQuotaPackage,
   type TenantQuotaRequestStatus,
   type TenantSsoStatus,
   type TenantStatus,
@@ -78,6 +80,10 @@ interface TenantManagementContextValue {
   tenants: Tenant[];
   tenantAdmins: TenantAdmin[];
   tenantBillings: TenantBilling[];
+  quotaPackages: TenantQuotaPackage[];
+  registerQuotaPackage: (quotaPackage: TenantQuotaPackage) => boolean;
+  publishQuotaPackage: (planCode: string) => boolean;
+  unregisterQuotaPackage: (planCode: string) => boolean;
   createTenant: (draft: TenantDraft) => CreateTenantResult;
   toggleTenantStatus: (tenantId: string) => TenantStatus | undefined;
   disableTenant: (tenantId: string) => boolean;
@@ -153,6 +159,21 @@ function formatCreatedAt() {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+function createBillingOperation(
+  operation: string,
+  message: string,
+  by = "platform-admin",
+): TenantBillingOperation {
+  const createdAt = formatCreatedAt();
+  return {
+    id: `billing-operation-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    operation,
+    message,
+    createdAt,
+    by,
+  };
+}
+
 function createLifecycleEvent(
   event: TenantLifecycleEvent["event"],
   message: string,
@@ -204,12 +225,50 @@ export function TenantManagementProvider({
   const [tenantBillings, setTenantBillings] = useState<TenantBilling[]>(
     initialTenantBillings,
   );
+  const [quotaPackages, setQuotaPackages] = useState<TenantQuotaPackage[]>(
+    tenantQuotaPackages,
+  );
 
   const value = useMemo<TenantManagementContextValue>(
     () => ({
       tenants,
       tenantAdmins,
       tenantBillings,
+      quotaPackages,
+      registerQuotaPackage: (quotaPackage) => {
+        if (
+          quotaPackages.some(
+            (item) =>
+              item.planCode.toLowerCase() === quotaPackage.planCode.toLowerCase(),
+          )
+        ) {
+          return false;
+        }
+        setQuotaPackages((current) => [quotaPackage, ...current]);
+        return true;
+      },
+      publishQuotaPackage: (planCode) => {
+        if (!quotaPackages.some((item) => item.planCode === planCode)) {
+          return false;
+        }
+        setQuotaPackages((current) =>
+          current.map((item) =>
+            item.planCode === planCode
+              ? { ...item, status: "enabled", updatedAt: formatCreatedAt() }
+              : item,
+          ),
+        );
+        return true;
+      },
+      unregisterQuotaPackage: (planCode) => {
+        if (tenants.some((tenant) => tenant.planCode === planCode)) {
+          return false;
+        }
+        setQuotaPackages((current) =>
+          current.filter((item) => item.planCode !== planCode),
+        );
+        return true;
+      },
       createTenant: (draft) => {
         if (tenants.some((tenant) => tenant.name === draft.name.trim())) {
           return { ok: false, reason: "租户标识已存在" };
@@ -219,10 +278,10 @@ export function TenantManagementProvider({
           (item) => item.value === draft.region,
         );
         const quotaPackage =
-          tenantQuotaPackages.find(
+          quotaPackages.find(
             (item) =>
               item.status === "enabled" && item.name === draft.quotaPackage,
-          ) ?? tenantQuotaPackages[0];
+          ) ?? quotaPackages[0];
         const tenantId = `tn-${Date.now()}`;
         const tenant: Tenant = {
           id: tenantId,
@@ -297,6 +356,13 @@ export function TenantManagementProvider({
             usageBreakdown: getTenantUsageBreakdown(tenant.usage),
             adjustments: [],
             invoices: [],
+            operations: [
+              createBillingOperation(
+                "开通计费账户",
+                `创建 ${tenant.name} 计费账户`,
+                "system",
+              ),
+            ],
             updatedAt: formatCreatedAt(),
           },
           ...current,
@@ -412,7 +478,7 @@ export function TenantManagementProvider({
         return true;
       },
       rebindTenantQuotaPackage: (tenantId, planCode) => {
-        const quotaPackage = tenantQuotaPackages.find(
+        const quotaPackage = quotaPackages.find(
           (item) => item.planCode === planCode && item.status === "enabled",
         );
         if (
@@ -778,6 +844,14 @@ export function TenantManagementProvider({
                     ...item,
                     usageCostUsd,
                     usageBreakdown,
+                    operations: [
+                      createBillingOperation(
+                        "刷新用量",
+                        `更新 ${item.period} 账期用量与费用`,
+                        "system",
+                      ),
+                      ...item.operations,
+                    ],
                     updatedAt: formatCreatedAt(),
                   }
                 : item,
@@ -822,6 +896,14 @@ export function TenantManagementProvider({
                       },
                       ...item.adjustments,
                     ],
+                    operations: [
+                      createBillingOperation(
+                        "授信调账",
+                        `${amountUsd > 0 ? "+" : ""}${amountUsd} USD · ${reason}`,
+                        "finance",
+                      ),
+                      ...item.operations,
+                    ],
                     updatedAt: formatCreatedAt(),
                   }
                 : item,
@@ -862,12 +944,20 @@ export function TenantManagementProvider({
                       },
                       ...item.invoices,
                     ],
+                    operations: [
+                      createBillingOperation(
+                        "生成账单",
+                        `${invoiceNo} · ${item.usageCostUsd} USD`,
+                        "finance",
+                      ),
+                      ...item.operations,
+                    ],
                     updatedAt: formatCreatedAt(),
                   }
                 : item,
             ),
           );
-          return { ok: true, message: `发票 ${invoiceNo} 已生成` };
+          return { ok: true, message: `账单 ${invoiceNo} 已生成` };
         }
 
         if (action === "mark_settled") {
@@ -881,6 +971,14 @@ export function TenantManagementProvider({
                     ...item,
                     status: "settled",
                     balanceUsd: nextBalance,
+                    operations: [
+                      createBillingOperation(
+                        "标记结清",
+                        `${item.period} 账期已完成线下结算`,
+                        "finance",
+                      ),
+                      ...item.operations,
+                    ],
                     updatedAt: formatCreatedAt(),
                   }
                 : item,
@@ -915,6 +1013,24 @@ export function TenantManagementProvider({
         }
 
         if (action === "export_statement") {
+          setTenantBillings((current) =>
+            current.map((item) =>
+              item.tenantId === tenantId
+                ? {
+                    ...item,
+                    operations: [
+                      createBillingOperation(
+                        "导出对账单",
+                        `${item.period} 账期对账单`,
+                        "finance",
+                      ),
+                      ...item.operations,
+                    ],
+                    updatedAt: formatCreatedAt(),
+                  }
+                : item,
+            ),
+          );
           return {
             ok: true,
             message: `已导出 ${tenant.name} ${billing.period} 对账单`,
@@ -1069,7 +1185,7 @@ export function TenantManagementProvider({
           if (!tenant.isTrial) {
             return { ok: false, reason: "仅试用租户可以转正式" };
           }
-          const quotaPackage = tenantQuotaPackages.find(
+          const quotaPackage = quotaPackages.find(
             (item) =>
               item.planCode === (options.planCode || "std") &&
               item.status === "enabled" &&
@@ -1241,7 +1357,7 @@ export function TenantManagementProvider({
         return { ok: false, reason: "不支持的生命周期操作" };
       },
     }),
-    [tenantAdmins, tenantBillings, tenants],
+    [quotaPackages, tenantAdmins, tenantBillings, tenants],
   );
 
   return (
