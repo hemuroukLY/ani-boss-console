@@ -1,9 +1,9 @@
 import { Button, Message } from "@arco-design/web-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { OperationsMetrics } from "@/components/platform-overview/OperationsMetrics";
-import { OperationsPanels } from "@/components/platform-overview/OperationsPanels";
-import { OverviewPageHeader } from "@/components/platform-overview/OverviewPageHeader";
-import { usePlatformOverview } from "@/features/platform-overview/PlatformOverviewProvider";
+import { OperationsMetrics } from "@/components/overview/OperationsMetrics";
+import { OperationsPanels } from "@/components/overview/OperationsPanels";
+import { OverviewPageHeader } from "@/components/overview/OverviewPageHeader";
+import { usePlatformOverview } from "@/components/overview/PlatformOverviewProvider";
 
 export const Route = createFileRoute("/")({
   component: OperationsOverviewRoute,

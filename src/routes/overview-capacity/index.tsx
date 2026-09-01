@@ -1,11 +1,11 @@
 import { Button, Message, Progress, Space } from "@arco-design/web-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Metric } from "@/components/platform-overview/Metric";
-import { OverviewPageHeader } from "@/components/platform-overview/OverviewPageHeader";
-import { Panel } from "@/components/platform-overview/Panel";
-import { SoftList } from "@/components/platform-overview/SoftList";
-import { SoftRow } from "@/components/platform-overview/SoftList/SoftRow";
-import { regions } from "@/features/platform-overview/model";
+import { Metric } from "@/components/overview/Metric";
+import { OverviewPageHeader } from "@/components/overview/OverviewPageHeader";
+import { Panel } from "@/components/overview/Panel";
+import { SoftList } from "@/components/overview/SoftList";
+import { SoftRow } from "@/components/overview/SoftList/SoftRow";
+import { regions } from "@/components/overview/model";
 
 export const Route = createFileRoute("/overview-capacity/")({
   component: CapacityOverviewRoute,

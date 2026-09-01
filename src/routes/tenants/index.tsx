@@ -1,27 +1,12 @@
 import { Button, Message } from "@arco-design/web-react";
 import { IconPlus } from "@arco-design/web-react/icon";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import {
-  ListPageFrame,
-  ListPageHeader,
-  ListToolbar,
-} from "@/components/common";
-import { TenantCreateDrawer } from "@/components/tenant-management/TenantCreateDrawer";
-import {
-  TenantFilters,
-  type TenantFiltersValue,
-} from "@/components/tenant-management/TenantFilters";
-import { TenantTable } from "@/components/tenant-management/TenantTable";
-import { useTenantManagement } from "@/features/tenant-management/TenantManagementProvider";
-import type { Tenant, TenantDraft } from "@/features/tenant-management/model";
-
-const initialFilters: TenantFiltersValue = {
-  keyword: "",
-  region: "all",
-  status: "all",
-  trial: "all",
-};
+import { useState } from "react";
+import { ListPageFrame, ListPageHeader } from "@/components/common";
+import { TenantCreateDrawer } from "@/components/tenant/TenantCreateDrawer";
+import { TenantTable } from "@/components/tenant/TenantTable";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
+import type { Tenant, TenantDraft } from "@/components/tenant/model";
 
 export const Route = createFileRoute("/tenants/")({
   component: TenantListRoute,
@@ -30,32 +15,7 @@ export const Route = createFileRoute("/tenants/")({
 function TenantListRoute() {
   const { tenants, createTenant, toggleTenantStatus, disableTenant } =
     useTenantManagement();
-  const [filters, setFilters] = useState<TenantFiltersValue>(initialFilters);
   const [createVisible, setCreateVisible] = useState(false);
-
-  const filteredTenants = useMemo(() => {
-    const keyword = filters.keyword.trim().toLowerCase();
-
-    return tenants.filter((tenant) => {
-      const matchesKeyword =
-        !keyword ||
-        tenant.name.toLowerCase().includes(keyword) ||
-        tenant.displayName.toLowerCase().includes(keyword);
-      const matchesRegion =
-        filters.region === "all" || tenant.region === filters.region;
-      const matchesStatus =
-        filters.status === "all" || tenant.status === filters.status;
-      const matchesTrial =
-        filters.trial === "all" ||
-        (filters.trial === "trial" ? tenant.isTrial : !tenant.isTrial);
-
-      return matchesKeyword && matchesRegion && matchesStatus && matchesTrial;
-    });
-  }, [filters, tenants]);
-
-  const updateFilter = (field: keyof TenantFiltersValue, value: string) => {
-    setFilters((current) => ({ ...current, [field]: value }));
-  };
 
   const submitTenant = (draft: TenantDraft) => {
     const result = createTenant(draft);
@@ -99,20 +59,9 @@ function TenantListRoute() {
             }
           />
         }
-        toolbar={
-          <ListToolbar
-            filters={
-              <TenantFilters
-                {...filters}
-                onChange={updateFilter}
-                onReset={() => setFilters(initialFilters)}
-              />
-            }
-          />
-        }
       >
         <TenantTable
-          data={filteredTenants}
+          data={tenants}
           onToggleStatus={handleToggleTenantStatus}
           onDisable={handleDisableTenant}
           onQuota={(tenant) =>

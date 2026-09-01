@@ -1,4 +1,9 @@
-export { DataTable } from "./DataTable";
+export {
+  DataTable,
+  DataTableNameCell,
+  DataTableRowActionButton,
+  DataTableRowActions,
+} from "./DataTable";
 export type { DataTableProps, ListColumn } from "./DataTable";
 export { DetailPageFrame } from "./DetailPageFrame";
 export type {
@@ -9,12 +14,9 @@ export type {
 } from "./DetailPageFrame";
 export {
   ListDataTable,
-  ListRowActionButton,
-  ListRowActions,
   ListRowMore,
 } from "./ListDataTable";
 export type { ListDataTableProps } from "./ListDataTable";
-export { ListNameCell } from "./ListNameCell";
 export {
   ListPageFrame,
   ListPageHeader,

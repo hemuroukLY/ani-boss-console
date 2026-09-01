@@ -1,56 +1,66 @@
-# 项目约定
+# AGENTS.md
 
-## UI 与产品原型
+## 项目定位
 
-- 本项目的信息架构、菜单名称、菜单层级、路由及页面规格，以 GitNexus 已索引的 `产品原型-8.25` 为当前唯一依据。
-- 新增或修改页面前，必须先通过 GitNexus 查询 `产品原型-8.25` 中对应的菜单项、路由与页面规格；原型版本升级时，应优先更新本约定中的版本号。
-- 当前仓库只承载产品原型中 BOSS 域的前端内容，项目内部无需再用 `boss` 重复区分业务域。
-- 路由、路由布局、源码目录、文件名、组件名及其他代码标识不得使用 `boss`、`Boss` 等冗余域名前缀；应使用项目内语义名称，例如 `/`、`/overview/*`、`_app`、`AppShell`。
-- 原型明确规定的用户可见产品名称、品牌文案或菜单文案不受上述代码命名约束，仍以产品原型为准。
-- BOSS 应用骨架与 `ani-console` 保持一致：一级菜单位于顶部，二级和三级菜单位于左侧边栏。
-- BOSS 原型层级映射规则：`l1` 对应顶部一级菜单，`l2` 对应左侧可点击菜单，`subgroups` 对应左侧三级分组标题。
-- 左侧边栏不得重复展示当前一级菜单名称，应直接从二级菜单或三级分组开始展示。
+本仓库只包含 ANI 平台管理端前端。仓库根目录已经代表产品原型中的 BOSS 范围，源码按业务语义命名。
 
-## 路由与页面组织
+## 开发入口
 
-- 项目使用 TanStack Router 文件路由，所有 URL 路由入口必须位于 `src/routes/`。
-- `src/routes/` 下的业务模块必须直接位于根层级，不得仅因菜单分类或业务归属再嵌套一层分类目录；模块之间不存在真实路由父子关系时，必须使用连字符连接语义并作为独立根级路由（例如 `tenants-billing/index.tsx`），不得使用 `tenants.billing` 点号嵌套或 `tenants/billing` 目录嵌套；只有模块自身的 index、详情等子路由才放入对应模块目录。
-- 业务页面路由必须使用 `<page-name>/index.tsx` 目录入口，不得使用 `<page-name>.tsx` 平铺页面文件；仅 `__root.tsx`、根 `index.tsx` 以及确实承载子路由布局的父 route 文件可例外。
-- 单一路由使用的页面组件必须直接定义在对应 route 文件中，通过 `createFileRoute` 的 `component` 属性注册；禁止新增或恢复 `src/features/*/pages`、独立 `pages` 目录或仅用于转发页面组件的薄 route 文件。
-- 项目已在 TanStack Router Vite 插件中启用 `autoCodeSplitting: true`；路由 UI 应交由插件自动拆分，除非存在明确的特殊拆包需求，否则不得额外创建 `.lazy.tsx` 或手动封装动态导入。
-- 被两个或以上路由复用的页面主体或 UI 片段必须抽取到 `src/components/<scope>/<ComponentName>/index.tsx`，route 文件只负责路由参数、路由上下文、页面数据编排和组合这些组件。
-- `src/features/` 只保留领域模型、状态管理、Provider、数据访问和业务逻辑，不得存放页面组件或通用 UI 组件。
-- 有子路由的父 route 必须通过 `Outlet` 承载子路由；index route 使用对应目录下的 `index.tsx`，动态参数使用 `$param.tsx`。
-- `src/routeTree.gen.ts` 为 TanStack Router 自动生成文件，不得手工编辑；路由结构变化后应由路由插件重新生成。
+1. 阅读 [工程约定](./docs/CONVENTIONS.md) 和 [UI 开发约定](./docs/UI-CONVENTIONS.md)。
+2. 当前范围、缺口与开发记录见 [docs/PROJECT-STATUS.md](./docs/PROJECT-STATUS.md)。
+3. 页面信息架构与交互规格以 GitNexus 索引 `产品原型-8.25` 为准；后端接口与行为以 GitNexus 索引 `ANI` 为准。
+4. 除非用户明确要求，不执行编译、构建或启动应用；页面与交互由项目负责人手动验证。
 
-## 组件与样式
+## 强制规则
 
-- `src/components/` 必须按页面作用域（page scope）组织，每个组件使用独立目录：`src/components/<scope>/<ComponentName>/index.tsx`。
-- `src/components/common/index.ts` 是公共组件的唯一对外导出层；`common` 目录内部引用其他公共组件时必须使用相对路径，目录外代码必须统一从 `@/components/common` 导入，不得绕过公共层引用具体组件子目录。
-- 组件私有样式必须与组件同目录，命名为 `index.css`、`index.less`、`index.module.css` 或 `index.module.less`。
-- 子组件使用 `src/components/<scope>/<ComponentName>/<SubComponentName>/index.tsx` 组织。
-- 禁止在 scope 目录直接平铺 `<ComponentName>.tsx`、`<ComponentName>.module.css` 或其他组件实现、私有样式文件。
-- 开发页面或交互前，必须先确认项目中是否已有可复用组件；项目内没有合适组件时，再确认 Arco Design 是否提供可直接使用的组件。
-- 涉及任何第三方开源库（包括但不限于 Arco Design）的 API、属性、类型、配置、布局或交互行为时，必须先通过 Context7 查询与项目当前依赖版本匹配的文档并依据查询结果实现；不得根据训练数据、记忆或经验猜测用法，且不得使用已弃用或过时的 API。
-- 只有项目现有组件和 Arco Design 均无法满足需求时，才允许封装自定义组件，避免重复实现已有能力。
-- 业务代码不得直接使用 Arco Design 的 `Table`；普通组件、详情页和嵌入式表格统一使用 `DataTable`，标准列表页统一使用 `ListDataTable`，两者分别承载基础表格行为和列表页专属布局与空态。
-- 项目已安装 `echarts` 和 `echarts-for-react`；图表及数据可视化场景必须优先通过 `echarts-for-react` 使用 ECharts 实现，不得在已有能力可满足时自行绘制或重复封装图表组件。
-- 项目已安装 `clsx`；动态或条件类名必须优先使用 `clsx` 组合，不得手动使用模板字符串、字符串拼接或嵌套条件表达式拼接类名。
-- 样式编写优先使用 Tailwind CSS；仅在 Tailwind CSS 确实无法合理实现时，才新增 Less 或 CSS 样式。
-- 列表的名称或主标识列已提供详情跳转时，不得在操作列重复展示“详情”；详情入口应统一放在名称或主标识列。
-- 详情页左侧信息区即为资源概览；右侧 Tabs 不得再设置或重复展示“概览”，只承载左侧概览之外的专项信息与操作。
-- 产品原型中的编辑操作必须通过弹窗修改，并在用户确认后生效；不得在详情展示区直接切换、原地编辑或即时写入。
+- 路由、路由布局、源码目录、文件名、组件名及其他代码标识不得使用 `boss`、`Boss` 等冗余域名前缀；原型明确规定的用户可见产品名称、品牌和菜单文案除外。
+- UI 实现顺序、组件复用、样式边界和交互底线以 `docs/UI-CONVENTIONS.md` 为准；目录职责、路由与组件组织、数据边界和验证方式以 `docs/CONVENTIONS.md` 为准。
+- BOSS 应用骨架与 `ani-console` 保持一致：`l1` 对应顶部一级菜单，`l2` 对应左侧可点击菜单，`subgroups` 对应左侧三级分组标题；侧边栏不得重复展示当前一级菜单名称。
+- 新增或修改页面前，必须通过 GitNexus 查询 `产品原型-8.25` 中对应的菜单、路由和页面规格；不得根据现有前端页面反推产品要求。
+- 接入接口或判断后端行为前，必须通过 GitNexus 查询 `ANI`；不得将前端演示数据作为接口契约。
+- 不覆盖、清理或改写用户已有的无关工作区变更。
 
-## 验证方式
+## 组件拆分
 
-- 除非用户明确要求，否则不要执行编译、构建或启动应用等验证；默认由项目负责人手动完成相关验证。
+### 文件规模参考
+
+- 路由文件建议控制在 150–300 行，职责限定为路由参数处理、页面状态编排和组件组合。
+- 业务组件通常控制在 80–200 行；超过 250 行时，应检查是否承担了多个可独立描述的职责。
+- Hook 或状态逻辑超过 80–120 行，或包含多组相互独立的操作流程时，应考虑按业务流程抽取。
+- 单文件页面超过 500 行时，通常应拆分；仅当内容高度线性、职责单一且拆分不能降低理解成本时可保留。
+- 行数仅用于提示潜在的职责混杂，不作为机械拆分的唯一依据；应优先根据业务边界、状态归属和维护成本判断。
+
+### 适合拆分的情形
+
+满足以下任一条件时，应优先评估并实施拆分：
+
+- 页面区域具有独立标题、表格、弹窗或完整交互边界。
+- 某一区域拥有独立状态、事件处理和操作流程。
+- 可以使用明确的业务名称描述，例如“设备表”“租户分配台账”。
+- 需要单独维护、测试，或已存在明确的复用需求。
+- 修改某一区域时，经常需要在同一大文件的不同位置之间来回查找。
+- `useState`、事件处理函数或表格 `columns` 按业务区域明显成组出现。
+
+拆分时应让新组件或 Hook 承担完整、可命名的业务职责，并尽量由其内部管理相关状态与操作，避免将实现细节重新变成大量零散参数传递给父组件。
+
+### 不宜拆分的情形
+
+- 只有十几行、没有独立业务语义的 JSX 片段，不应仅为缩短文件而抽取。
+- 仅转发一层 props、未隔离状态、逻辑或复杂度的薄组件，不应单独创建。
+- 如果拆分会引入大量零散参数、使状态归属模糊或增加跨文件跳转成本，应保留在原组件中，或先重新划分职责边界。
+
+## 开发记录
+
+- 完成并验证实现、修复或文档调整后，在最终回复前更新 `docs/PROJECT-STATUS.md`。
+- 记录应简短、事实准确，覆盖变更区域、用户可见行为、重要集成说明和已执行验证；不粘贴冗长命令输出。
+- 不创建重复的状态或记录文件；更新记录后运行 `git diff --check`。
 
 ## GitNexus
 
-- 当前前端仓库索引名为 `ani-boss-console`，后端索引名为 `ANI`，产品原型索引名为 `产品原型-8.25`。
+当前前端仓库索引名为 `ani-boss-console`，后端索引名为 `ANI`，产品原型索引名为 `产品原型-8.25`。GitNexus 查询必须使用当前会话接入的工具，不得使用仓库内 CLI 或索引文件替代。
+
 - 修改函数、类或方法前，必须使用当前会话已接入的 `impact` 工具，对目标符号执行 upstream 影响分析。
 - `impact` 返回 HIGH 或 CRITICAL 风险时，必须先向用户说明直接调用方、受影响流程和风险，再继续修改。
-- GitNexus 查询必须使用当前会话已接入的 GitNexus 工具（如 `query`、`context`、`impact`、`detect_changes`），不得使用 GitNexus CLI、`.gitnexus/run.cjs` 或仓库索引目录下的文件替代这些查询工具。
 - 完成代码修改后，必须使用当前会话已接入的 `detect_changes({ repo: "ani-boss-console", scope: "all" })` 工具检查变更范围。
 - 查看接口、后端契约或执行流时，必须使用当前会话已接入的 GitNexus 工具查询后端索引 `ANI`（`repo: "ANI"`）。
 - 查看产品原型、页面信息架构或交互布局时，必须使用当前会话已接入的 GitNexus 工具查询产品原型索引 `产品原型-8.25`（`repo: "产品原型-8.25"`）。
@@ -59,7 +69,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **ani-boss-console** (715 symbols, 1457 relationships, 52 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ani-boss-console** (767 symbols, 1636 relationships, 61 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 

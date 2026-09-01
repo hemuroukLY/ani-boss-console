@@ -13,14 +13,14 @@ import {
   type DetailInfoCard,
   type DetailTab,
 } from "@/components/common";
-import { TenantAdministrators } from "@/components/tenant-management/TenantAdministrators";
-import { TenantBillingSummary } from "@/components/tenant-management/TenantBillingSummary";
-import { TenantIdentitySecurity } from "@/components/tenant-management/TenantIdentitySecurity";
-import { TenantLifecycle } from "@/components/tenant-management/TenantLifecycle";
-import { TenantOperationHistory } from "@/components/tenant-management/TenantOperationHistory";
-import { TenantQuotaUsage } from "@/components/tenant-management/TenantQuotaUsage";
-import { useTenantManagement } from "@/features/tenant-management/TenantManagementProvider";
-import { tenantStatusMeta } from "@/features/tenant-management/model";
+import { TenantAdministrators } from "@/components/tenant/TenantAdministrators";
+import { TenantBillingSummary } from "@/components/tenant/TenantBillingSummary";
+import { TenantIdentitySecurity } from "@/components/tenant/TenantIdentitySecurity";
+import { TenantLifecycle } from "@/components/tenant/TenantLifecycle";
+import { TenantOperationHistory } from "@/components/tenant/TenantOperationHistory";
+import { TenantQuotaUsage } from "@/components/tenant/TenantQuotaUsage";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
+import { tenantStatusMeta } from "@/components/tenant/model";
 
 export const Route = createFileRoute("/tenants/$tenantId")({
   component: TenantDetailRoute,

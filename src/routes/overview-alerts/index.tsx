@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Metric } from "@/components/platform-overview/Metric";
-import { OverviewPageHeader } from "@/components/platform-overview/OverviewPageHeader";
-import { PlatformAlertTable } from "@/components/platform-overview/PlatformAlertTable";
-import { usePlatformOverview } from "@/features/platform-overview/PlatformOverviewProvider";
+import { Metric } from "@/components/overview/Metric";
+import { OverviewPageHeader } from "@/components/overview/OverviewPageHeader";
+import { PlatformAlertTable } from "@/components/overview/PlatformAlertTable";
+import { usePlatformOverview } from "@/components/overview/PlatformOverviewProvider";
 
 export const Route = createFileRoute("/overview-alerts/")({
   component: AlertsRoute,

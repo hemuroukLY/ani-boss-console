@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GpuDeviceTable } from "@/components/platform-overview/GpuDeviceTable";
-import { Metric } from "@/components/platform-overview/Metric";
-import { OverviewPageHeader } from "@/components/platform-overview/OverviewPageHeader";
-import { Panel } from "@/components/platform-overview/Panel";
-import { SoftList } from "@/components/platform-overview/SoftList";
-import { SoftRow } from "@/components/platform-overview/SoftList/SoftRow";
+import { GpuDeviceTable } from "@/components/overview/GpuDeviceTable";
+import { Metric } from "@/components/overview/Metric";
+import { OverviewPageHeader } from "@/components/overview/OverviewPageHeader";
+import { Panel } from "@/components/overview/Panel";
+import { SoftList } from "@/components/overview/SoftList";
+import { SoftRow } from "@/components/overview/SoftList/SoftRow";
 
 export const Route = createFileRoute("/overview-gpu/")({
   component: GpuPoolRoute,

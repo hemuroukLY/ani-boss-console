@@ -20,6 +20,10 @@ import { Route as OverviewInferenceIndexRouteImport } from './routes/overview-in
 import { Route as OverviewGpuIndexRouteImport } from './routes/overview-gpu/index'
 import { Route as OverviewCapacityIndexRouteImport } from './routes/overview-capacity/index'
 import { Route as OverviewAlertsIndexRouteImport } from './routes/overview-alerts/index'
+import { Route as OpsStorageIndexRouteImport } from './routes/ops-storage/index'
+import { Route as OpsPoolIndexRouteImport } from './routes/ops-pool/index'
+import { Route as OpsNodesIndexRouteImport } from './routes/ops-nodes/index'
+import { Route as OpsGpuIndexRouteImport } from './routes/ops-gpu/index'
 import { Route as TenantsTenantIdRouteImport } from './routes/tenants/$tenantId'
 import { Route as TenantsQuotasPlanCodeRouteImport } from './routes/tenants-quotas/$planCode'
 import { Route as TenantsBillingTenantIdRouteImport } from './routes/tenants-billing/$tenantId'
@@ -80,6 +84,26 @@ const OverviewAlertsIndexRoute = OverviewAlertsIndexRouteImport.update({
   path: '/overview-alerts/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpsStorageIndexRoute = OpsStorageIndexRouteImport.update({
+  id: '/ops-storage/',
+  path: '/ops-storage/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpsPoolIndexRoute = OpsPoolIndexRouteImport.update({
+  id: '/ops-pool/',
+  path: '/ops-pool/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpsNodesIndexRoute = OpsNodesIndexRouteImport.update({
+  id: '/ops-nodes/',
+  path: '/ops-nodes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpsGpuIndexRoute = OpsGpuIndexRouteImport.update({
+  id: '/ops-gpu/',
+  path: '/ops-gpu/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TenantsTenantIdRoute = TenantsTenantIdRouteImport.update({
   id: '/$tenantId',
   path: '/$tenantId',
@@ -108,6 +132,10 @@ export interface FileRoutesByFullPath {
   '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
   '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
   '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/ops-gpu': typeof OpsGpuIndexRoute
+  '/ops-nodes': typeof OpsNodesIndexRoute
+  '/ops-pool': typeof OpsPoolIndexRoute
+  '/ops-storage': typeof OpsStorageIndexRoute
   '/overview-alerts': typeof OverviewAlertsIndexRoute
   '/overview-capacity': typeof OverviewCapacityIndexRoute
   '/overview-gpu': typeof OverviewGpuIndexRoute
@@ -124,6 +152,10 @@ export interface FileRoutesByTo {
   '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
   '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
   '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/ops-gpu': typeof OpsGpuIndexRoute
+  '/ops-nodes': typeof OpsNodesIndexRoute
+  '/ops-pool': typeof OpsPoolIndexRoute
+  '/ops-storage': typeof OpsStorageIndexRoute
   '/overview-alerts': typeof OverviewAlertsIndexRoute
   '/overview-capacity': typeof OverviewCapacityIndexRoute
   '/overview-gpu': typeof OverviewGpuIndexRoute
@@ -142,6 +174,10 @@ export interface FileRoutesById {
   '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
   '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
   '/tenants/$tenantId': typeof TenantsTenantIdRoute
+  '/ops-gpu/': typeof OpsGpuIndexRoute
+  '/ops-nodes/': typeof OpsNodesIndexRoute
+  '/ops-pool/': typeof OpsPoolIndexRoute
+  '/ops-storage/': typeof OpsStorageIndexRoute
   '/overview-alerts/': typeof OverviewAlertsIndexRoute
   '/overview-capacity/': typeof OverviewCapacityIndexRoute
   '/overview-gpu/': typeof OverviewGpuIndexRoute
@@ -161,6 +197,10 @@ export interface FileRouteTypes {
     | '/tenants-billing/$tenantId'
     | '/tenants-quotas/$planCode'
     | '/tenants/$tenantId'
+    | '/ops-gpu'
+    | '/ops-nodes'
+    | '/ops-pool'
+    | '/ops-storage'
     | '/overview-alerts'
     | '/overview-capacity'
     | '/overview-gpu'
@@ -177,6 +217,10 @@ export interface FileRouteTypes {
     | '/tenants-billing/$tenantId'
     | '/tenants-quotas/$planCode'
     | '/tenants/$tenantId'
+    | '/ops-gpu'
+    | '/ops-nodes'
+    | '/ops-pool'
+    | '/ops-storage'
     | '/overview-alerts'
     | '/overview-capacity'
     | '/overview-gpu'
@@ -194,6 +238,10 @@ export interface FileRouteTypes {
     | '/tenants-billing/$tenantId'
     | '/tenants-quotas/$planCode'
     | '/tenants/$tenantId'
+    | '/ops-gpu/'
+    | '/ops-nodes/'
+    | '/ops-pool/'
+    | '/ops-storage/'
     | '/overview-alerts/'
     | '/overview-capacity/'
     | '/overview-gpu/'
@@ -211,6 +259,10 @@ export interface RootRouteChildren {
   TenantsAdminsAdminIdRoute: typeof TenantsAdminsAdminIdRoute
   TenantsBillingTenantIdRoute: typeof TenantsBillingTenantIdRoute
   TenantsQuotasPlanCodeRoute: typeof TenantsQuotasPlanCodeRoute
+  OpsGpuIndexRoute: typeof OpsGpuIndexRoute
+  OpsNodesIndexRoute: typeof OpsNodesIndexRoute
+  OpsPoolIndexRoute: typeof OpsPoolIndexRoute
+  OpsStorageIndexRoute: typeof OpsStorageIndexRoute
   OverviewAlertsIndexRoute: typeof OverviewAlertsIndexRoute
   OverviewCapacityIndexRoute: typeof OverviewCapacityIndexRoute
   OverviewGpuIndexRoute: typeof OverviewGpuIndexRoute
@@ -300,6 +352,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OverviewAlertsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ops-storage/': {
+      id: '/ops-storage/'
+      path: '/ops-storage'
+      fullPath: '/ops-storage'
+      preLoaderRoute: typeof OpsStorageIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ops-pool/': {
+      id: '/ops-pool/'
+      path: '/ops-pool'
+      fullPath: '/ops-pool'
+      preLoaderRoute: typeof OpsPoolIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ops-nodes/': {
+      id: '/ops-nodes/'
+      path: '/ops-nodes'
+      fullPath: '/ops-nodes'
+      preLoaderRoute: typeof OpsNodesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ops-gpu/': {
+      id: '/ops-gpu/'
+      path: '/ops-gpu'
+      fullPath: '/ops-gpu'
+      preLoaderRoute: typeof OpsGpuIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tenants/$tenantId': {
       id: '/tenants/$tenantId'
       path: '/$tenantId'
@@ -350,6 +430,10 @@ const rootRouteChildren: RootRouteChildren = {
   TenantsAdminsAdminIdRoute: TenantsAdminsAdminIdRoute,
   TenantsBillingTenantIdRoute: TenantsBillingTenantIdRoute,
   TenantsQuotasPlanCodeRoute: TenantsQuotasPlanCodeRoute,
+  OpsGpuIndexRoute: OpsGpuIndexRoute,
+  OpsNodesIndexRoute: OpsNodesIndexRoute,
+  OpsPoolIndexRoute: OpsPoolIndexRoute,
+  OpsStorageIndexRoute: OpsStorageIndexRoute,
   OverviewAlertsIndexRoute: OverviewAlertsIndexRoute,
   OverviewCapacityIndexRoute: OverviewCapacityIndexRoute,
   OverviewGpuIndexRoute: OverviewGpuIndexRoute,

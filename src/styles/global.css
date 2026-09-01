@@ -129,56 +129,51 @@ button {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.menu-group {
-  margin-bottom: 5px;
-}
-.menu-group-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 34px;
-  padding: 0 10px;
-  color: #86909c;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.side-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.side-menu.arco-menu {
   width: 100%;
+  min-height: 100%;
+  padding: 0;
+  background: transparent;
+}
+.side-menu.arco-menu .arco-menu-indent {
+  display: none;
+}
+.side-menu.arco-menu .side-menu-leaf,
+.side-menu.arco-menu .side-menu-submenu > .arco-menu-inline-header {
+  display: flex;
+  align-items: center;
   height: 38px;
   margin: 2px 0;
   padding: 0 12px;
-  overflow: hidden;
-  border: 0;
   border-radius: 5px;
   color: #4e5969;
   background: transparent;
-  text-decoration: none;
-  text-align: left;
-  white-space: nowrap;
-  cursor: pointer;
 }
-.side-item:hover {
+.side-menu.arco-menu .side-menu-submenu > .arco-menu-inline-header {
+  padding-left: 12px;
+}
+.side-menu.arco-menu .arco-menu-inline-content .side-menu-leaf {
+  padding-left: 32px;
+  color: #86909c;
+}
+.side-menu.arco-menu .side-menu-leaf:hover:not(.arco-menu-selected),
+.side-menu.arco-menu .side-menu-submenu > .arco-menu-inline-header:hover {
   color: #0079d3;
   background: rgba(0, 121, 211, 0.05);
 }
-.side-item.active {
+.side-menu.arco-menu .side-menu-leaf.arco-menu-selected {
   color: #0079d3;
   background: rgba(0, 121, 211, 0.09);
   font-weight: 600;
 }
-.side-dot {
-  flex: 0 0 auto;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #c9cdd4;
-}
-.side-item.active .side-dot {
-  background: #0079d3;
+.side-menu-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
 }
 .collapse-button {
   display: flex;
@@ -194,11 +189,14 @@ button {
   white-space: nowrap;
   cursor: pointer;
 }
-.sidebar.collapsed .menu-group-title,
-.sidebar.collapsed .side-item span:last-child {
+.sidebar.collapsed .side-menu .arco-menu-icon-suffix {
   display: none;
 }
-.sidebar.collapsed .side-item,
+.sidebar.collapsed .side-menu.arco-menu .side-menu-leaf,
+.sidebar.collapsed
+  .side-menu.arco-menu
+  .side-menu-submenu
+  > .arco-menu-inline-header,
 .sidebar.collapsed .collapse-button {
   justify-content: center;
   padding-right: 0;
