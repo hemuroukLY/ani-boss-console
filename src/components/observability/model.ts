@@ -64,18 +64,6 @@ export interface TraceSample {
   spans: TraceSpan[];
 }
 
-export interface AlertRule {
-  id: string;
-  name: string;
-  target: string;
-  expression: string;
-  severity: "严重" | "警告" | "提示";
-  duration: string;
-  enabled: boolean;
-  channel: string;
-  updatedAt: string;
-}
-
 export const platformComponents: PlatformComponentHealth[] = [
   {
     id: "component-gateway",
@@ -563,74 +551,5 @@ export const traceSamples: TraceSample[] = [
         status: "ok",
       },
     ],
-  },
-];
-
-export const alertRules: AlertRule[] = [
-  {
-    id: "rule-vector-ready",
-    name: "向量存储无就绪副本",
-    target: "vector-store",
-    expression: "ready_replicas < 1",
-    severity: "严重",
-    duration: "1 分钟",
-    enabled: true,
-    channel: "平台值班群",
-    updatedAt: "2026-09-02 10:20",
-  },
-  {
-    id: "rule-model-p99",
-    name: "模型服务 P99 过高",
-    target: "model-service",
-    expression: "p99_latency_ms > 800",
-    severity: "警告",
-    duration: "5 分钟",
-    enabled: true,
-    channel: "AI 平台运维",
-    updatedAt: "2026-09-01 16:45",
-  },
-  {
-    id: "rule-gpu-xid",
-    name: "GPU Xid 异常",
-    target: "gpu-exporter",
-    expression: "gpu_xid_errors_total > 0",
-    severity: "严重",
-    duration: "立即",
-    enabled: true,
-    channel: "基础设施值班",
-    updatedAt: "2026-08-30 09:12",
-  },
-  {
-    id: "rule-kb-backlog",
-    name: "知识库索引积压",
-    target: "kb-service",
-    expression: "index_backlog > 20",
-    severity: "警告",
-    duration: "10 分钟",
-    enabled: true,
-    channel: "AI 平台运维",
-    updatedAt: "2026-08-28 14:08",
-  },
-  {
-    id: "rule-api-error",
-    name: "网关错误率升高",
-    target: "gateway",
-    expression: "error_rate > 2%",
-    severity: "警告",
-    duration: "5 分钟",
-    enabled: false,
-    channel: "平台值班群",
-    updatedAt: "2026-08-26 11:30",
-  },
-  {
-    id: "rule-quota",
-    name: "镜像配额水位过高",
-    target: "registry",
-    expression: "quota_usage_percent > 90",
-    severity: "提示",
-    duration: "15 分钟",
-    enabled: true,
-    channel: "运营通知",
-    updatedAt: "2026-08-24 18:10",
   },
 ];

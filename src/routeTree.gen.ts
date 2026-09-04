@@ -36,6 +36,7 @@ import { Route as MeteringIndexRouteImport } from './routes/metering/index'
 import { Route as MaintSkillsIndexRouteImport } from './routes/maint-skills/index'
 import { Route as MaintJobsIndexRouteImport } from './routes/maint-jobs/index'
 import { Route as MaintIncidentsIndexRouteImport } from './routes/maint-incidents/index'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as IntegrationWebhookIndexRouteImport } from './routes/integration-webhook/index'
 import { Route as IntegrationOpsSystemIndexRouteImport } from './routes/integration-ops-system/index'
 import { Route as IntegrationNotifyIndexRouteImport } from './routes/integration-notify/index'
@@ -193,6 +194,11 @@ const MaintIncidentsIndexRoute = MaintIncidentsIndexRouteImport.update({
   path: '/maint-incidents/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IntegrationWebhookIndexRoute = IntegrationWebhookIndexRouteImport.update({
   id: '/integration-webhook/',
   path: '/integration-webhook/',
@@ -312,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/integration-notify': typeof IntegrationNotifyIndexRoute
   '/integration-ops-system': typeof IntegrationOpsSystemIndexRoute
   '/integration-webhook': typeof IntegrationWebhookIndexRoute
+  '/login': typeof LoginIndexRoute
   '/maint-incidents': typeof MaintIncidentsIndexRoute
   '/maint-jobs': typeof MaintJobsIndexRoute
   '/maint-skills': typeof MaintSkillsIndexRoute
@@ -359,6 +366,7 @@ export interface FileRoutesByTo {
   '/integration-notify': typeof IntegrationNotifyIndexRoute
   '/integration-ops-system': typeof IntegrationOpsSystemIndexRoute
   '/integration-webhook': typeof IntegrationWebhookIndexRoute
+  '/login': typeof LoginIndexRoute
   '/maint-incidents': typeof MaintIncidentsIndexRoute
   '/maint-jobs': typeof MaintJobsIndexRoute
   '/maint-skills': typeof MaintSkillsIndexRoute
@@ -408,6 +416,7 @@ export interface FileRoutesById {
   '/integration-notify/': typeof IntegrationNotifyIndexRoute
   '/integration-ops-system/': typeof IntegrationOpsSystemIndexRoute
   '/integration-webhook/': typeof IntegrationWebhookIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/maint-incidents/': typeof MaintIncidentsIndexRoute
   '/maint-jobs/': typeof MaintJobsIndexRoute
   '/maint-skills/': typeof MaintSkillsIndexRoute
@@ -458,6 +467,7 @@ export interface FileRouteTypes {
     | '/integration-notify'
     | '/integration-ops-system'
     | '/integration-webhook'
+    | '/login'
     | '/maint-incidents'
     | '/maint-jobs'
     | '/maint-skills'
@@ -505,6 +515,7 @@ export interface FileRouteTypes {
     | '/integration-notify'
     | '/integration-ops-system'
     | '/integration-webhook'
+    | '/login'
     | '/maint-incidents'
     | '/maint-jobs'
     | '/maint-skills'
@@ -553,6 +564,7 @@ export interface FileRouteTypes {
     | '/integration-notify/'
     | '/integration-ops-system/'
     | '/integration-webhook/'
+    | '/login/'
     | '/maint-incidents/'
     | '/maint-jobs/'
     | '/maint-skills/'
@@ -601,6 +613,7 @@ export interface RootRouteChildren {
   IntegrationNotifyIndexRoute: typeof IntegrationNotifyIndexRoute
   IntegrationOpsSystemIndexRoute: typeof IntegrationOpsSystemIndexRoute
   IntegrationWebhookIndexRoute: typeof IntegrationWebhookIndexRoute
+  LoginIndexRoute: typeof LoginIndexRoute
   MaintIncidentsIndexRoute: typeof MaintIncidentsIndexRoute
   MaintJobsIndexRoute: typeof MaintJobsIndexRoute
   MaintSkillsIndexRoute: typeof MaintSkillsIndexRoute
@@ -818,6 +831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaintIncidentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/integration-webhook/': {
       id: '/integration-webhook/'
       path: '/integration-webhook'
@@ -988,6 +1008,7 @@ const rootRouteChildren: RootRouteChildren = {
   IntegrationNotifyIndexRoute: IntegrationNotifyIndexRoute,
   IntegrationOpsSystemIndexRoute: IntegrationOpsSystemIndexRoute,
   IntegrationWebhookIndexRoute: IntegrationWebhookIndexRoute,
+  LoginIndexRoute: LoginIndexRoute,
   MaintIncidentsIndexRoute: MaintIncidentsIndexRoute,
   MaintJobsIndexRoute: MaintJobsIndexRoute,
   MaintSkillsIndexRoute: MaintSkillsIndexRoute,

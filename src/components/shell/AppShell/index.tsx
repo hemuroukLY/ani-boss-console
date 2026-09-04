@@ -1,6 +1,6 @@
-import { Avatar, Button, Menu } from "@arco-design/web-react";
+import { Avatar, Button, Menu, Message } from "@arco-design/web-react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  IconDown,
   IconMenuFold,
   IconMenuUnfold,
   IconNotification,
@@ -8,6 +8,11 @@ import {
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useState } from "react";
+import { logoutPlatform } from "@/api/auth";
+import {
+  clearAuthSession,
+  useAuthState,
+} from "@/components/auth/store";
 import { PlatformOverviewProvider } from "@/components/overview/PlatformOverviewProvider";
 import { TenantManagementProvider } from "@/components/tenant/TenantManagementProvider";
 
@@ -214,7 +219,10 @@ const integrationNavigation: readonly NavigationLeaf[] = [
 ];
 
 export function AppShell() {
+  const queryClient = useQueryClient();
+  const authState = useAuthState();
   const [collapsed, setCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [openMenuKeys, setOpenMenuKeys] = useState([
     "resource-pool",
     "infrastructure",
@@ -298,6 +306,19 @@ export function AppShell() {
   );
   const currentPage = currentPageItem.label;
 
+  const logout = async () => {
+    setLoggingOut(true);
+    try {
+      await logoutPlatform();
+    } catch {
+      Message.warning("服务端退出失败，本地登录状态已清除");
+    } finally {
+      clearAuthSession();
+      queryClient.clear();
+      window.location.assign("/login");
+    }
+  };
+
   const renderMenuItem = (item: NavigationLeaf) => (
     <Menu.Item
       key={item.to}
@@ -348,10 +369,23 @@ export function AppShell() {
               )}
             </nav>
             <div className="top-actions">
-              <Button type="text" icon={<IconNotification />} />
-              <Avatar size={28}>管</Avatar>
-              <span>平台管理员</span>
-              <IconDown />
+              <Button
+                type="text"
+                aria-label="通知"
+                icon={<IconNotification />}
+              />
+              <Avatar size={28}>
+                {(authState.username || "平台管理员").slice(0, 1)}
+              </Avatar>
+              <span>{authState.username || "平台管理员"}</span>
+              <Button
+                type="text"
+                size="small"
+                loading={loggingOut}
+                onClick={() => void logout()}
+              >
+                退出
+              </Button>
             </div>
           </header>
           <div className="workspace">

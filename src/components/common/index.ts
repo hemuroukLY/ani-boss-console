@@ -22,3 +22,4 @@ export {
   ListPageHeader,
   ListToolbar,
 } from "./ListPageFrame";
+export { PagePlaceholder } from "./PagePlaceholder";
