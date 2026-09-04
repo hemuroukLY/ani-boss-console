@@ -19,16 +19,43 @@ const topNavigation: Array<{
     | "/ops-pool"
     | "/ops-gpu"
     | "/ops-nodes"
-    | "/ops-storage";
+    | "/ops-storage"
+    | "/ops-storage-quotas"
+    | "/ops-network"
+    | "/ops-registry-quota"
+    | "/ops-registry-vulnerabilities"
+    | "/ops-registry-gc"
+    | "/health"
+    | "/health-gpu"
+    | "/health-inference"
+    | "/health-kb"
+    | "/health-metrics"
+    | "/health-logs"
+    | "/health-traces"
+    | "/health-alert-rules"
+    | "/maint-skills"
+    | "/maint-jobs"
+    | "/maint-incidents"
+    | "/metering"
+    | "/audit"
+    | "/audit-api-keys"
+    | "/audit-inference"
+    | "/audit-export"
+    | "/settings-platform-admins"
+    | "/settings-idp"
+    | "/settings-session"
+    | "/integration-webhook"
+    | "/integration-notify"
+    | "/integration-ops-system";
 }> = [
   { label: "平台运营总览", to: "/" },
   { label: "租户管理", to: "/tenants" },
   { label: "资源池与基础设施", to: "/ops-pool" },
-  { label: "运维与可观测" },
-  { label: "平台计量与结算" },
-  { label: "安全审计与合规" },
-  { label: "平台设置" },
-  { label: "平台集成与通知" },
+  { label: "运维与可观测", to: "/health" },
+  { label: "平台计量与结算", to: "/metering" },
+  { label: "安全审计与合规", to: "/audit" },
+  { label: "平台设置", to: "/settings-platform-admins" },
+  { label: "平台集成与通知", to: "/integration-webhook" },
 ];
 
 type AppRoute =
@@ -45,7 +72,34 @@ type AppRoute =
   | "/ops-pool"
   | "/ops-gpu"
   | "/ops-nodes"
-  | "/ops-storage";
+  | "/ops-storage"
+  | "/ops-storage-quotas"
+  | "/ops-network"
+  | "/ops-registry-quota"
+  | "/ops-registry-vulnerabilities"
+  | "/ops-registry-gc"
+  | "/health"
+  | "/health-gpu"
+  | "/health-inference"
+  | "/health-kb"
+  | "/health-metrics"
+  | "/health-logs"
+  | "/health-traces"
+  | "/health-alert-rules"
+  | "/maint-skills"
+  | "/maint-jobs"
+  | "/maint-incidents"
+  | "/metering"
+  | "/audit"
+  | "/audit-api-keys"
+  | "/audit-inference"
+  | "/audit-export"
+  | "/settings-platform-admins"
+  | "/settings-idp"
+  | "/settings-session"
+  | "/integration-webhook"
+  | "/integration-notify"
+  | "/integration-ops-system";
 
 interface NavigationLeaf {
   label: string;
@@ -93,8 +147,70 @@ const infrastructureNavigation: readonly NavigationItem[] = [
   {
     key: "infrastructure",
     label: "基础设施",
-    children: [{ label: "存储基础设施", to: "/ops-storage" }],
+    children: [
+      { label: "存储基础设施", to: "/ops-storage" },
+      { label: "租户存储配额", to: "/ops-storage-quotas" },
+      { label: "网络基础设施", to: "/ops-network" },
+    ],
   },
+  {
+    key: "registry-operations",
+    label: "镜像仓库运维",
+    children: [
+      { label: "镜像配额", to: "/ops-registry-quota" },
+      { label: "漏洞扫描", to: "/ops-registry-vulnerabilities" },
+      { label: "垃圾回收", to: "/ops-registry-gc" },
+    ],
+  },
+];
+
+const observabilityNavigation: readonly NavigationItem[] = [
+  {
+    key: "monitoring",
+    label: "监控",
+    children: [
+      { label: "平台健康", to: "/health" },
+      { label: "GPU 监控", to: "/health-gpu" },
+      { label: "推理监控", to: "/health-inference" },
+      { label: "知识库监控", to: "/health-kb" },
+      { label: "组件指标", to: "/health-metrics" },
+      { label: "日志", to: "/health-logs" },
+      { label: "Trace", to: "/health-traces" },
+    ],
+  },
+  {
+    key: "maintenance-jobs",
+    label: "运维作业",
+    children: [
+      { label: "告警规则", to: "/health-alert-rules" },
+      { label: "运维 Skills", to: "/maint-skills" },
+      { label: "任务历史", to: "/maint-jobs" },
+      { label: "故障处理", to: "/maint-incidents" },
+    ],
+  },
+];
+
+const meteringNavigation: readonly NavigationLeaf[] = [
+  { label: "计量总览", to: "/metering" },
+];
+
+const auditNavigation: readonly NavigationLeaf[] = [
+  { label: "平台审计日志", to: "/audit" },
+  { label: "API Key 审计", to: "/audit-api-keys" },
+  { label: "推理调用审计", to: "/audit-inference" },
+  { label: "合规导出与取证", to: "/audit-export" },
+];
+
+const settingsNavigation: readonly NavigationLeaf[] = [
+  { label: "平台运营账号", to: "/settings-platform-admins" },
+  { label: "登录与 IdP（预留）", to: "/settings-idp" },
+  { label: "会话与安全策略（预留）", to: "/settings-session" },
+];
+
+const integrationNavigation: readonly NavigationLeaf[] = [
+  { label: "运维 Webhook", to: "/integration-webhook" },
+  { label: "企业通知集成", to: "/integration-notify" },
+  { label: "运营系统对接", to: "/integration-ops-system" },
 ];
 
 export function AppShell() {
@@ -102,6 +218,9 @@ export function AppShell() {
   const [openMenuKeys, setOpenMenuKeys] = useState([
     "resource-pool",
     "infrastructure",
+    "registry-operations",
+    "monitoring",
+    "maintenance-jobs",
   ]);
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
@@ -115,16 +234,54 @@ export function AppShell() {
   const isInfrastructure = infrastructurePages.some(
     (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
   );
+  const observabilityPages = observabilityNavigation.flatMap((item) =>
+    isNavigationGroup(item) ? item.children : [item],
+  );
+  const isObservability = observabilityPages.some(
+    (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+  );
+  const isMetering = meteringNavigation.some(
+    (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+  );
+  const isAudit = auditNavigation.some(
+    (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+  );
+  const isSettings = settingsNavigation.some(
+    (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+  );
+  const isIntegration = integrationNavigation.some(
+    (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
+  );
   const currentTopNavigation = isTenantManagement
     ? "租户管理"
     : isInfrastructure
       ? "资源池与基础设施"
-      : "平台运营总览";
+      : isObservability
+        ? "运维与可观测"
+        : isMetering
+          ? "平台计量与结算"
+          : isAudit
+            ? "安全审计与合规"
+            : isSettings
+              ? "平台设置"
+              : isIntegration
+                ? "平台集成与通知"
+                : "平台运营总览";
   const sideNavigation = isTenantManagement
     ? tenantNavigation
     : isInfrastructure
       ? infrastructureNavigation
-      : overviewNavigation;
+      : isObservability
+        ? observabilityNavigation
+        : isMetering
+          ? meteringNavigation
+          : isAudit
+            ? auditNavigation
+            : isSettings
+              ? settingsNavigation
+              : isIntegration
+                ? integrationNavigation
+                : overviewNavigation;
   const sidePages = sideNavigation.flatMap((item) =>
     isNavigationGroup(item) ? item.children : [item],
   );
@@ -204,7 +361,9 @@ export function AppShell() {
                   id="sidebar-navigation-menu"
                   collapse={collapsed}
                   selectedKeys={[currentPageItem.to]}
-                  openKeys={isInfrastructure ? openMenuKeys : []}
+                  openKeys={
+                    isInfrastructure || isObservability ? openMenuKeys : []
+                  }
                   onClickSubMenu={(_, keys) => setOpenMenuKeys(keys)}
                   className={clsx(
                     "side-menu border-none",
