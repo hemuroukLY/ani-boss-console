@@ -57,7 +57,7 @@ export function TenantTable({
               {tenant.name}
             </Link>
           }
-          secondary={tenant.displayName || "—"}
+          secondary={tenant.displayName || "-"}
         />
       ),
     },

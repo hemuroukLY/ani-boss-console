@@ -170,7 +170,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
               value: quotaPackage.limits.storageGi.toLocaleString(),
             },
             { label: "绑定租户", value: "${boundTenants.length} 个" },
-            { label: "更新时间", value: quotaPackage.updatedAt ?? "—" },
+            { label: "更新时间", value: quotaPackage.updatedAt ?? "-" },
             { label: "说明", value: description },
           ]}
         />
@@ -263,7 +263,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
                 operation: quotaPackage.status === "draft" ? "创建草稿" : "创建套餐",
                 message: `套餐 ${quotaPackage.name}`,
                 by: "platform-admin",
-                createdAt: quotaPackage.updatedAt ?? "—",
+                createdAt: quotaPackage.updatedAt ?? "-",
               },
             ]}
           />
@@ -287,7 +287,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
           { label: "GPU-Hours", value: quotaPackage.limits.gpuHours.toLocaleString() },
           { label: "存储 Gi", value: quotaPackage.limits.storageGi.toLocaleString() },
           { label: "绑定租户", value: "${boundTenants.length} 个" },
-          { label: "更新时间", value: quotaPackage.updatedAt ?? "—" },
+          { label: "更新时间", value: quotaPackage.updatedAt ?? "-" },
         ]}
         actions={
           <Space wrap>

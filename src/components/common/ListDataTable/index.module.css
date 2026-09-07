@@ -1,4 +1,12 @@
 .listDataTable {
+  --list-primary: #0079d3;
+  --list-primary-hover: #006cbd;
+  --list-primary-soft: rgba(0, 121, 211, 0.08);
+  --list-primary-header: #f2f8fd;
+  --list-text: rgba(0, 0, 0, 0.9);
+  --list-text-secondary: rgba(0, 0, 0, 0.6);
+  --list-text-tertiary: rgba(0, 0, 0, 0.4);
+  --list-table-divider: #e5e6eb;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -12,17 +20,20 @@
 .listDataTable > :global(.arco-spin),
 .listDataTable > :global(.arco-spin) > :global(.arco-spin-children),
 .listDataTable :global(.arco-table-container),
-.listDataTable :global(.arco-table-content-scroll) {
+.listDataTable :global(.arco-table-content-scroll),
+.listDataTable :global(.arco-table-content-inner) {
   display: flex;
   flex: 1;
   flex-direction: column;
   width: 100%;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
 
-.listDataTable :global(.arco-table-content-scroll),
 .listDataTable :global(.arco-table-header) {
+  flex: 0 0 auto;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -37,11 +48,65 @@
   flex: 0 0 auto;
 }
 
+.listDataTable :global(.arco-table-th) {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0;
+  border-bottom: 1px solid var(--list-table-divider);
+  background: var(--list-primary-header);
+  color: var(--list-text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.listDataTable :global(.arco-table-th-item) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0 16px;
+  line-height: 39px;
+  white-space: nowrap;
+}
+
+.listDataTable :global(.arco-table-td) {
+  box-sizing: border-box;
+  height: 56px;
+  max-width: 300px;
+  overflow: hidden;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--list-table-divider);
+  color: var(--list-text);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listDataTable :global(.arco-table-th.arco-table-checkbox),
+.listDataTable :global(.arco-table-td.arco-table-checkbox),
+.listDataTable
+  :global(.arco-table-th.arco-table-checkbox .arco-table-th-item) {
+  padding: 0;
+}
+
+.listDataTable
+  :global(.arco-table-tbody .arco-table-tr:last-child .arco-table-td) {
+  border-bottom: 0;
+}
+
+.listDataTable :global(.arco-table-tbody .arco-table-tr:hover) {
+  background: var(--list-primary-soft);
+}
+
 .tableState {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   width: 100%;
   min-height: 220px;
-  color: #86909c;
+  color: var(--list-text-secondary);
 }

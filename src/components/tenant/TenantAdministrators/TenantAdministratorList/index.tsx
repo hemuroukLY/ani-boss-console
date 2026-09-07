@@ -232,7 +232,7 @@ export function TenantAdministratorList() {
               {admin.name}
             </Link>
           }
-          secondary={admin.displayName || "—"}
+          secondary={admin.displayName || "-"}
         />
       ),
     },

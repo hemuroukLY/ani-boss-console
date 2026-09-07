@@ -6,7 +6,7 @@
 
 .listName {
   width: fit-content;
-  color: #0079d3;
+  color: var(--list-primary, rgb(var(--primary-6)));
   font-size: 14px;
   line-height: 20px;
 }
@@ -17,12 +17,12 @@
 }
 
 .listName :global(a:hover) {
-  color: #0066b3;
+  color: var(--list-primary-hover, rgb(var(--primary-7)));
   text-decoration: none;
 }
 
 .listNameSecondary {
-  color: #86909c;
+  color: var(--list-text-secondary, var(--color-text-2));
   font-size: 12px;
   line-height: 16px;
 }
@@ -38,6 +38,11 @@
 .rowActionButton {
   height: 28px;
   padding: 0 4px;
-  color: var(--list-primary);
+  color: var(--list-primary, rgb(var(--primary-6)));
   white-space: nowrap;
+}
+
+.rowActionButton:hover {
+  color: var(--list-primary-hover, rgb(var(--primary-7)));
+  background: var(--list-primary-soft, var(--color-primary-light-1));
 }

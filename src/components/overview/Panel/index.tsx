@@ -19,7 +19,7 @@ export function Panel({ title, action, onAction, children }: PanelProps) {
           </Button>
         ) : null
       }
-      className="mb-3.5 overflow-hidden rounded-lg [&_.arco-card-body]:p-0"
+      className="mb-4 overflow-hidden rounded-md [&_.arco-card-body]:p-0"
     >
       {children}
     </Card>

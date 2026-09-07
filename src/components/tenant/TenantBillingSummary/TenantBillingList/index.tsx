@@ -183,7 +183,7 @@ export function TenantBillingList() {
       title: "账单号",
       dataIndex: "invoiceNo",
       width: 145,
-      render: (value?: string) => value ?? "—",
+      render: (value?: string) => value ?? "-",
     },
     { title: "到期日", dataIndex: "dueDate", width: 120 },
     { title: "更新时间", dataIndex: "updatedAt", width: 160 },

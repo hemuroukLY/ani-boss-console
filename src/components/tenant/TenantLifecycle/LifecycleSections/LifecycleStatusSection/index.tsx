@@ -58,9 +58,9 @@ export function LifecycleStatusSection({
             value: tenant.isTrial ? "试用租户" : "正式租户",
           },
           { label: "开通时间", value: tenant.createdAt },
-          { label: "冻结时间", value: tenant.suspendedAt || "—" },
-          { label: "冻结原因", value: tenant.suspendReason || "—" },
-          { label: "禁用时间", value: tenant.disabledAt || "—" },
+          { label: "冻结时间", value: tenant.suspendedAt || "-" },
+          { label: "冻结原因", value: tenant.suspendReason || "-" },
+          { label: "禁用时间", value: tenant.disabledAt || "-" },
         ]}
       />
     </section>

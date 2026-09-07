@@ -95,7 +95,7 @@ export function QuotaRequestTable({
                   </DataTableRowActionButton>
                 </DataTableRowActions>
               ) : (
-                "—"
+                "-"
               ),
           },
         ]}

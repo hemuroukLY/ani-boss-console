@@ -1,4 +1,4 @@
-import { Dropdown } from "@arco-design/web-react";
+import { Dropdown, Empty } from "@arco-design/web-react";
 import { IconDown } from "@arco-design/web-react/icon";
 import type { ReactElement } from "react";
 import {
@@ -23,7 +23,9 @@ export function ListDataTable<T>({
     <DataTable<T>
       {...tableProps}
       className={styles.listDataTable}
-      noDataElement={<div className={styles.tableState}>{emptyText}</div>}
+      noDataElement={
+        <Empty className={styles.tableState} description={emptyText} />
+      }
     />
   );
 }

@@ -64,7 +64,7 @@ export function TenantOperationHistory({
           {
             title: "说明",
             dataIndex: "message",
-            render: (value: string) => value || "—",
+            render: (value: string) => value || "-",
           },
           {
             title: "操作人",

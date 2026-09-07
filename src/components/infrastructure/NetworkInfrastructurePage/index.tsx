@@ -100,7 +100,7 @@ const networkComponents: NetworkComponent[] = [
     cluster: "ani-north",
     heartbeat: "2026-07-28 13:40",
     replicas: "2/2",
-    note: "—",
+    note: "-",
     events: [],
   },
 ];
@@ -217,7 +217,7 @@ export function NetworkInfrastructurePage() {
             <div className="text-gray-400">{event.at}</div>
           </div>
         ) : (
-          <span className="text-gray-400">—</span>
+          <span className="text-gray-400">-</span>
         );
       },
     },
@@ -286,12 +286,12 @@ export function NetworkInfrastructurePage() {
         <Metric
           label="SDN 控制器"
           value={controller?.status === "healthy" ? "健康" : "降级"}
-          hint={controller?.name ?? "—"}
+          hint={controller?.name ?? "-"}
         />
         <Metric
           label="出口网关"
           value={gateway?.status === "healthy" ? "健康" : "降级"}
-          hint={gateway?.name ?? "—"}
+          hint={gateway?.name ?? "-"}
         />
         <Metric
           label="最高 IP 池占用"

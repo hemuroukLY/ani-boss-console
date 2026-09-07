@@ -1,4 +1,4 @@
-import { Card, Typography } from "@arco-design/web-react";
+import { Card, Empty, Typography } from "@arco-design/web-react";
 import { ListPageHeader } from "../ListPageFrame";
 
 interface PagePlaceholderProps {
@@ -10,10 +10,11 @@ export function PagePlaceholder({ title, priority }: PagePlaceholderProps) {
   return (
     <div className="space-y-4">
       <ListPageHeader title={title} />
-      <Card className="rounded-lg">
-        <div className="flex min-h-[360px] flex-col items-center justify-center gap-2 text-center">
+      <Card className="rounded-md border-transparent">
+        <div className="flex min-h-[360px] flex-col items-center justify-center gap-3 text-center">
+          <Empty description={`${priority} / 未接入 Store`} />
           <Typography.Title heading={6} className="!m-0">
-            {priority} / 未接入 Store
+            页面能力暂未开放
           </Typography.Title>
           <Typography.Text type="secondary">
             该页尚未纳入有状态操作台种子数据。

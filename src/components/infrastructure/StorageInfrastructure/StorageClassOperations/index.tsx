@@ -12,7 +12,7 @@ interface StorageClassItem {
   type: "块" | "对象" | "文件";
   backend: string;
   media: string;
-  reclaimPolicy: "Delete" | "Retain" | "—";
+  reclaimPolicy: "Delete" | "Retain" | "-";
   isDefault: boolean;
   enabled: boolean;
   note: string;
@@ -22,7 +22,7 @@ const storageClasses: StorageClassItem[] = [
   { id: "sc-essd", name: "ani-block-essd", type: "块", backend: "块存储池 · Rook-Ceph", media: "essd", reclaimPolicy: "Delete", isDefault: true, enabled: true, note: "高性能 SSD，Console 默认" },
   { id: "sc-ssd", name: "ani-block-ssd", type: "块", backend: "块存储池 · Rook-Ceph", media: "ssd", reclaimPolicy: "Delete", isDefault: false, enabled: true, note: "通用 SSD" },
   { id: "sc-hdd", name: "ani-block-hdd", type: "块", backend: "块存储池 · Rook-Ceph", media: "hdd", reclaimPolicy: "Retain", isDefault: false, enabled: true, note: "冷数据" },
-  { id: "sc-obj-std", name: "ani-object-standard", type: "对象", backend: "对象存储 · MinIO", media: "standard", reclaimPolicy: "—", isDefault: true, enabled: true, note: "标准存储类" },
+  { id: "sc-obj-std", name: "ani-object-standard", type: "对象", backend: "对象存储 · MinIO", media: "standard", reclaimPolicy: "-", isDefault: true, enabled: true, note: "标准存储类" },
   { id: "sc-nfs", name: "ani-nfs", type: "文件", backend: "文件存储 · NFS CSI", media: "nfs", reclaimPolicy: "Retain", isDefault: true, enabled: true, note: "NFS CSI" },
 ];
 

@@ -78,7 +78,7 @@ export function SsoConfigurationModal({
           />
         </Form.Item>
         <Typography.Text type="secondary" className="block text-xs">
-          状态 {status} · 最近测试 {lastTestAt || "—"}
+          状态 {status} · 最近测试 {lastTestAt || "-"}
         </Typography.Text>
       </Form>
     </Modal>

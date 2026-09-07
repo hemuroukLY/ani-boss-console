@@ -44,7 +44,7 @@ export function TenantIdentitySecurity({
   const [regionVisible, setRegionVisible] = useState(false);
   const [ssoEnabled, setSsoEnabled] = useState(tenant.ssoEnabled);
   const [ssoProvider, setSsoProvider] = useState(
-    tenant.ssoProvider === "—" ? "Azure AD" : tenant.ssoProvider,
+    tenant.ssoProvider === "-" ? "Azure AD" : tenant.ssoProvider,
   );
   const [ssoStatus, setSsoStatus] = useState<TenantSsoStatus>(tenant.ssoStatus);
   const [ssoLastTestAt, setSsoLastTestAt] = useState(tenant.ssoLastTestAt);
@@ -53,7 +53,7 @@ export function TenantIdentitySecurity({
   const openSsoModal = () => {
     setSsoEnabled(tenant.ssoEnabled);
     setSsoProvider(
-      tenant.ssoProvider === "—" ? "Azure AD" : tenant.ssoProvider,
+      tenant.ssoProvider === "-" ? "Azure AD" : tenant.ssoProvider,
     );
     setSsoStatus(tenant.ssoStatus);
     setSsoLastTestAt(tenant.ssoLastTestAt);
@@ -67,7 +67,7 @@ export function TenantIdentitySecurity({
     }
     onUpdate({
       ssoEnabled,
-      ssoProvider: ssoEnabled ? ssoProvider : "—",
+      ssoProvider: ssoEnabled ? ssoProvider : "-",
       ssoStatus: ssoEnabled ? ssoStatus : "disconnected",
       ssoLastTestAt: ssoEnabled ? ssoLastTestAt : undefined,
     });
@@ -147,7 +147,7 @@ export function TenantIdentitySecurity({
           </div>
 
           <Typography.Text type="secondary" className="mt-4 block text-xs">
-            状态 {tenant.ssoStatus} · 最近测试 {tenant.ssoLastTestAt || "—"}
+            状态 {tenant.ssoStatus} · 最近测试 {tenant.ssoLastTestAt || "-"}
           </Typography.Text>
 
           <Space wrap className="mt-4">

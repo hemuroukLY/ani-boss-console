@@ -235,7 +235,7 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
             },
             { label: "授信额度", value: formatUsd(billing.creditUsd) },
             { label: "到期日", value: billing.dueDate },
-            { label: "账单号", value: billing.invoiceNo ?? "—" },
+            { label: "账单号", value: billing.invoiceNo ?? "-" },
             { label: "最近更新", value: billing.updatedAt },
           ]}
         />

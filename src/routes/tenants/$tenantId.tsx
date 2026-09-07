@@ -95,7 +95,7 @@ function TenantDetailRoute() {
               label: "区域 / 行业",
               value: `${tenant.regionName} (${tenant.region}) / ${tenant.industry}`,
             },
-            { label: "联系人", value: tenant.contact || "—" },
+            { label: "联系人", value: tenant.contact || "-" },
             {
               label: "成员 / 管理员",
               value: `${tenant.memberCount} / ${tenant.adminCount}`,
@@ -109,7 +109,7 @@ function TenantDetailRoute() {
               value: tenant.ssoEnabled ? "已开启" : "未开启",
             },
             { label: "强制 MFA", value: tenant.forceMfa ? "开" : "关" },
-            { label: "试用到期", value: tenant.trialEndsAt || "—" },
+            { label: "试用到期", value: tenant.trialEndsAt || "-" },
             { label: "创建时间", value: tenant.createdAt },
           ]}
         />

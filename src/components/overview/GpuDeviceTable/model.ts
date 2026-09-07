@@ -26,8 +26,8 @@ export const devices: Device[] = [
     model: "A100 · 40 GiB",
     slicing: "整卡",
     status: "空闲未分配",
-    tenant: "—",
-    occupant: "—",
+    tenant: "-",
+    occupant: "-",
   },
   {
     id: "gpu-dev-03",
@@ -44,7 +44,7 @@ export const devices: Device[] = [
     model: "H100 · 80 GiB",
     slicing: "整卡",
     status: "异常",
-    tenant: "—",
+    tenant: "-",
     occupant: "驱动升级窗口",
   },
   {
@@ -53,8 +53,8 @@ export const devices: Device[] = [
     model: "A10 · 24 GiB",
     slicing: "整卡",
     status: "空闲未分配",
-    tenant: "—",
-    occupant: "—",
+    tenant: "-",
+    occupant: "-",
   },
   {
     id: "gpu-dev-06",
@@ -62,7 +62,7 @@ export const devices: Device[] = [
     model: "A10 · 24 GiB",
     slicing: "整卡",
     status: "异常",
-    tenant: "—",
+    tenant: "-",
     occupant: "Xid 79 硬件错误",
   },
   {
@@ -80,8 +80,8 @@ export const devices: Device[] = [
     model: "A100 · 40 GiB",
     slicing: "整卡",
     status: "空闲未分配",
-    tenant: "—",
-    occupant: "—",
+    tenant: "-",
+    occupant: "-",
   },
 ];
 

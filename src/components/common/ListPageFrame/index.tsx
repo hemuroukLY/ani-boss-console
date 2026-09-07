@@ -1,5 +1,6 @@
 import { Card, Typography } from "@arco-design/web-react";
-import type { ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
+import styles from "./index.module.css";
 
 interface ListPageHeaderProps {
   title: ReactNode;
@@ -13,18 +14,18 @@ export function ListPageHeader({
   extra,
 }: ListPageHeaderProps) {
   return (
-    <header className="flex items-start justify-between gap-4">
-      <div className="min-w-0">
-        <Typography.Title heading={4} className="!m-0 !text-2xl">
+    <header className={styles.pageHeader}>
+      <div className={styles.pageHeaderTitleArea}>
+        <Typography.Title heading={5} className={styles.pageHeaderTitle}>
           {title}
         </Typography.Title>
         {subtitle ? (
-          <Typography.Text type="secondary" className="mt-1 block">
+          <Typography.Text type="secondary" className={styles.pageHeaderSubtitle}>
             {subtitle}
           </Typography.Text>
         ) : null}
       </div>
-      {extra ? <div className="shrink-0">{extra}</div> : null}
+      {extra ? <div className={styles.pageHeaderExtra}>{extra}</div> : null}
     </header>
   );
 }
@@ -37,14 +38,10 @@ interface ListToolbarProps {
 
 export function ListToolbar({ actions, filters, tools }: ListToolbarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-gray-100 p-4">
-      {actions ? (
-        <div className="flex items-center gap-2">{actions}</div>
-      ) : null}
-      {filters ? <div className="min-w-0 flex-1">{filters}</div> : null}
-      {tools ? (
-        <div className="ml-auto flex items-center gap-2">{tools}</div>
-      ) : null}
+    <div className={styles.toolbar}>
+      {actions ? <div className={styles.toolbarActions}>{actions}</div> : null}
+      {filters ? <div className={styles.toolbarFilters}>{filters}</div> : null}
+      {tools ? <div className={styles.toolbarTools}>{tools}</div> : null}
     </div>
   );
 }
@@ -62,10 +59,13 @@ export function ListPageFrame({
   toolbar,
   children,
 }: ListPageFrameProps) {
+  const hasPageHeader = isValidElement(header) && header.type === ListPageHeader;
+
   return (
-    <div className="space-y-4">
-      {header}
-      <Card className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0">
+    <div className={styles.page}>
+      {hasPageHeader ? header : null}
+      <Card className={styles.contentPanel}>
+        {!hasPageHeader ? header : null}
         {tabs}
         {toolbar}
         {children}

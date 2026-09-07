@@ -4,10 +4,10 @@ import {
   Card,
   Tabs,
   Tooltip,
-  Typography,
 } from "@arco-design/web-react";
 import { IconLeft } from "@arco-design/web-react/icon";
 import { useState, type ReactNode } from "react";
+import styles from "./index.module.css";
 
 export interface DetailBreadcrumbItem {
   label: ReactNode;
@@ -65,28 +65,41 @@ export function DetailPageFrame({
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
+    <div className={styles.page}>
+      <div className={styles.breadcrumbRow}>
         <Tooltip content="返回上一级">
           <Button
             type="text"
             shape="circle"
+            className={styles.backButton}
             icon={<IconLeft />}
             aria-label="返回上一级"
             onClick={onBack}
           />
         </Tooltip>
-        <Breadcrumb aria-label="详情面包屑">
+        <Breadcrumb className={styles.breadcrumbs} aria-label="详情面包屑">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
             return (
               <Breadcrumb.Item key={index}>
                 {item.onClick && !isLast ? (
-                  <Button type="text" className="!p-0" onClick={item.onClick}>
+                  <button
+                    type="button"
+                    className={styles.breadcrumbLink}
+                    onClick={item.onClick}
+                  >
                     {item.label}
-                  </Button>
+                  </button>
                 ) : (
-                  item.label
+                  <span
+                    className={
+                      isLast
+                        ? styles.breadcrumbCurrent
+                        : styles.breadcrumbText
+                    }
+                  >
+                    {item.label}
+                  </span>
                 )}
               </Breadcrumb.Item>
             );
@@ -94,53 +107,45 @@ export function DetailPageFrame({
         </Breadcrumb>
       </div>
 
-      <Card className="rounded-lg [&_.arco-card-body]:p-5">
-        <div className="flex flex-wrap items-start gap-5">
-          <div className="flex min-w-[220px] items-start gap-3">
-            {icon ? <div className="shrink-0">{icon}</div> : null}
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                <Typography.Title heading={4} className="!m-0 !text-2xl">
-                  {title}
-                </Typography.Title>
-                {status}
-              </div>
-              {subtitle ? (
-                <Typography.Text type="secondary" className="mt-1 block">
-                  {subtitle}
-                </Typography.Text>
-              ) : null}
+      <section className={styles.headerCard}>
+        <div className={styles.identity}>
+          {icon ? <div className={styles.identityIcon}>{icon}</div> : null}
+          <div className={styles.identityText}>
+            <div className={styles.titleRow}>
+              <h1 className={styles.title}>{title}</h1>
+              {status ? <div className={styles.status}>{status}</div> : null}
             </div>
+            {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
           </div>
-
-          <div className="grid min-w-[420px] flex-1 grid-cols-4 gap-5 max-[1200px]:grid-cols-2 max-[720px]:min-w-0 max-[720px]:grid-cols-1">
-            {headerItems.map((item, index) => (
-              <div key={index}>
-                <Typography.Text type="secondary" className="block text-xs">
-                  {item.label}
-                </Typography.Text>
-                <div className="mt-1 font-medium text-gray-900">
-                  {item.value ?? "—"}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {actions ? <div className="ml-auto shrink-0">{actions}</div> : null}
         </div>
-      </Card>
 
-      <div className="grid grid-cols-[360px_minmax(0,1fr)] gap-4 max-[1100px]:grid-cols-1">
-        <aside className="space-y-4" aria-label="详情信息">
+        <div className={styles.headerItems} aria-label="关键字段">
+          {headerItems.map((item, index) => (
+            <div key={index} className={styles.headerItem}>
+              <span className={styles.headerItemLabel}>{item.label}</span>
+              <span className={styles.headerItemValue}>{item.value ?? "-"}</span>
+            </div>
+          ))}
+        </div>
+
+        {actions ? <div className={styles.headerActions}>{actions}</div> : null}
+      </section>
+
+      <div
+        className={`${styles.workspace} ${
+          tabs?.length ? styles.workspaceSplit : styles.workspaceSingle
+        }`}
+      >
+        <aside className={styles.leftPane} aria-label="详情信息">
           {cards.map((card) => (
-            <Card key={card.key} title={card.title} className="rounded-lg">
+            <Card key={card.key} title={card.title} className={styles.infoCard}>
               {card.content}
             </Card>
           ))}
         </aside>
 
         {tabs?.length ? (
-          <Card className="min-w-0 rounded-lg [&_.arco-card-body]:p-0">
+          <section className={styles.rightPane}>
             <Tabs
               defaultActiveTab={defaultTabKey ?? tabs[0].key}
               extra={
@@ -149,7 +154,10 @@ export function DetailPageFrame({
                   : tabExtra
               }
               onChange={setActiveTabKey}
-              className="px-5"
+              className={styles.tabs}
+              type="line"
+              headerPadding={false}
+              inkBarSize={{ width: 16 }}
             >
               {tabs.map((tab) => (
                 <Tabs.TabPane key={tab.key} title={tab.title}>
@@ -157,7 +165,7 @@ export function DetailPageFrame({
                 </Tabs.TabPane>
               ))}
             </Tabs>
-          </Card>
+          </section>
         ) : null}
       </div>
     </div>

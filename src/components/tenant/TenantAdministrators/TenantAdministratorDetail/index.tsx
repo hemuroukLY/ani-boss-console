@@ -236,7 +236,7 @@ export function TenantAdministratorDetail({
           data={[
             { label: "用户 ID", value: admin.id },
             { label: "用户名", value: admin.name },
-            { label: "显示名", value: admin.displayName || "—" },
+            { label: "显示名", value: admin.displayName || "-" },
             { label: "邮箱", value: admin.email },
             {
               label: "所属租户",
@@ -258,9 +258,9 @@ export function TenantAdministratorDetail({
             },
             { label: "来源", value: admin.source },
             { label: "MFA", value: admin.mfa ? "已开启" : "未开启" },
-            { label: "邀请时间", value: admin.invitedAt || "—" },
-            { label: "最近登录", value: admin.lastLogin || "—" },
-            { label: "最近重置密码", value: admin.lastResetAt || "—" },
+            { label: "邀请时间", value: admin.invitedAt || "-" },
+            { label: "最近登录", value: admin.lastLogin || "-" },
+            { label: "最近重置密码", value: admin.lastResetAt || "-" },
           ]}
         />
       ),
@@ -279,7 +279,7 @@ export function TenantAdministratorDetail({
           },
         ]
       : []),
-    ...(admin.status === "active" && admin.lastLogin !== "—"
+    ...(admin.status === "active" && admin.lastLogin !== "-"
       ? [
           {
             id: "last-login",
@@ -295,7 +295,7 @@ export function TenantAdministratorDetail({
       action: "发送邀请",
       result: "成功",
       operator: "platform-admin",
-      time: admin.invitedAt || "—",
+      time: admin.invitedAt || "-",
     },
   ];
 
@@ -363,7 +363,7 @@ export function TenantAdministratorDetail({
           { label: "所属租户", value: admin.tenantName },
           { label: "角色", value: admin.role },
           { label: "MFA", value: admin.mfa ? "已开启" : "未开启" },
-          { label: "最近登录", value: admin.lastLogin || "—" },
+          { label: "最近登录", value: admin.lastLogin || "-" },
         ]}
         actions={
           <Space wrap>

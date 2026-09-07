@@ -265,7 +265,7 @@ export function TenantStorageQuotaPage() {
             </div>
           </div>
         ) : (
-          <span className="text-gray-400">—</span>
+          <span className="text-gray-400">-</span>
         ),
     },
   ];

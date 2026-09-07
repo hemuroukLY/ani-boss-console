@@ -20,7 +20,7 @@ export function Metric({
     <Card
       hoverable={Boolean(onClick)}
       className={clsx(
-        "h-full min-h-[112px] rounded-lg [&_.arco-card-body]:p-5",
+        "h-full min-h-[112px] rounded-md [&_.arco-card-body]:p-4",
         onClick && "cursor-pointer",
       )}
       onClick={onClick}
@@ -29,7 +29,10 @@ export function Metric({
         title={label}
         value={value}
         styleValue={{
-          color: tone === "danger" ? "#f53f3f" : "#1d2129",
+          color:
+            tone === "danger"
+              ? "rgb(var(--danger-6))"
+              : "var(--color-text-1)",
           fontSize: 28,
           lineHeight: 1.2,
         }}
@@ -38,8 +41,8 @@ export function Metric({
             className={clsx(
               "text-xs",
               tone === "danger" || tone === "warning"
-                ? "text-orange-500"
-                : "text-green-600",
+                ? "text-[rgb(var(--warning-6))]"
+                : "text-[var(--color-text-2)]",
             )}
           >
             {hint}

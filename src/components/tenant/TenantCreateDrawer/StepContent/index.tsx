@@ -23,7 +23,7 @@ interface StepContentProps {
 
 export function StepContent({ current, draft, onChange }: StepContentProps) {
   const regionName =
-    tenantRegions.find((item) => item.value === draft.region)?.label ?? "—";
+    tenantRegions.find((item) => item.value === draft.region)?.label ?? "-";
 
   return (
     <Form layout="vertical" className="mx-auto max-w-[560px]">

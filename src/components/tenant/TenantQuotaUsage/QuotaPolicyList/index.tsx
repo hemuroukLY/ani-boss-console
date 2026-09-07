@@ -443,7 +443,7 @@ export function QuotaPolicyList() {
             <Typography.Text type="secondary">
               当前套餐：
               {tenants.find((tenant) => tenant.id === targetTenantId)
-                ?.quotaPackage ?? "—"}
+                ?.quotaPackage ?? "-"}
               ，确认后可前往
               <Link
                 to="/tenants/$tenantId"

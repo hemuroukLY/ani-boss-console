@@ -99,7 +99,7 @@ export function QuotaUsageTable({ tenant }: QuotaUsageTableProps) {
             title: "当前用量",
             render: (_, record: QuotaRow) =>
               record.usage === null
-                ? "—"
+                ? "-"
                 : formatQuotaValue(record.usage, record.usageUnit),
           },
           {
@@ -113,7 +113,7 @@ export function QuotaUsageTable({ tenant }: QuotaUsageTableProps) {
             render: (_, record: QuotaRow) => {
               const percent = getUsagePercent(record.usage, record.limit);
               if (percent === null || record.usageUnit !== record.limitUnit)
-                return "—";
+                return "-";
               return (
                 <div className="flex items-center gap-3">
                   <Progress

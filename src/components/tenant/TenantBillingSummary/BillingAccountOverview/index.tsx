@@ -68,7 +68,7 @@ export function BillingAccountOverview({
           { label: "账户余额", value: formatUsd(billing.balanceUsd) },
           { label: "授信额度", value: formatUsd(billing.creditUsd) },
           { label: "到期日", value: billing.dueDate },
-          { label: "发票号", value: billing.invoiceNo || "—" },
+          { label: "发票号", value: billing.invoiceNo || "-" },
         ]}
       />
     </section>
