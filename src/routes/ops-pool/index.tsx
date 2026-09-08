@@ -303,7 +303,7 @@ function PlatformResourcePoolOverviewRoute() {
     },
     {
       title: "操作",
-      width: "max-content",
+      width: 200,
       fixed: "right",
       render: (_, region) => (
         <DataTableRowActions>

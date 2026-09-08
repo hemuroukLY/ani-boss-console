@@ -1,5 +1,13 @@
+import { Alert, Button } from "@arco-design/web-react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import clsx from "clsx";
+import {
+  fetchPlatformServiceHealth,
+  platformQueryKeys,
+  type PlatformServiceHealthComponent,
+  type PlatformServiceScrapeStatus,
+} from "@/api/platform";
 import {
   DataTableNameCell,
   DataTableRowActions,
@@ -8,20 +16,29 @@ import {
   ListPageHeader,
   type ListColumn,
 } from "@/components/common";
+import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { Metric } from "@/components/overview/Metric";
-import {
-  platformComponents,
-  type HealthStatus,
-  type PlatformComponentHealth,
-} from "../model";
 
-const healthMeta: Record<HealthStatus, { label: string; className: string }> = {
-  ok: { label: "正常", className: "bg-green-50 text-green-700" },
-  degraded: { label: "降级", className: "bg-orange-50 text-orange-700" },
-  error: { label: "异常", className: "bg-red-50 text-red-700" },
+const healthMeta: Record<
+  PlatformServiceScrapeStatus,
+  { label: string; className: string }
+> = {
+  reachable: { label: "正常", className: "bg-green-50 text-green-700" },
+  unknown: { label: "未知", className: "bg-orange-50 text-orange-700" },
+  unreachable: { label: "异常", className: "bg-red-50 text-red-700" },
 };
 
-function HealthBadge({ status }: { status: HealthStatus }) {
+const serviceNames: Record<string, string> = {
+  "ani-gateway": "API 网关",
+  "auth-service": "认证服务",
+  "model-service": "模型服务",
+  "task-service": "任务服务",
+  "inference-service": "推理服务",
+  "tenant-service": "租户服务",
+  "metering-service": "计量服务",
+};
+
+function HealthBadge({ status }: { status: PlatformServiceScrapeStatus }) {
   const meta = healthMeta[status];
   return (
     <span
@@ -32,124 +49,175 @@ function HealthBadge({ status }: { status: HealthStatus }) {
   );
 }
 
-export function PlatformHealthPage() {
-  const okCount = platformComponents.filter(
-    (item) => item.status === "ok",
-  ).length;
-  const degradedCount = platformComponents.filter(
-    (item) => item.status === "degraded",
-  ).length;
-  const errorCount = platformComponents.filter(
-    (item) => item.status === "error",
-  ).length;
-  const failedDependencies = platformComponents.flatMap((component) =>
-    component.dependencies
-      .filter((dependency) => dependency.status === "fail")
-      .map((dependency) => ({ component, dependency })),
-  );
+function formatObservedAt(value?: string) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("zh-CN", { hour12: false });
+}
 
-  const columns: ListColumn<PlatformComponentHealth>[] = [
-    { title: "分组", dataIndex: "group", width: 90 },
+function formatLastCollected(value?: number) {
+  if (value === undefined) return "-";
+  if (value < 10) return "刚刚";
+  if (value < 60) return `${Math.round(value)} 秒前`;
+  if (value < 3600) return `${Math.round(value / 60)} 分钟前`;
+  return `${Math.round(value / 3600)} 小时前`;
+}
+
+export function PlatformHealthPage() {
+  const healthQuery = useQuery({
+    queryKey: platformQueryKeys.serviceHealth,
+    queryFn: fetchPlatformServiceHealth,
+  });
+  useListErrorNotification({
+    id: "platform-service-health",
+    title: "平台健康加载失败",
+    error: healthQuery.error,
+  });
+  const components = healthQuery.data?.components || [];
+  const reachableCount = components.filter(
+    (item) => item.scrapeStatus === "reachable",
+  ).length;
+  const unknownCount = components.filter(
+    (item) => item.scrapeStatus === "unknown",
+  ).length;
+  const unreachableCount = components.filter(
+    (item) => item.scrapeStatus === "unreachable",
+  ).length;
+  const total = components.length;
+  const overall = healthQuery.isPending
+    ? "加载中"
+    : healthQuery.isError
+      ? "-"
+      : unreachableCount > 0
+        ? "异常"
+        : unknownCount > 0
+          ? "部分未知"
+          : "正常";
+  const overallTone =
+    unreachableCount > 0
+      ? "danger"
+      : unknownCount > 0
+        ? "warning"
+        : undefined;
+
+  const columns: ListColumn<PlatformServiceHealthComponent>[] = [
+    { title: "范围", width: 100, render: () => "核心服务" },
     {
       title: "组件",
-      dataIndex: "name",
-      width: 210,
+      width: 220,
       fixed: "left",
       render: (_, component) => (
         <DataTableNameCell
-          name={component.name}
-          secondary={component.service}
+          name={serviceNames[component.serviceName] || component.serviceName}
+          secondary={component.serviceName}
         />
       ),
     },
     {
       title: "状态",
       width: 90,
-      render: (_, component) => <HealthBadge status={component.status} />,
-    },
-    { title: "版本", dataIndex: "version", width: 130 },
-    { title: "就绪副本", dataIndex: "replicas", width: 100 },
-    {
-      title: "P99",
-      width: 100,
-      render: (_, component) =>
-        component.p99Ms === undefined ? "-" : `${component.p99Ms} ms`,
-    },
-    {
-      title: "错误率",
-      width: 100,
-      render: (_, component) => `${component.errorRate.toFixed(2)}%`,
-    },
-    {
-      title: "依赖检查",
-      width: 300,
       render: (_, component) => (
-        <div className="flex flex-wrap gap-1">
-          {component.dependencies.map((dependency) => (
-            <span
-              key={dependency.name}
-              className={clsx(
-                "rounded px-2 py-0.5 text-xs",
-                dependency.status === "ok"
-                  ? "bg-green-50 text-green-700"
-                  : "bg-red-50 text-red-700",
-              )}
-              title={dependency.error}
-            >
-              {dependency.name}: {dependency.status}
-              {dependency.latencyMs === undefined
-                ? ""
-                : ` · ${dependency.latencyMs} ms`}
-            </span>
-          ))}
-        </div>
+        <HealthBadge status={component.scrapeStatus} />
       ),
     },
     {
-      title: "下钻",
-      width: 180,
+      title: "版本",
+      width: 200,
+      render: (_, component) => component.versions.join(", ") || "-",
+    },
+    {
+      title: "可达 / 观测副本",
+      width: 150,
+      render: (_, component) =>
+        `${component.reachableReplicas} / ${component.observedReplicas}`,
+    },
+    {
+      title: "最近采集",
+      width: 110,
+      render: (_, component) =>
+        formatLastCollected(component.sampleAgeSeconds),
+    },
+    {
+      title: "操作",
+      width: 240,
       fixed: "right",
       render: () => (
         <DataTableRowActions>
           <Link to="/health-metrics" className="text-blue-600 no-underline">
-            指标
+            查看指标
           </Link>
           <Link to="/health-logs" className="text-blue-600 no-underline">
-            日志
+            查看日志
           </Link>
           <Link to="/health-traces" className="text-blue-600 no-underline">
-            Trace
+            查看链路
           </Link>
         </DataTableRowActions>
       ),
     },
   ];
 
+  const distribution = [
+    ["正常", reachableCount, "bg-green-500"],
+    ["未知", unknownCount, "bg-orange-500"],
+    ["异常", unreachableCount, "bg-red-500"],
+  ] as const;
+
   return (
     <div className="space-y-4">
       <ListPageHeader
         title="平台健康"
-        subtitle="全平台控制面与数据面组件运行态，异常和降级项优先展示。"
+        subtitle="ANI 核心服务的 Prometheus 抓取状态与可达副本。"
+        extra={
+          <Button
+            loading={healthQuery.isFetching}
+            onClick={() => void healthQuery.refetch()}
+          >
+            刷新
+          </Button>
+        }
+      />
+
+      <Alert
+        type="info"
+        content="当前接口固定覆盖 ANI 网关、认证、模型、任务、推理、租户和计量七个核心服务，只提供抓取可达性、观测副本、版本与最近采集时间；P99、错误率和依赖检查尚无平台接口。"
       />
 
       <section className="grid grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
         <Metric
           label="整体状态"
-          value="异常"
-          hint="存在不可用组件"
-          tone="danger"
+          value={overall}
+          hint="七个核心服务"
+          tone={overallTone}
         />
-        <Metric label="正常" value={String(okCount)} hint="status = ok" />
         <Metric
-          label="降级"
-          value={String(degradedCount)}
-          hint="需要关注"
+          label="正常"
+          value={
+            healthQuery.isPending || healthQuery.isError
+              ? "-"
+              : String(reachableCount)
+          }
+          hint="scrape_status = reachable"
+        />
+        <Metric
+          label="未知"
+          value={
+            healthQuery.isPending || healthQuery.isError
+              ? "-"
+              : String(unknownCount)
+          }
+          hint="未观测到目标"
           tone="warning"
         />
         <Metric
           label="异常"
-          value={String(errorCount)}
-          hint="优先处置"
+          value={
+            healthQuery.isPending || healthQuery.isError
+              ? "-"
+              : String(unreachableCount)
+          }
+          hint="已观测但不可达"
           tone="danger"
         />
       </section>
@@ -157,16 +225,10 @@ export function PlatformHealthPage() {
       <section className="grid grid-cols-2 gap-3.5 max-[980px]:grid-cols-1">
         <div className="rounded-lg border border-gray-200 bg-white p-5">
           <div className="text-base font-semibold text-gray-900">
-            组件状态分布
+            服务状态分布
           </div>
           <div className="mt-5 space-y-4">
-            {(
-              [
-                ["正常", okCount, "bg-green-500"],
-                ["降级", degradedCount, "bg-orange-500"],
-                ["异常", errorCount, "bg-red-500"],
-              ] as const
-            ).map(([label, count, color]) => (
+            {distribution.map(([label, count, color]) => (
               <div
                 key={label}
                 className="grid grid-cols-[48px_1fr_32px] items-center gap-3 text-sm"
@@ -174,9 +236,9 @@ export function PlatformHealthPage() {
                 <span>{label}</span>
                 <div className="h-2 rounded bg-gray-100">
                   <div
-                    className={`h-2 rounded ${color}`}
+                    className={clsx("h-2 rounded", color)}
                     style={{
-                      width: `${Math.max(5, (count / platformComponents.length) * 100)}%`,
+                      width: `${total === 0 ? 0 : (count / total) * 100}%`,
                     }}
                   />
                 </div>
@@ -187,22 +249,31 @@ export function PlatformHealthPage() {
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <div className="text-base font-semibold text-gray-900">异常依赖</div>
-          <div className="mt-3 space-y-2">
-            {failedDependencies.map(({ component, dependency }) => (
-              <div
-                key={`${component.id}-${dependency.name}`}
-                className="rounded border border-red-100 bg-red-50 px-4 py-3"
-              >
-                <div className="font-medium text-red-700">
-                  {component.name} → {dependency.name}
-                </div>
-                <div className="mt-1 text-xs text-red-600">
-                  {dependency.error ?? "依赖检查失败"}
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="text-base font-semibold text-gray-900">采集范围</div>
+          <dl className="mt-4 grid grid-cols-[96px_1fr] gap-x-4 gap-y-3 text-sm">
+            <dt className="text-gray-500">覆盖范围</dt>
+            <dd className="m-0 text-gray-900">
+              {healthQuery.data?.coverage === "partial"
+                ? "部分覆盖"
+                : healthQuery.data?.coverage || "-"}
+            </dd>
+            <dt className="text-gray-500">信号来源</dt>
+            <dd className="m-0 text-gray-900">
+              {healthQuery.data?.signal === "prometheus_scrape"
+                ? "Prometheus 抓取"
+                : healthQuery.data?.signal || "-"}
+            </dd>
+            <dt className="text-gray-500">数据源状态</dt>
+            <dd className="m-0 text-gray-900">
+              {healthQuery.data?.sourceStatus === "ok"
+                ? "正常"
+                : healthQuery.data?.sourceStatus || "-"}
+            </dd>
+            <dt className="text-gray-500">观测时间</dt>
+            <dd className="m-0 text-gray-900">
+              {formatObservedAt(healthQuery.data?.observedAt)}
+            </dd>
+          </dl>
         </div>
       </section>
 
@@ -217,21 +288,24 @@ export function PlatformHealthPage() {
                 本页只读巡检，不提供服务重启或扩缩容操作。
               </div>
             </div>
-            <span className="text-xs text-gray-500">
-              共 {platformComponents.length} 个组件
-            </span>
+            <span className="text-xs text-gray-500">共 {total} 个组件</span>
           </div>
         }
       >
         <ListDataTable
-          rowKey="id"
+          rowKey="serviceName"
           columns={columns}
-          data={[...platformComponents].sort((left, right) => {
-            const rank = { error: 0, degraded: 1, ok: 2 };
-            return rank[left.status] - rank[right.status];
+          data={[...components].sort((left, right) => {
+            const rank: Record<PlatformServiceScrapeStatus, number> = {
+              unreachable: 0,
+              unknown: 1,
+              reachable: 2,
+            };
+            return rank[left.scrapeStatus] - rank[right.scrapeStatus];
           })}
+          loading={healthQuery.isPending}
           pagination={false}
-          scroll={{ x: 1300 }}
+          scroll={{ x: 1050 }}
           emptyText="暂无组件健康数据"
         />
       </ListPageFrame>

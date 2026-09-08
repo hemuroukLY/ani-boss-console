@@ -37,7 +37,7 @@ export function PlatformOverviewProvider({
       },
       resetDemo: () => {
         setAlerts(platformAlerts.map((item) => ({ ...item })));
-        Message.success("运营态势演示已复位，可从指标或告警继续下钻");
+        Message.success("运营态势演示已复位，可继续查看指标或告警");
       },
     }),
     [alerts],

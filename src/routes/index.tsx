@@ -21,7 +21,7 @@ function OperationsOverviewRoute() {
     <>
       <OverviewPageHeader
         title="运营总览"
-        subtitle="看见异常，快速下钻对象并完成处置"
+        subtitle="看见异常，快速定位对象并完成处置"
         extra={<Button onClick={resetDemo}>运营态势演示</Button>}
       />
       <OperationsMetrics

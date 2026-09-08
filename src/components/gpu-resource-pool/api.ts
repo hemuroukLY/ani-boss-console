@@ -48,7 +48,6 @@ interface QuotaItemResponse {
   total: number;
   used: number;
   reserved: number;
-  tightened?: boolean;
 }
 
 interface TenantQuotaResponse {
@@ -60,15 +59,6 @@ interface TenantQuotaResponse {
 interface QuotaListResponse {
   items: TenantQuotaResponse[];
   next_cursor?: string | null;
-}
-
-interface ReservationResponse {
-  tenant_id: string;
-  allocated_gpu_count: number;
-  used: number;
-  reserved: number;
-  available: number;
-  tightened?: boolean;
 }
 
 const GPU_RESOURCE_TYPE = "gpu_count";
@@ -145,12 +135,6 @@ async function fetchAllTenantQuotas() {
   return items;
 }
 
-async function fetchTenantReservation(tenantId: string) {
-  return apiRequest<ReservationResponse>(
-    `/admin/tenants/${encodeURIComponent(tenantId)}/reservations`,
-  );
-}
-
 export async function fetchTenantGpuAllocations(): Promise<
   TenantGpuAllocation[]
 > {
@@ -165,21 +149,13 @@ export async function fetchTenantGpuAllocations(): Promise<
         Boolean(item.gpu),
     );
 
-  return Promise.all(
-    gpuQuotas.map(async ({ quota, gpu }) => {
-      const reservation = await fetchTenantReservation(quota.tenant_id);
-      return {
-        tenantId: quota.tenant_id,
-        tenantName: quota.tenant_name || quota.tenant_id,
-        quotaTotal: gpu.total,
-        allocatedGpuCount: reservation.allocated_gpu_count,
-        used: reservation.used,
-        reserved: reservation.reserved,
-        available: reservation.available,
-        tightened: reservation.tightened ?? gpu.tightened ?? false,
-      };
-    }),
-  );
+  return gpuQuotas.map(({ quota, gpu }) => ({
+    tenantId: quota.tenant_id,
+    tenantName: quota.tenant_name || quota.tenant_id,
+    quotaTotal: gpu.total,
+    used: gpu.used,
+    reserved: gpu.reserved,
+  }));
 }
 
 export function updateTenantGpuQuota(tenantId: string, total: number) {
@@ -190,20 +166,6 @@ export function updateTenantGpuQuota(tenantId: string, total: number) {
       body: JSON.stringify({
         items: [{ resource_type: GPU_RESOURCE_TYPE, total }],
       }),
-    },
-  );
-}
-
-export function updateTenantGpuReservation(
-  tenantId: string,
-  allocatedGpuCount: number,
-) {
-  return apiRequest<ReservationResponse>(
-    `/admin/tenants/${encodeURIComponent(tenantId)}/reservations`,
-    {
-      method: "PUT",
-      headers: { "Idempotency-Key": crypto.randomUUID() },
-      body: JSON.stringify({ allocated_gpu_count: allocatedGpuCount }),
     },
   );
 }

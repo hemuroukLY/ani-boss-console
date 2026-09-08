@@ -250,10 +250,9 @@ button {
 }
 
 .side-menu-label-text {
+  flex: 1;
+  width: 100%;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .collapse-button {

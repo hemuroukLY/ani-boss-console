@@ -3,9 +3,7 @@ import type { GpuOccupancy } from "../types";
 
 interface GpuSummaryProps {
   occupancy?: GpuOccupancy;
-  tenantAllocatedTotal?: number;
   occupancyPending: boolean;
-  tenantsPending: boolean;
 }
 
 function metricValue(value: number | undefined, pending: boolean) {
@@ -14,12 +12,10 @@ function metricValue(value: number | undefined, pending: boolean) {
 
 export function GpuSummary({
   occupancy,
-  tenantAllocatedTotal,
   occupancyPending,
-  tenantsPending,
 }: GpuSummaryProps) {
   return (
-    <section className="grid grid-cols-5 gap-3.5 max-[1280px]:grid-cols-3">
+    <section className="grid grid-cols-4 gap-3.5 max-[1280px]:grid-cols-2">
       <Metric
         label="物理卡"
         value={metricValue(occupancy?.total, occupancyPending)}
@@ -40,11 +36,6 @@ export function GpuSummary({
         value={metricValue(occupancy?.fault, occupancyPending)}
         hint="不参与调度"
         tone={occupancy?.fault ? "danger" : ""}
-      />
-      <Metric
-        label="资源预留总额"
-        value={metricValue(tenantAllocatedTotal, tenantsPending)}
-        hint="租户聚合上限之和"
       />
     </section>
   );

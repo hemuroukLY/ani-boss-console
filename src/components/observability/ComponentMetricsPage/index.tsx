@@ -41,7 +41,7 @@ export function ComponentMetricsPage() {
     <div className="space-y-4">
       <ListPageHeader
         title="组件指标"
-        subtitle="从平台健康下钻查看组件运行指标和依赖探测结果。"
+        subtitle="查看组件运行指标和依赖探测结果。"
         extra={
           <Select
             value={service}

@@ -15,7 +15,7 @@ export function OperationsMetrics({
   return (
     <>
       <section className="mb-4 grid grid-cols-4 gap-3.5">
-        <Metric label="活跃租户" value="38" hint="试用标签 5 · 点击下钻" />
+        <Metric label="活跃租户" value="38" hint="试用标签 5 · 点击查看" />
         <Metric label="冻结" value="3" hint="含欠费/试用到期" tone="danger" />
         <Metric
           label="待审批配额"

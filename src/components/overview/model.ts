@@ -59,17 +59,11 @@ export const platformAlerts: AlertItem[] = [
   },
 ];
 
-export const regions = [
-  ["华东一区", "cn-east-1", "18 / 64", "24 · AZ-A, AZ-B", "21", 72],
-  ["华北一区", "cn-north-1", "24 / 48", "18 · AZ-A", "13", 50],
-  ["西南一区", "cn-southwest-1", "4 / 16", "6 · AZ-A", "4", 75],
-] as const;
-
 export const statusData = {
   inference: {
     title: "AI 服务运营态势",
     subtitle: "掌握推理服务运行质量与调用趋势",
-    tip: "跨租户查看推理服务规模、可用性与调用质量，异常服务可下钻处理。",
+    tip: "跨租户查看推理服务规模、可用性与调用质量，异常服务可查看详情并处理。",
     metrics: [
       ["在线服务", "42", "共 48 个服务"],
       ["异常服务", "2", "需要及时关注"],

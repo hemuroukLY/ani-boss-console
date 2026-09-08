@@ -9,7 +9,7 @@
 - 后端：独立 ANI 仓库；接口契约与行为以 GitNexus 索引 `ANI` 为准。
 - 应用骨架：与 `ani-console` 保持一致，顶部承载一级菜单，左侧承载二级菜单和三级分组。
 - UI：Arco Design React 为基础组件库，Tailwind CSS 负责布局，ECharts 负责图表。
-- 数据：已建立统一 API 请求入口和平台身份会话；GPU 资源池管理已接入 ANI 实际库存、占用、调度规格目录、GPU 配额和租户资源预留，其余页面仍主要使用前端模型和演示状态。
+- 数据：已建立统一 API 请求入口和平台身份会话；资源池与容量态势、平台健康、GPU 资源池管理和平台 GPU 计量已接入 ANI 实际接口，其余页面仍主要使用前端模型和演示状态。
 - 验证：页面与交互默认由项目负责人手动验证；Agent 不主动构建或启动应用。
 
 ## 当前模块
@@ -17,7 +17,7 @@
 ### 平台运营总览
 
 - 运营总览：运营指标、告警摘要与待处理事项。
-- 资源池与容量态势：区域容量与资源状态。
+- 资源池与容量态势：读取 ANI 平台容量接口，展示区域、GPU、节点、CPU、内存和租户汇总，并区分真实集群 Provider 与开发回退数据。
 - GPU 资源池态势：GPU 设备、使用率与状态展示。
 - AI 服务运营态势：推理服务指标、趋势和异常服务。
 - 知识库运营态势：知识库规模、查询趋势和索引状态。
@@ -34,7 +34,7 @@
 ### 资源池与基础设施
 
 - 平台资源池总览。
-- GPU 资源池管理：展示 ANI 返回的设备库存和占用汇总，支持调度规格目录的查询、新建与删除，以及租户 GPU 配额上限与聚合资源预留的查询、调整和写后刷新；页面读取 `dev_profile` 区分真实 Kubernetes Provider 与本地开发数据，新建规格仅从实际节点标签中选择并限制为后端可映射的整卡、half 或 quarter 策略，聚合预留为 0 时按已落库和实例创建闸门的真实语义展示为“预留上限为 0”；指定物理卡分配、对某张卡执行切分、维护/恢复和资源池事件仍无对应接口，ANI 新增的 `/gpu-scheduling/queues` 为租户上下文队列，不能替代 BOSS 平台级调度队列。
+- GPU 资源池管理：按 `产品原型-9.03` 将租户分配台账、设备列表、调度队列和事件分别作为四个 Tab；设备表已对齐原型的节点/卡、型号、切分、状态、归属和操作六列，读取 ANI 库存字段，未注册设备切分、分配和维护写接口前操作列显示 `-`。页面展示 ANI 返回的设备库存、占用汇总和租户 GPU 配额，并支持配额上限调整与写后刷新。全租户 `/quotas` 未返回 GPU 聚合预留视图，页面已停止逐租户请求 `/admin/tenants/{tenant_id}/reservations`，暂不展示或调整资源预留。调度队列和事件因缺少 ANI 平台接口展示未接入空态；`/gpu-scheduling/queues` 是租户上下文队列，不能替代 BOSS 平台级调度队列。调度规格接口与组件已接入，但原型本页没有调度规格目录区域，当前等待确定其他产品入口。
 - 节点状态，位于资源池菜单下，包括区域、资源池、健康状态和关键字筛选。
 - 存储基础设施，位于基础设施菜单下，展示块、对象、文件和向量存储后端的健康与容量状态、StorageClass 运营和最近平台事件。
 - 租户存储配额，位于基础设施菜单下，顶部保留汇总指标，下方由租户热度 TopN、租户存储配额和最近事件三个板块组成。
@@ -43,7 +43,7 @@
 
 ### 运维与可观测
 
-- 平台健康：汇总控制面和数据面组件的正常、降级、异常状态，展示依赖检查并提供指标、日志和 Trace 下钻入口。
+- 平台健康：读取 ANI 七个核心服务的 Prometheus 抓取状态、观测/可达副本、版本和最近采集时间，提供查看指标、日志和调用链入口；P99、错误率、依赖检查和数据面组件尚无平台接口。
 - GPU 监控、推理监控和知识库监控：使用统一监控骨架展示领域指标、趋势图和当前关注项。
 - 组件指标：支持切换平台组件，展示 P99、错误率、就绪副本、请求量和依赖探测结果。
 - 日志与 Trace：提供静态日志组合筛选、调用链样本切换、瀑布图和耗时排行。
@@ -51,7 +51,7 @@
 
 ### 平台计量与结算
 
-- 计量总览：按 GPU-Hours、CPU-Hours、Memory、Storage、Tokens 和 KB Queries 六个原型页签展示本月合计、环比、峰值日、配额使用率、近 7 日趋势与租户用量排行；支持区域和租户关键字筛选，导出操作保持禁用。
+- 计量总览：保留 GPU-Hours、CPU-Hours、Memory、Storage、Tokens 和 KB Queries 六个原型页签；GPU 页签读取 ANI 平台计量数据，按本月、上月同期和日粒度展示合计、环比、峰值日、近 7 日趋势与租户 ID 用量排行，并标识开发 Provider。接口未返回租户名称、区域和配额汇总，因此不再展示对应模拟字段；其他页签明确说明当前接入缺口，导出操作保持禁用。
 - 原型菜单备注写有“七类指标”，但页面线框实际只定义上述六个页签；当前实现以可运行线框为准，待产品口径澄清后再补充。
 
 ### 安全审计与合规
@@ -72,7 +72,7 @@
 
 ## 当前可对接接口清单
 
-> 核对日期：2026-09-07。以下是接入就绪度清单，不保存接口契约副本；字段、错误码和权限仍以 GitNexus 索引 `ANI` 中的 OpenAPI、网关路由和处理流程为准。
+> 核对日期：2026-09-08。以下是接入就绪度清单，不保存接口契约副本；字段、错误码和权限仍以 GitNexus 索引 `ANI` 中的 OpenAPI、网关路由和处理流程为准。
 
 - `可直接对接`：路由与处理逻辑已存在，平台登录令牌的边界允许访问；仍需按 `dev_profile` 或依赖状态区分真实 Provider 与开发回退。
 - `条件可对接`：主要契约可用，但只能覆盖页面部分区域，或依赖运行时 Provider、下游服务和数据落库。
@@ -83,9 +83,9 @@
 
 | 页面能力 | 可用接口 | 结论 | 接入说明 |
 |----------|----------|------|----------|
-| 资源池与容量态势 | `GET /api/v1/platform/capacity` | 条件可对接 | 已注册为 platform 边界，可提供区域、GPU、节点、CPU、内存和租户数汇总；响应含 `dev_profile`，真实数据取决于集群与租户 Provider。 |
+| 资源池与容量态势 | `GET /api/v1/platform/capacity` | 已接入 | 页面已接区域、GPU、节点、CPU、内存和租户数汇总，并根据 `dev_profile` 标识真实集群 Provider 与开发回退；资源池明细、趋势和事件仍缺接口。 |
 | 平台健康摘要 | `GET /api/v1/platform/services/health` | 条件可对接 | 已注册为 platform 边界，当前固定覆盖 gateway、auth、model、task、inference、tenant、metering 七个服务；未配置或不可用时返回 503。 |
-| GPU 资源池态势 | `GET /api/v1/gpu-inventory`、`GET /api/v1/gpu-inventory/occupancy` | 后端需先补齐 | 路由和实现均存在，但仍走 legacy 权限路径，`scope=platform` 在非 dev 环境会被 scope 守卫拒绝。 |
+| GPU 资源池态势 | `GET /api/v1/gpu-inventory`、`GET /api/v1/gpu-inventory/occupancy` | 已接入 | ANI legacy scope 已允许 platform 与 tenant 身份访问集群级 GPU 清单，`30083` 请求已验证正常；前端已接入，仍需核对导入数据的业务一致性。 |
 | AI 服务运营态势 | `/api/v1/svc/inference-services*` | 后端需先补齐 | 现有接口面向租户服务管理，没有 BOSS 所需的跨租户服务量、调用趋势和异常服务聚合。 |
 | 知识库运营态势 | `/api/v1/svc/knowledge-bases*` | 后端需先补齐 | 现有接口面向租户知识库管理，没有平台规模、查询趋势和索引状态聚合。 |
 | 平台告警与待处理 | 无匹配的平台聚合接口 | 后端需先补齐 | `/observability/alert-rules*` 为租户语义且 legacy 权限路径不接受平台令牌，不能作为平台告警清单。 |
@@ -98,7 +98,7 @@
 | 配额策略 | `/api/v1/svc/tenant-plans*`、`GET /api/v1/svc/quota-meta`、`POST /api/v1/svc/tenants/{tenantId}/plan` | 可直接对接 | 已覆盖套餐列表、创建、详情、编辑、软删除、发布、禁用、限额、绑定租户、可绑定租户和操作历史；依赖 tenant-service 可用。 |
 | 租户管理员 | `/api/v1/svc/tenant-admins*`、`/api/v1/svc/tenants/{tenantId}/admins*`、`GET /api/v1/svc/tenants/{tenantId}/roles` | 可直接对接 | 已覆盖跨租户列表、租户选择器、详情、邀请、重发邀请、角色、重置密码、启停、软删除和操作历史；依赖 tenant-service 可用。 |
 | 单租户配额与 GPU 预留 | `/api/v1/admin/tenants/{tenant_id}/quota*`、`GET /api/v1/admin/quota-meta`、`GET/PUT /api/v1/admin/tenants/{tenant_id}/reservations` | 可直接对接 | platform 路径可访问，适合租户详情中的配额读取、调整和 GPU 聚合预留。 |
-| 全租户配额列表 | `GET /api/v1/quotas` | 后端需先补齐 | 接口明确面向 BOSS 且实现了分页，但 legacy scope 守卫当前拒绝平台令牌；现有 GPU 页面因此只能在 dev 鉴权旁路下完整工作。 |
+| 全租户配额列表 | `GET /api/v1/quotas` | 可直接对接 | 接口面向 BOSS、实现分页并通过 platform transaction 绕过租户 RLS；ANI legacy scope 已精确限定为仅 platform 身份可访问，租户自查仍走 `/quotas/me`。 |
 | 租户计费与用量 | `GET /api/v1/metering/usage/platform` | 条件可对接 | 可按租户与时间范围查询用量，但不提供账务账户、账单、价格、结算状态或账务记录。 |
 | 生命周期、身份安全与完整操作历史 | 无匹配的聚合接口 | 后端需先补齐 | 套餐和管理员各自有审计记录，但不能替代租户生命周期、安全策略和全量操作历史。 |
 
@@ -107,9 +107,9 @@
 | 页面能力 | 可用接口 | 结论 | 接入说明 |
 |----------|----------|------|----------|
 | 平台资源池总览 | `GET /api/v1/platform/capacity` | 条件可对接 | 可先替换区域和容量汇总；缺少资源池明细、趋势与事件。 |
-| GPU 库存与占用 | `GET /api/v1/gpu-inventory`、`GET /api/v1/gpu-inventory/occupancy` | 已接入但受阻 | 前端已调用，后端真实/开发数据由 `dev_profile` 标识；非 dev 环境仍需先修复 platform scope。 |
-| GPU 调度规格 | `GET/POST /api/v1/gpu-specs`、`GET/DELETE /api/v1/gpu-specs/{spec_id}` | 已接入但受阻 | 前端已接查询、新建和删除；非 dev 环境仍需先修复 platform scope。 |
-| GPU 配额与预留 | `GET /api/v1/quotas`、`GET/PUT /api/v1/admin/tenants/{tenant_id}/quota`、`GET/PUT /api/v1/admin/tenants/{tenant_id}/reservations` | 部分已接入 | 单租户管理路径可用；全租户列表受 platform scope 阻塞。 |
+| GPU 库存与占用 | `GET /api/v1/gpu-inventory`、`GET /api/v1/gpu-inventory/occupancy` | 已接入 | 前端已调用并按原型六列展示设备；ANI legacy scope 已允许 platform 身份访问且 `30083` 请求已验证正常。现有设备状态只有 `available`、`in_use`、`fault`，无法单独展示原型的“已预留给租户”，也未返回切分后的算力占比；`tenant_id`、`instance_id` 当前按节点 Pod 数量和卡索引顺序推算，不是设备级权威绑定。后端真实/开发数据仍由 `dev_profile` 标识，待核对导入数据的业务一致性。 |
+| GPU 调度规格 | `GET/POST /api/v1/gpu-specs`、`GET/DELETE /api/v1/gpu-specs/{spec_id}` | 组件已接入，页面入口待确认 | 查询、新建和删除组件已完成，ANI legacy scope 已允许 platform 身份访问；原型 GPU 资源池页对应的是平台调度队列而非规格目录，因此暂不在该页展示，后续需确认产品入口。 |
+| GPU 配额与预留 | `GET /api/v1/quotas`、`GET/PUT /api/v1/admin/tenants/{tenant_id}/quota`、`GET/PUT /api/v1/admin/tenants/{tenant_id}/reservations` | 部分已接入 | 全租户台账当前只读取 `/quotas` 并支持额度调整；为避免每个租户一次补充请求，资源预留展示与调整已暂时移除。ANI 需在全租户列表中批量补充 `allocated_gpu_count`，并明确 `available` 和状态字段后再恢复。 |
 | GPU 维护与平台调度 | `PATCH /api/v1/gpu-inventory/{device_id}` 仅有 OpenAPI；`/api/v1/gpu-scheduling/queues*` 为租户队列 | 后端需先补齐 | 维护接口未注册；队列处理器强制要求 tenant ID，不能用于平台级调度队列。 |
 | 节点状态 | 无匹配接口 | 后端需先补齐 | `/k8s-clusters*` 是租户/集群管理面，不提供原型要求的 BOSS 节点健康、标签、污点和心跳清单。 |
 | 存储基础设施 | 无匹配的平台接口 | 后端需先补齐 | `/volumes*`、`/filesystems*`、`/buckets*`、`/vector-stores*` 是租户资源 CRUD，不是跨租户后端健康、容量、StorageClass 和事件接口。 |
@@ -121,7 +121,7 @@
 
 | 页面能力 | 可用接口 | 结论 | 接入说明 |
 |----------|----------|------|----------|
-| 平台健康 | `GET /api/v1/platform/services/health` | 条件可对接 | 可先接七个核心服务的抓取状态、可达副本、版本和样本年龄；只覆盖平台健康页的一部分。 |
+| 平台健康 | `GET /api/v1/platform/services/health` | 部分已接入 | 已接七个核心服务的抓取状态、观测/可达副本、版本和最近采集时间，并保留 503 错误态；P99、错误率、依赖检查和数据面组件仍缺接口。 |
 | GPU、推理、知识库和组件指标 | `/api/v1/observability/query*`、`GET /api/v1/observability/resource_trend` | 后端需先补齐 | 现有 PromQL 代理和资源趋势是租户语义；legacy 查询接口不接受平台令牌，`resource_trend` 明确是 tenant 边界。 |
 | 日志与 Trace | 无匹配的平台查询接口 | 后端需先补齐 | 实例日志和平台工作负载日志都是单资源接口，没有 BOSS 所需的跨组件日志检索和 Trace 查询。 |
 | 告警规则 | `/api/v1/observability/alert-rules*` | 后端需先补齐 | 处理逻辑存在但属于租户级规则，且 platform scope 不可访问，不能直接替换原型占位页。 |
@@ -131,8 +131,8 @@
 
 | 页面能力 | 可用接口 | 结论 | 接入说明 |
 |----------|----------|------|----------|
-| 平台用量 | `GET /api/v1/metering/usage/platform` | 条件可对接 | 已注册为 platform 边界，支持 `tenant_id`、时间范围以及按租户、日、小时聚合；响应含 `dev_profile`。 |
-| 六类计量页签 | 同上 | 部分可对接 | 当前资源类型仅覆盖 GPU、CPU、内存和 Tokens（`instance_gpu_seconds`、`instance_cpu_seconds`、`instance_memory_gib_seconds`、`token_input/output/total`）；Storage 与 KB Queries 尚无计量类型。 |
+| 平台用量 | `GET /api/v1/metering/usage/platform` | 部分已接入 | GPU 页签已按租户和日粒度接入本月、上月同期及近 7 日用量，并根据 `dev_profile` 标识数据来源；仍需结合真实 GPU 实例创建验证占用和计量回流。 |
+| 六类计量页签 | 同上 | 部分已接入 | GPU 已接入；ANI 资源类型还覆盖 CPU、内存和 Tokens（`instance_cpu_seconds`、`instance_memory_gib_seconds`、`token_input/output/total`），待核对页面计量口径后接入。Storage 与 KB Queries 尚无计量类型。 |
 | 结算与导出 | 无匹配接口 | 后端需先补齐 | 没有价格、账单、结算、发票或导出任务接口；现有用量接口也不直接返回环比、峰值日或配额使用率。 |
 
 ### 安全审计与合规
@@ -161,8 +161,9 @@
 
 ## 当前缺口与整理重点
 
-- 当前仅 GPU 资源池管理接入真实 ANI API；其余前端演示数据仍不能作为接口契约依据。
-- 管理端已接入平台账密登录与身份会话；Vite 开发服务器通过 `VITE_API_PROXY_TARGET` 配置 `/api` 转发，`.env.development` 当前连接 ANI 开发环境，未配置时回退到 `http://127.0.0.1:8080`。本地 `ANI_AUTH_MODE=dev` 可使用开发跳过登录；生产部署仍需在 Web Server 或网关配置同源 `/api` 转发。ANI 当前 legacy scope 守卫未将 `/gpu-inventory`、`/gpu-specs`、`/quotas`、`/auth/logout`、`/notifications/email/*` 和通用 `/observability/*` 识别为 platform 路径，平台令牌会在到达业务处理前被拒绝；`/metering/usage/platform` 已使用 generated platform policy，不属于该阻塞。
+- 当前资源池与容量态势、平台健康、GPU 资源池管理和平台 GPU 计量已接入 ANI API；其余前端演示数据仍不能作为接口契约依据。未接入原因与后续顺序见 [未接入接口现状](./API-INTEGRATION-GAPS.md)。
+- 接口接入以原型中的 GPU 端到端业务流程为唯一 P0 主线：平台资源确认与租户额度配置、Console 租户自查与实例创建、资源占用与计量回流必须连续调通。产品经理的演示路径仅作为联调验收顺序，不是页面功能；其他已就绪接口在 GPU 流程完成后再安排。
+- 管理端已接入平台账密登录与身份会话；Vite 开发服务器通过 `VITE_API_PROXY_TARGET` 配置 `/api` 转发，`.env.development` 当前连接 `http://10.10.1.66:30083`，未配置时回退到 `http://127.0.0.1:8080`。本地 `ANI_AUTH_MODE=dev` 可使用开发跳过登录；生产部署仍需在 Web Server 或网关配置同源 `/api` 转发。ANI legacy scope 已允许 platform 身份访问 `/gpu-inventory*`、`/gpu-specs*` 和 `/gpu-scheduling*`，并将跨租户 `/quotas` 精确限定为 platform；`/auth/logout`、`/notifications/email/*` 和通用 `/observability/*` 仍未进入 platform 可访问边界，`/metering/usage/platform` 则使用 generated platform policy。
 - ANI OpenAPI 已声明 `PATCH /gpu-inventory/{device_id}` 维护状态接口，但当前 ani-gateway 未注册对应路由；前端只展示 `maintenance` 状态，不提供会产生假成功的维护写操作。
 - `ops-pool/index.tsx` 以及若干租户管理路由超过建议规模，应按独立表格、弹窗和业务流程逐步拆分。
 - 部分业务状态仍集中在 Provider 与模型文件中；接入真实数据时需明确服务端状态、页面状态和演示状态的边界。
@@ -173,9 +174,11 @@
 
 | 日期 | 摘要 |
 |------|------|
-| 2026-09-07 | 按 8 个一级模块完成 ANI 接口接入就绪度清单：平台容量、平台服务健康、租户套餐、租户管理员、单租户配额与预留、平台计量可作为下一批真实数据接入基础；GPU 全局接口、退出和邮件通知仍受 legacy platform scope、运行时 Provider 或本地内存 Store 限制，部分模块还存在租户语义与平台聚合语义不匹配、OpenAPI 有声明但网关无处理器等缺口。 |
-| 2026-09-07 | 统一 BOSS 管理端 UI：对齐 `ani-console` 的 184px 侧栏、44px 菜单行和 16px 内容间距；侧边栏第一层及折叠态显示图标，嵌套菜单保持纯文字并消除横向滚动；统一导航、列表、详情、空态、总览面板与指标卡样式，详情路由不再重复显示壳层面包屑，空值占位统一为 `-`。保留 `产品原型-9.03` 定义的 8 个一级菜单、41 个页面及现有路由、数据和操作逻辑。GitNexus 变更检测覆盖 59 个符号和 37 条流程，因共享壳层与列表组件标记为 `CRITICAL`，与全局视觉调整范围一致；循环依赖、导航语法、浏览器交互和 `git diff --check` 验证通过，按约定未运行构建或类型编译。 |
-| 2026-09-04 | 完成平台身份与 GPU 资源池真实数据闭环：新增平台账密登录、令牌持久化、Bearer 请求、401 单飞刷新、受保护路由、退出吊销和开发代理；GPU 页面接入库存、占用、调度规格、租户配额与聚合预留，支持受后端约束的规格和额度写操作，并拆分为独立业务组件。新增八步演示向导复用真实库存和写操作；物理卡即时切分、指定卡绑定、维护恢复、调度队列及测试库存等无接口能力保持说明态。ANI platform scope、维护路由和预留为 0 的查询/创建语义差异仍为已知外部缺口。目标影响分析均为低风险；全量 GitNexus 检测因统一认证链路覆盖登录、退出及 GPU 请求为 `CRITICAL`，循环依赖检查和 `git diff --check` 通过；按约定未运行构建或启动应用。 |
+| 2026-09-08 | 完成 GPU P0 主线的首批真实数据接入与产品收敛：新增统一平台数据 API 层，资源池与容量态势、平台健康和平台 GPU 计量分别接入 ANI 容量、七个核心服务健康及平台计量接口，覆盖加载、空态、刷新、错误和开发 Provider 提示；GPU 计量展示本月合计、上月同期环比、峰值日、近 7 日趋势与租户 ID 排行，不再补造接口缺失字段。GPU 资源池按 `产品原型-9.03` 整理为租户分配台账、设备列表、平台调度队列和联动事件四个 Tab，设备表对齐六列原型，移除误实现的“GPU 演示”和不属于本页的调度规格目录；开发代理切换至 `http://10.10.1.66:30083`，新网关健康、鉴权与 GPU 请求已验证。全租户 `/quotas` 尚无聚合预留视图，平台队列、事件、设备切分/分配/维护写接口仍缺失，导入数据业务一致性及完整写后回读仍待验收；接口缺口文档已按跨平台资源、租户准入、实例创建、占用与计量回流的顺序整理。 |
+| 2026-09-08 | 统一共享交互与本批验证结果：平台容量、平台健康、GPU 计量及 GPU 资源池各查询失败均改为稳定 ID 的右上角 Notification，数据区域仅保留 loading、empty 或已有数据状态；侧边菜单长文案使用单行省略并仅在截断时提示完整内容，监控下钻和采集时效文案同步改为用户可理解表述，导航层级与路由未变。目标符号上游影响均为 `LOW`；最终 GitNexus 全量检测覆盖当前工作区 64 个符号和 17 条流程、整体风险为 `CRITICAL`，高风险来自累计的平台 API、共享页面和应用壳层变更，GPU 收敛仅涉及资源池页面及其数据链路；循环依赖、静态 API/类型、残留模拟字段与内嵌查询错误文案检查通过，`git diff --check` 通过，按约定未运行构建、类型编译或应用。 |
+| 2026-09-07 | 按 8 个一级模块完成 ANI 接口接入就绪度清单：平台容量、平台服务健康、租户套餐、租户管理员、单租户配额与预留、平台计量具备不同程度的接入基础；GPU 全局接口、退出和邮件通知仍受 legacy platform scope、运行时 Provider 或本地内存 Store 限制，部分模块还存在租户语义与平台聚合语义不匹配、OpenAPI 有声明但网关无处理器等缺口。接口就绪度仅作为工作量依据，不代表接入优先级。 |
+| 2026-09-07 | 统一 BOSS 管理端 UI：对齐 `ani-console` 的 184px 侧栏、44px 菜单行和 16px 内容间距；侧边栏第一层及折叠态显示图标，嵌套菜单保持纯文字并消除横向滚动；统一导航、列表、详情、空态、总览面板与指标卡样式，详情路由不再重复显示壳层面包屑，空值占位统一为 `-`。保留 `产品原型-9.03` 定义的 8 个一级菜单、41 个页面及现有路由、数据和操作逻辑；移除误实现的“GPU 演示”入口与八步向导，产品经理演示路径仅作为验收流程，不属于产品交互。全局 UI 调整的 GitNexus 检测覆盖 59 个符号和 37 条流程，因共享壳层与列表组件标记为 `CRITICAL`；演示入口修正的目标影响均为 `LOW`，全量检测覆盖 2 个符号和 2 条流程、风险为 `MEDIUM`。循环依赖、导航语法、浏览器交互和 `git diff --check` 验证通过，按约定未运行构建或类型编译。 |
+| 2026-09-04 | 完成平台身份与 GPU 资源池页面接口接入：新增平台账密登录、令牌持久化、Bearer 请求、401 单飞刷新、受保护路由、退出吊销和开发代理；GPU 页面接入库存、占用、调度规格、租户配额与聚合预留，支持受后端约束的规格和额度写操作，并拆分为独立业务组件。物理卡即时切分、指定卡绑定、维护恢复、调度队列及测试库存等无接口能力保持说明态；产品经理的八步演示仅作为验收路径，不实现为页面功能。ANI platform scope、维护路由和预留为 0 的查询/创建语义差异仍为已知外部缺口，因此尚未形成跨 BOSS、Console、实例创建、占用与计量的生产闭环。目标影响分析均为低风险；全量 GitNexus 检测因统一认证链路覆盖登录、退出及 GPU 请求为 `CRITICAL`，循环依赖检查和 `git diff --check` 通过；按约定未运行构建或启动应用。 |
 | 2026-09-04 | 将页面信息架构与交互规格基线更新为 `产品原型-9.03`，确认 BOSS 端 8 个一级入口、41 个可点击页面及 5 个租户详情路由均已覆盖；按 Store 接入分支将告警规则、运维、安全审计与合规、身份安全及平台集成等 13 个未接入 Store 的路由统一收敛为占位页，移除无依据的演示列表、筛选、配置和取证流程，并保留镜像仓库、监控、日志与 Trace 等原型专用页面。 |
 | 2026-09-02 | 将页面信息架构与交互规格基线更新为 GitNexus 索引 `产品原型-9.01`；统一规定用户界面空值占位使用半角 `-`，不得使用长破折号 `—`。 |
 | 2026-09-01 | 依据产品原型新增“网络基础设施”页面并归入基础设施菜单，顶部展示 SDN 控制器、出口网关和最高 IP 池占用汇总，下方展示网络组件与 IP 地址池明细；支持区域、健康状态和关键字筛选，不提供模拟状态操作，尚未接入 ANI 网络基础设施接口。 |

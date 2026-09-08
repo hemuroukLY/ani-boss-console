@@ -1,4 +1,10 @@
-import { Avatar, Button, Menu, Message } from "@arco-design/web-react";
+import {
+  Avatar,
+  Button,
+  Menu,
+  Message,
+  Typography,
+} from "@arco-design/web-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   IconMenuFold,
@@ -136,7 +142,14 @@ export function AppShell() {
       <span className="side-menu-label-icon" aria-hidden="true">
         {icon}
       </span>
-      <span className="side-menu-label-text">{label}</span>
+      <Typography.Ellipsis
+        rows={1}
+        expandable={false}
+        showTooltip
+        className="side-menu-label-text"
+      >
+        {label}
+      </Typography.Ellipsis>
     </span>
   );
 
@@ -153,7 +166,16 @@ export function AppShell() {
       >
         {depth === 0 && item.icon
           ? renderMenuLabel(item.label, item.icon)
-          : item.label}
+          : (
+              <Typography.Ellipsis
+                rows={1}
+                expandable={false}
+                showTooltip
+                className="side-menu-label-text"
+              >
+                {item.label}
+              </Typography.Ellipsis>
+            )}
       </Link>
     </Menu.Item>
   );

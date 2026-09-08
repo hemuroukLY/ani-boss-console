@@ -7,6 +7,7 @@ import {
   DataTableRowActionButton,
   type ListColumn,
 } from "@/components/common";
+import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { gpuResourcePoolQueryKeys } from "../api";
 import { createGpuSpec, deleteGpuSpec, fetchGpuSpecs } from "../spec-api";
 import { GpuSpecCreateModal } from "../GpuSpecCreateModal";
@@ -28,6 +29,12 @@ export function GpuSpecCatalog({ devices }: GpuSpecCatalogProps) {
   const specsQuery = useQuery({
     queryKey: gpuResourcePoolQueryKeys.specs,
     queryFn: fetchGpuSpecs,
+  });
+
+  useListErrorNotification({
+    id: "gpu-resource-specs",
+    title: "GPU 调度规格目录加载失败",
+    error: specsQuery.error,
   });
 
   const refreshSpecs = () =>
@@ -96,7 +103,7 @@ export function GpuSpecCatalog({ devices }: GpuSpecCatalogProps) {
     },
     {
       title: "操作",
-      width: "max-content",
+      width: 200,
       fixed: "right",
       render: (_, spec) => (
         <DataTableRowActionButton
@@ -126,23 +133,14 @@ export function GpuSpecCatalog({ devices }: GpuSpecCatalogProps) {
           content="这里管理的是 Console 创建实例时使用的调度规格目录，不会立即切分某一张物理 GPU。"
           className="m-4"
         />
-        {specsQuery.isError ? (
-          <div className="flex items-center justify-between gap-4 p-6 text-sm text-red-600">
-            <span>规格目录加载失败：{getApiErrorMessage(specsQuery.error)}</span>
-            <Button size="small" onClick={() => void specsQuery.refetch()}>
-              重试
-            </Button>
-          </div>
-        ) : (
-          <DataTable
-            tableLabel="GPU 调度规格目录"
-            rowKey="id"
-            columns={columns}
-            data={specsQuery.data || []}
-            loading={specsQuery.isPending}
-            pagination={false}
-          />
-        )}
+        <DataTable
+          tableLabel="GPU 调度规格目录"
+          rowKey="id"
+          columns={columns}
+          data={specsQuery.data || []}
+          loading={specsQuery.isPending}
+          pagination={false}
+        />
       </Card>
 
       <GpuSpecCreateModal

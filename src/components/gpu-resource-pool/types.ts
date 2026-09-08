@@ -66,9 +66,6 @@ export interface TenantGpuAllocation {
   tenantId: string;
   tenantName: string;
   quotaTotal: number;
-  allocatedGpuCount: number;
   used: number;
   reserved: number;
-  available: number;
-  tightened: boolean;
 }
