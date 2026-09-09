@@ -57,6 +57,6 @@
 
 默认由项目负责人手动完成构建、启动和页面交互验证。除非用户明确要求，Agent 不运行 `pnpm build`、`pnpm verify` 或启动开发服务。
 
-文档修改至少检查 Markdown 链接、内容一致性和 `git diff --check`；代码修改还必须遵循 `AGENTS.md` 中的 GitNexus 影响分析与变更检测要求。
+完成代码或工程配置修改后，在最终回复前必须运行 `pnpm lint` 和 `pnpm fmt:check`；检查失败时应先修复，无法在当前范围处理的既有问题必须如实记录。文档修改至少检查 Markdown 链接、内容一致性和 `git diff --check`；代码修改还必须遵循 `AGENTS.md` 中的 GitNexus 影响分析与变更检测要求。
 
 功能范围、数据接入状态或验证口径发生变化后，应同步更新 [PROJECT-STATUS.md](./PROJECT-STATUS.md)，只保留当前有效状态和简短里程碑。

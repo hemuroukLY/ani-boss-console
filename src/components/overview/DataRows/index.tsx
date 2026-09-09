@@ -14,13 +14,5 @@ export function DataRows({ rows }: { rows: readonly (readonly string[])[] }) {
     dataIndex: `column${columnIndex}`,
   }));
 
-  return (
-    <DataTable
-      rowKey="key"
-      columns={columns}
-      data={data}
-      pagination={false}
-      border={false}
-    />
-  );
+  return <DataTable rowKey="key" columns={columns} data={data} pagination={false} border={false} />;
 }

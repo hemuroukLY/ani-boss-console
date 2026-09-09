@@ -2,11 +2,7 @@ import { Alert, Button, Card, Message, Modal } from "@arco-design/web-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { getApiErrorMessage } from "@/api/client";
-import {
-  DataTable,
-  DataTableRowActionButton,
-  type ListColumn,
-} from "@/components/common";
+import { DataTable, DataTableRowActionButton, type ListColumn } from "@/components/common";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { gpuResourcePoolQueryKeys } from "../api";
 import { createGpuSpec, deleteGpuSpec, fetchGpuSpecs } from "../spec-api";
@@ -79,11 +75,7 @@ export function GpuSpecCatalog({ devices }: GpuSpecCatalogProps) {
       title: "模式",
       width: 100,
       render: (_, spec) =>
-        spec.gpuMode === "wholecard"
-          ? "整卡"
-          : spec.gpuMode === "vgpu"
-            ? "vGPU"
-            : "-",
+        spec.gpuMode === "wholecard" ? "整卡" : spec.gpuMode === "vgpu" ? "vGPU" : "-",
     },
     { title: "份数", dataIndex: "shares", width: 90 },
     {
@@ -143,13 +135,14 @@ export function GpuSpecCatalog({ devices }: GpuSpecCatalogProps) {
         />
       </Card>
 
-      <GpuSpecCreateModal
-        visible={createVisible}
-        devices={devices}
-        submitting={createMutation.isPending}
-        onCancel={() => setCreateVisible(false)}
-        onSubmit={(input) => createMutation.mutate(input)}
-      />
+      {createVisible && (
+        <GpuSpecCreateModal
+          devices={devices}
+          submitting={createMutation.isPending}
+          onCancel={() => setCreateVisible(false)}
+          onSubmit={(input) => createMutation.mutate(input)}
+        />
+      )}
     </>
   );
 }

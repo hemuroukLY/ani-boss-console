@@ -9,13 +9,7 @@ interface MetricProps {
   onClick?: () => void;
 }
 
-export function Metric({
-  label,
-  value,
-  hint,
-  tone = "",
-  onClick,
-}: MetricProps) {
+export function Metric({ label, value, hint, tone = "", onClick }: MetricProps) {
   return (
     <Card
       hoverable={Boolean(onClick)}
@@ -29,10 +23,7 @@ export function Metric({
         title={label}
         value={value}
         styleValue={{
-          color:
-            tone === "danger"
-              ? "rgb(var(--danger-6))"
-              : "var(--color-text-1)",
+          color: tone === "danger" ? "rgb(var(--danger-6))" : "var(--color-text-1)",
           fontSize: 28,
           lineHeight: 1.2,
         }}

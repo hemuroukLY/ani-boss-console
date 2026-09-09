@@ -1,10 +1,4 @@
-import {
-  Button,
-  Descriptions,
-  Modal,
-  Space,
-  Typography,
-} from "@arco-design/web-react";
+import { Button, Descriptions, Modal, Space, Typography } from "@arco-design/web-react";
 import type { Tenant } from "@/components/tenant/model";
 
 interface TrialLifecycleSectionProps {

@@ -9,14 +9,7 @@
   --sidebar-collapsed-width: 56px;
   --sidebar-active-bg: rgba(0, 121, 211, 0.08);
   --surface-shadow: 0 2px 10px rgba(0, 73, 128, 0.05);
-  font-family: var(
-    --font-family,
-    Inter,
-    "PingFang SC",
-    "Microsoft YaHei",
-    system-ui,
-    sans-serif
-  );
+  font-family: var(--font-family, Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif);
   color: var(--color-text-1, #1d2129);
   background: var(--color-bg-1, #f7f8fa);
 }
@@ -296,13 +289,8 @@ button {
 }
 
 .sidebar.collapsed .side-menu.arco-menu .side-menu-leaf,
-.sidebar.collapsed
-  .side-menu.arco-menu
-  .side-menu-submenu.arco-menu-pop-header,
-.sidebar.collapsed
-  .side-menu.arco-menu
-  .side-menu-submenu
-  > .arco-menu-inline-header {
+.sidebar.collapsed .side-menu.arco-menu .side-menu-submenu.arco-menu-pop-header,
+.sidebar.collapsed .side-menu.arco-menu .side-menu-submenu > .arco-menu-inline-header {
   display: flex;
   box-sizing: border-box;
   width: 100%;

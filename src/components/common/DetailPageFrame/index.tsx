@@ -1,10 +1,4 @@
-import {
-  Breadcrumb,
-  Button,
-  Card,
-  Tabs,
-  Tooltip,
-} from "@arco-design/web-react";
+import { Breadcrumb, Button, Card, Tabs, Tooltip } from "@arco-design/web-react";
 import { IconLeft } from "@arco-design/web-react/icon";
 import { useState, type ReactNode } from "react";
 import styles from "./index.module.css";
@@ -60,9 +54,7 @@ export function DetailPageFrame({
   defaultTabKey,
   onBack,
 }: DetailPageFrameProps) {
-  const [activeTabKey, setActiveTabKey] = useState(
-    defaultTabKey ?? tabs?.[0]?.key ?? "",
-  );
+  const [activeTabKey, setActiveTabKey] = useState(defaultTabKey ?? tabs?.[0]?.key ?? "");
 
   return (
     <div className={styles.page}>
@@ -83,21 +75,11 @@ export function DetailPageFrame({
             return (
               <Breadcrumb.Item key={index}>
                 {item.onClick && !isLast ? (
-                  <button
-                    type="button"
-                    className={styles.breadcrumbLink}
-                    onClick={item.onClick}
-                  >
+                  <button type="button" className={styles.breadcrumbLink} onClick={item.onClick}>
                     {item.label}
                   </button>
                 ) : (
-                  <span
-                    className={
-                      isLast
-                        ? styles.breadcrumbCurrent
-                        : styles.breadcrumbText
-                    }
-                  >
+                  <span className={isLast ? styles.breadcrumbCurrent : styles.breadcrumbText}>
                     {item.label}
                   </span>
                 )}
@@ -148,11 +130,7 @@ export function DetailPageFrame({
           <section className={styles.rightPane}>
             <Tabs
               defaultActiveTab={defaultTabKey ?? tabs[0].key}
-              extra={
-                typeof tabExtra === "function"
-                  ? tabExtra(activeTabKey)
-                  : tabExtra
-              }
+              extra={typeof tabExtra === "function" ? tabExtra(activeTabKey) : tabExtra}
               onChange={setActiveTabKey}
               className={styles.tabs}
               type="line"

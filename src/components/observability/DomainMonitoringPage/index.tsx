@@ -54,16 +54,8 @@ export function DomainMonitoringPage({ domain }: { domain: MonitoringDomain }) {
                 key={notice.title}
                 className="flex items-center justify-between rounded border border-gray-100 px-4 py-3"
               >
-                <span className="font-medium text-gray-800">
-                  {notice.title}
-                </span>
-                <span
-                  className={
-                    notice.tone === "danger"
-                      ? "text-red-600"
-                      : "text-orange-600"
-                  }
-                >
+                <span className="font-medium text-gray-800">{notice.title}</span>
+                <span className={notice.tone === "danger" ? "text-red-600" : "text-orange-600"}>
                   {notice.detail}
                 </span>
               </div>

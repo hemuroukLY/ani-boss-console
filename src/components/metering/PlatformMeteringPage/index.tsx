@@ -5,33 +5,22 @@ import { ListPageHeader } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { MeteringTrend } from "../MeteringTrend";
-import {
-  meteringDimensions,
-  type MeteringDimension,
-} from "../model";
+import { meteringDimensions, type MeteringDimension } from "../model";
 import { MeteringTenantTable } from "./MeteringTenantTable";
-import {
-  formatUsage,
-  getChangeRate,
-  usePlatformGpuMetering,
-} from "./usePlatformGpuMetering";
+import { formatUsage, getChangeRate, usePlatformGpuMetering } from "./usePlatformGpuMetering";
 
 export function PlatformMeteringPage() {
   const [dimension, setDimension] = useState<MeteringDimension>("gpu");
   const current =
-    meteringDimensions.find((item) => item.key === dimension) ??
-    meteringDimensions[0];
+    meteringDimensions.find((item) => item.key === dimension) ?? meteringDimensions[0];
   const { query, view } = usePlatformGpuMetering(current.resourceType);
   useListErrorNotification({
     id: "platform-gpu-metering",
     title: "GPU 计量数据加载失败",
     error: query.error,
   });
-  const totalChangeRate = view
-    ? getChangeRate(view.currentTotal, view.previousTotal)
-    : undefined;
-  const metricValue = (value?: string) =>
-    query.isPending || query.isError ? "-" : value || "-";
+  const totalChangeRate = view ? getChangeRate(view.currentTotal, view.previousTotal) : undefined;
+  const metricValue = (value?: string) => (query.isPending || query.isError ? "-" : value || "-");
 
   return (
     <div className="space-y-4">
@@ -107,9 +96,7 @@ export function PlatformMeteringPage() {
             />
             <Metric
               label="有用量租户"
-              value={metricValue(
-                view ? String(view.tenantRows.length) : undefined,
-              )}
+              value={metricValue(view ? String(view.tenantRows.length) : undefined)}
               hint="本月或上月同期有记录"
             />
           </section>
@@ -117,12 +104,8 @@ export function PlatformMeteringPage() {
           <section className="rounded-lg border border-gray-200 bg-white p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-base font-semibold text-gray-900">
-                  近 7 日趋势
-                </div>
-                <div className="mt-1 text-xs text-gray-500">
-                  {current.description}
-                </div>
+                <div className="text-base font-semibold text-gray-900">近 7 日趋势</div>
+                <div className="mt-1 text-xs text-gray-500">{current.description}</div>
               </div>
               <span className="rounded bg-blue-50 px-2 py-1 text-xs text-blue-700">
                 单位：{current.unit}

@@ -41,12 +41,7 @@ export function MonitoringTrend({ panel }: { panel: MonitoringPanel }) {
 
   return (
     <Card title={panel.title} className="rounded-lg [&_.arco-card-body]:p-3">
-      <ReactECharts
-        option={option}
-        notMerge
-        lazyUpdate
-        className="h-[220px] w-full"
-      />
+      <ReactECharts option={option} notMerge lazyUpdate className="h-[220px] w-full" />
     </Card>
   );
 }

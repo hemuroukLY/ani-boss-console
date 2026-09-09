@@ -178,9 +178,7 @@ export const platformComponents: PlatformComponentHealth[] = [
     replicas: "0/2",
     errorRate: 100,
     requestRate: "0 QPS",
-    dependencies: [
-      { name: "etcd", status: "fail", error: "leader election timeout" },
-    ],
+    dependencies: [{ name: "etcd", status: "fail", error: "leader election timeout" }],
   },
   {
     id: "component-mq",
@@ -210,10 +208,7 @@ export const platformComponents: PlatformComponentHealth[] = [
   },
 ];
 
-export const monitoringProfiles: Record<
-  "gpu" | "inference" | "kb",
-  MonitoringProfile
-> = {
+export const monitoringProfiles: Record<"gpu" | "inference" | "kb", MonitoringProfile> = {
   gpu: {
     title: "GPU 监控",
     subtitle: "查看 GPU 设备利用率、显存、温度和调度队列运行态。",
@@ -338,9 +333,7 @@ export const monitoringProfiles: Record<
         color: "#f53f3f",
       },
     ],
-    notices: [
-      { title: "产品知识库", detail: "向量索引积压 9 篇文档", tone: "warning" },
-    ],
+    notices: [{ title: "产品知识库", detail: "向量索引积压 9 篇文档", tone: "warning" }],
   },
 };
 

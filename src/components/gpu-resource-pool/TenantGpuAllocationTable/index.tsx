@@ -24,10 +24,7 @@ export function TenantGpuAllocationTable({
       title: "租户",
       width: 260,
       render: (_, tenant) => (
-        <DataTableNameCell
-          name={tenant.tenantName}
-          secondary={tenant.tenantId}
-        />
+        <DataTableNameCell name={tenant.tenantName} secondary={tenant.tenantId} />
       ),
     },
     { title: "配额上限", dataIndex: "quotaTotal", width: 110 },
@@ -48,10 +45,7 @@ export function TenantGpuAllocationTable({
   ];
 
   return (
-    <Card
-      title="租户分配台账"
-      className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0"
-    >
+    <Card title="租户分配台账" className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0">
       <DataTable
         tableLabel="租户 GPU 分配台账"
         rowKey="tenantId"

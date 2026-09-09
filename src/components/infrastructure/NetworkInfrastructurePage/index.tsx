@@ -54,9 +54,7 @@ const networkComponents: NetworkComponent[] = [
     heartbeat: "2026-07-28 13:40",
     replicas: "3/3",
     note: "支撑 Console VPC / 子网",
-    events: [
-      { type: "Normal", message: "Leader election OK", at: "2026-07-28 10:00" },
-    ],
+    events: [{ type: "Normal", message: "Leader election OK", at: "2026-07-28 10:00" }],
   },
   {
     id: "net-gw",
@@ -133,9 +131,7 @@ function StatusBadge({ status }: { status: ComponentStatus }) {
     <span
       className={clsx(
         "inline-flex rounded px-2 py-0.5 text-xs font-medium",
-        status === "healthy"
-          ? "bg-green-50 text-green-700"
-          : "bg-orange-50 text-orange-700",
+        status === "healthy" ? "bg-green-50 text-green-700" : "bg-orange-50 text-orange-700",
       )}
     >
       {status === "healthy" ? "健康" : "降级"}
@@ -153,9 +149,7 @@ export function NetworkInfrastructurePage() {
     return networkComponents.filter((component) => {
       const matchesKeyword =
         !query ||
-        `${component.name} ${component.type} ${component.cluster}`
-          .toLowerCase()
-          .includes(query);
+        `${component.name} ${component.type} ${component.cluster}`.toLowerCase().includes(query);
       return (
         (region === "all" || component.region === region) &&
         (status === "all" || component.status === status) &&
@@ -164,12 +158,8 @@ export function NetworkInfrastructurePage() {
     });
   }, [keyword, region, status]);
 
-  const worstPool = [...ipPools].sort(
-    (left, right) => usagePercent(right) - usagePercent(left),
-  )[0];
-  const controller = networkComponents.find((item) =>
-    item.type.includes("控制器"),
-  );
+  const worstPool = [...ipPools].sort((left, right) => usagePercent(right) - usagePercent(left))[0];
+  const controller = networkComponents.find((item) => item.type.includes("控制器"));
   const gateway = networkComponents.find((item) => item.type.includes("网关"));
 
   const componentColumns: ListColumn<NetworkComponent>[] = [
@@ -254,9 +244,7 @@ export function NetworkInfrastructurePage() {
               status={percent >= 80 ? "warning" : "normal"}
               className="min-w-36 flex-1"
             />
-            <span className="w-10 text-right text-xs text-gray-600">
-              {percent}%
-            </span>
+            <span className="w-10 text-right text-xs text-gray-600">{percent}%</span>
           </div>
         );
       },

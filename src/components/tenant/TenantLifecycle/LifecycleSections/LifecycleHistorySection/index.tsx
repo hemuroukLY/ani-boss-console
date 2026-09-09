@@ -1,17 +1,12 @@
 import { Tag, Typography } from "@arco-design/web-react";
 import { DataTable } from "@/components/common";
-import {
-  tenantLifecycleEventMeta,
-  type TenantLifecycleEvent,
-} from "@/components/tenant/model";
+import { tenantLifecycleEventMeta, type TenantLifecycleEvent } from "@/components/tenant/model";
 
 interface LifecycleHistorySectionProps {
   events: TenantLifecycleEvent[];
 }
 
-export function LifecycleHistorySection({
-  events,
-}: LifecycleHistorySectionProps) {
+export function LifecycleHistorySection({ events }: LifecycleHistorySectionProps) {
   return (
     <section>
       <Typography.Title heading={6} className="!mb-4">

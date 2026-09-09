@@ -1,8 +1,5 @@
 import { Message } from "@arco-design/web-react";
-import {
-  DataTableRowActionButton,
-  DataTableRowActions,
-} from "@/components/common";
+import { DataTableRowActionButton, DataTableRowActions } from "@/components/common";
 import type { Device } from "../model";
 
 export function DeviceActions({ device }: { device: Device }) {

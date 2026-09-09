@@ -11,17 +11,14 @@ interface LogoutResponse {
 }
 
 export async function loginPlatform(input: PlatformLoginInput) {
-  const tokens = await apiRequest<AuthTokens>(
-    "/auth/platform/password/login",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        username: input.username.trim(),
-        password: input.password,
-        idempotency_key: crypto.randomUUID(),
-      }),
-    },
-  );
+  const tokens = await apiRequest<AuthTokens>("/auth/platform/password/login", {
+    method: "POST",
+    body: JSON.stringify({
+      username: input.username.trim(),
+      password: input.password,
+      idempotency_key: crypto.randomUUID(),
+    }),
+  });
   if (!tokens?.access_token || !tokens.refresh_token) {
     throw new Error("登录响应缺少令牌");
   }

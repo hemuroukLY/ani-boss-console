@@ -1,9 +1,4 @@
-import {
-  Button,
-  Descriptions,
-  Space,
-  Typography,
-} from "@arco-design/web-react";
+import { Button, Descriptions, Space, Typography } from "@arco-design/web-react";
 import type { Tenant } from "@/components/tenant/model";
 
 interface QuotaOverviewProps {
@@ -12,11 +7,7 @@ interface QuotaOverviewProps {
   onRebindPackage: () => void;
 }
 
-export function QuotaOverview({
-  tenant,
-  onRefresh,
-  onRebindPackage,
-}: QuotaOverviewProps) {
+export function QuotaOverview({ tenant, onRefresh, onRebindPackage }: QuotaOverviewProps) {
   return (
     <section>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

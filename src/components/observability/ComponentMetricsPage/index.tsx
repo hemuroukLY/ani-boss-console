@@ -34,8 +34,7 @@ const metricSeries = [
 export function ComponentMetricsPage() {
   const [service, setService] = useState("model-service");
   const component =
-    platformComponents.find((item) => item.service === service) ??
-    platformComponents[0];
+    platformComponents.find((item) => item.service === service) ?? platformComponents[0];
 
   return (
     <div className="space-y-4">
@@ -67,11 +66,7 @@ export function ComponentMetricsPage() {
           hint="近 5 分钟"
           tone={component.errorRate > 1 ? "danger" : ""}
         />
-        <Metric
-          label="就绪副本"
-          value={component.replicas}
-          hint="ready / desired"
-        />
+        <Metric label="就绪副本" value={component.replicas} hint="ready / desired" />
         <Metric label="请求量" value={component.requestRate} hint="当前速率" />
       </section>
 
@@ -90,22 +85,14 @@ export function ComponentMetricsPage() {
               className="flex items-center justify-between rounded border border-gray-100 px-4 py-3"
             >
               <div>
-                <div className="font-medium text-gray-800">
-                  {dependency.name}
-                </div>
+                <div className="font-medium text-gray-800">{dependency.name}</div>
                 <div className="mt-1 text-xs text-gray-500">
                   {dependency.error ?? "依赖探测正常"}
                 </div>
               </div>
-              <span
-                className={
-                  dependency.status === "ok" ? "text-green-600" : "text-red-600"
-                }
-              >
+              <span className={dependency.status === "ok" ? "text-green-600" : "text-red-600"}>
                 {dependency.status}
-                {dependency.latencyMs === undefined
-                  ? ""
-                  : ` · ${dependency.latencyMs} ms`}
+                {dependency.latencyMs === undefined ? "" : ` · ${dependency.latencyMs} ms`}
               </span>
             </div>
           ))}

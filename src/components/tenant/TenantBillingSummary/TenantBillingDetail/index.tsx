@@ -1,12 +1,4 @@
-import {
-  Button,
-  Descriptions,
-  Message,
-  Modal,
-  Result,
-  Space,
-  Tag,
-} from "@arco-design/web-react";
+import { Button, Descriptions, Message, Modal, Result, Tag } from "@arco-design/web-react";
 import { useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
 import {
@@ -20,14 +12,9 @@ import {
 } from "@/components/common";
 import { useState } from "react";
 import { CreditAdjustmentModal } from "@/components/tenant/TenantBillingSummary/CreditAdjustmentModal";
-import {
-  formatAmount,
-  formatUsd,
-} from "@/components/tenant/TenantBillingSummary/formatters";
-import {
-  useTenantManagement,
-  type TenantBillingAction,
-} from "@/components/tenant/TenantManagementProvider";
+import { formatAmount, formatUsd } from "@/components/tenant/TenantBillingSummary/formatters";
+import type { TenantBillingAction } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import {
   tenantBillingStatusMeta,
   type TenantBillingAdjustment,
@@ -42,8 +29,7 @@ interface TenantBillingDetailProps {
 
 export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
   const navigate = useNavigate();
-  const { tenants, tenantBillings, applyTenantBillingAction } =
-    useTenantManagement();
+  const { tenants, tenantBillings, applyTenantBillingAction } = useTenantManagement();
   const [adjustVisible, setAdjustVisible] = useState(false);
   const [adjustmentAmount, setAdjustmentAmount] = useState(0);
   const [adjustmentReason, setAdjustmentReason] = useState("");
@@ -89,8 +75,7 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
     Modal.confirm({
       title,
       content,
-      onOk: () =>
-        void showResult(applyTenantBillingAction(tenant.id, action), success),
+      onOk: () => void showResult(applyTenantBillingAction(tenant.id, action), success),
     });
   };
 
@@ -189,10 +174,7 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
           </DataTableRowActionButton>
           <DataTableRowActionButton
             onClick={() =>
-              showResult(
-                applyTenantBillingAction(tenant.id, "export_statement"),
-                "对账单已导出",
-              )
+              showResult(applyTenantBillingAction(tenant.id, "export_statement"), "对账单已导出")
             }
           >
             导出对账单

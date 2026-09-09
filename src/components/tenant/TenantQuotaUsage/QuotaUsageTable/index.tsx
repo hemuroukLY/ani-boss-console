@@ -98,22 +98,18 @@ export function QuotaUsageTable({ tenant }: QuotaUsageTableProps) {
           {
             title: "当前用量",
             render: (_, record: QuotaRow) =>
-              record.usage === null
-                ? "-"
-                : formatQuotaValue(record.usage, record.usageUnit),
+              record.usage === null ? "-" : formatQuotaValue(record.usage, record.usageUnit),
           },
           {
             title: "配额上限",
-            render: (_, record: QuotaRow) =>
-              formatQuotaValue(record.limit, record.limitUnit),
+            render: (_, record: QuotaRow) => formatQuotaValue(record.limit, record.limitUnit),
           },
           {
             title: "使用率",
             width: 220,
             render: (_, record: QuotaRow) => {
               const percent = getUsagePercent(record.usage, record.limit);
-              if (percent === null || record.usageUnit !== record.limitUnit)
-                return "-";
+              if (percent === null || record.usageUnit !== record.limitUnit) return "-";
               return (
                 <div className="flex items-center gap-3">
                   <Progress
@@ -122,9 +118,7 @@ export function QuotaUsageTable({ tenant }: QuotaUsageTableProps) {
                     status={percent > 100 ? "error" : "normal"}
                     className="min-w-28 flex-1"
                   />
-                  <span className="w-14 text-right tabular-nums">
-                    {percent}%
-                  </span>
+                  <span className="w-14 text-right tabular-nums">{percent}%</span>
                 </div>
               );
             },

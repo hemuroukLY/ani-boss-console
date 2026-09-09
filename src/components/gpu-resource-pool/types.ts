@@ -1,8 +1,4 @@
-export type GpuInventoryStatus =
-  | "available"
-  | "in_use"
-  | "fault"
-  | "maintenance";
+export type GpuInventoryStatus = "available" | "in_use" | "fault" | "maintenance";
 
 export interface ApiRuntimeProfile {
   mode: string;

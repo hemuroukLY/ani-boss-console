@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Message } from "@arco-design/web-react";
-import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant } from "@/components/tenant/model";
 import { ArrearsPolicyModal } from "./ArrearsPolicyModal";
 import { ConvertTrialModal } from "./ConvertTrialModal";
@@ -26,18 +26,12 @@ export function TenantLifecycle({ tenant }: TenantLifecycleProps) {
   const [convertPlanCode, setConvertPlanCode] = useState("std");
   const [policyModalVisible, setPolicyModalVisible] = useState(false);
   const [graceDays, setGraceDays] = useState(tenant.arrearsPolicy.graceDays);
-  const [autoSuspend, setAutoSuspend] = useState(
-    tenant.arrearsPolicy.autoSuspend,
-  );
+  const [autoSuspend, setAutoSuspend] = useState(tenant.arrearsPolicy.autoSuspend);
   const [emailNotification, setEmailNotification] = useState(
     tenant.arrearsPolicy.emailNotification,
   );
 
-  const showResult = (result: {
-    ok: boolean;
-    reason?: string;
-    message?: string;
-  }) => {
+  const showResult = (result: { ok: boolean; reason?: string; message?: string }) => {
     if (result.ok) {
       Message.success(result.message || "操作成功");
       return true;
@@ -60,11 +54,7 @@ export function TenantLifecycle({ tenant }: TenantLifecycleProps) {
   };
 
   const confirmResume = () => {
-    if (
-      showResult(
-        applyTenantLifecycleAction(tenant.id, "resume", { force: forceResume }),
-      )
-    ) {
+    if (showResult(applyTenantLifecycleAction(tenant.id, "resume", { force: forceResume }))) {
       setResumeModalVisible(false);
       setForceResume(false);
     }
@@ -128,17 +118,13 @@ export function TenantLifecycle({ tenant }: TenantLifecycleProps) {
           setDisableReason("");
           setDisableModalVisible(true);
         }}
-        onExtendTrial={() =>
-          showResult(applyTenantLifecycleAction(tenant.id, "extend_trial"))
-        }
+        onExtendTrial={() => showResult(applyTenantLifecycleAction(tenant.id, "extend_trial"))}
         onOpenConvert={() => {
           setConvertPlanCode("std");
           setConvertModalVisible(true);
         }}
         onSimulateTrialExpiry={() =>
-          showResult(
-            applyTenantLifecycleAction(tenant.id, "simulate_trial_expiry"),
-          )
+          showResult(applyTenantLifecycleAction(tenant.id, "simulate_trial_expiry"))
         }
         onOpenPolicy={() => {
           setGraceDays(tenant.arrearsPolicy.graceDays);

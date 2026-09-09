@@ -1,7 +1,4 @@
-import {
-  Menu,
-  Tag,
-} from "@arco-design/web-react";
+import { Menu, Tag } from "@arco-design/web-react";
 import {
   DataTable,
   DataTableRowActionButton,
@@ -9,10 +6,7 @@ import {
   ListRowMore,
 } from "@/components/common";
 import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
-import {
-  tenantAdminStatusMeta,
-  type TenantAdmin,
-} from "@/components/tenant/model";
+import { tenantAdminStatusMeta, type TenantAdmin } from "@/components/tenant/model";
 
 interface AdministratorTableProps {
   admins: TenantAdmin[];
@@ -108,9 +102,7 @@ export function AdministratorTable({
           fixed: "left",
           render: (_, admin: TenantAdmin) => (
             <div>
-              <div className="font-medium">
-                {admin.displayName || admin.name}
-              </div>
+              <div className="font-medium">{admin.displayName || admin.name}</div>
               <div className="mt-1 text-xs text-gray-500">{admin.email}</div>
             </div>
           ),

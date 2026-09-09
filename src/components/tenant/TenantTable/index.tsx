@@ -1,11 +1,4 @@
-import {
-  Link,
-  Menu,
-  Modal,
-  Popconfirm,
-  Tag,
-  Typography,
-} from "@arco-design/web-react";
+import { Link, Menu, Modal, Popconfirm, Tag, Typography } from "@arco-design/web-react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ListDataTable,
@@ -14,10 +7,7 @@ import {
   DataTableRowActions,
   ListRowMore,
 } from "@/components/common";
-import {
-  tenantStatusMeta,
-  type Tenant,
-} from "@/components/tenant/model";
+import { tenantStatusMeta, type Tenant } from "@/components/tenant/model";
 
 interface TenantTableProps {
   data: Tenant[];
@@ -116,9 +106,7 @@ export function TenantTable({
           >
             <Menu.Item key="quota">配额</Menu.Item>
             <Menu.Item key="admins">管理员</Menu.Item>
-            {tenant.status !== "disabled" ? (
-              <Menu.Item key="disable">禁用</Menu.Item>
-            ) : null}
+            {tenant.status !== "disabled" ? <Menu.Item key="disable">禁用</Menu.Item> : null}
           </Menu>
         );
 

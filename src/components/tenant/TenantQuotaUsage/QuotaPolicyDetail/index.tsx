@@ -21,11 +21,8 @@ import {
   type DetailTab,
   type ListColumn,
 } from "@/components/common";
-import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
-import type {
-  Tenant,
-  TenantQuotaLimits,
-} from "@/components/tenant/model";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
+import type { Tenant, TenantQuotaLimits } from "@/components/tenant/model";
 
 const quotaLimitLabels: Array<[keyof TenantQuotaLimits, string]> = [
   ["gpuHours", "GPU-Hours"],
@@ -75,9 +72,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
     );
   }
 
-  const boundTenants = tenants.filter(
-    (tenant) => tenant.planCode === quotaPackage.planCode,
-  );
+  const boundTenants = tenants.filter((tenant) => tenant.planCode === quotaPackage.planCode);
   const status = quotaStatusMeta[quotaPackage.status];
   const description =
     quotaPackage.description ??
@@ -213,10 +208,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
               type="primary"
               disabled={quotaPackage.status !== "enabled"}
               onClick={() => {
-                setTargetTenantId(
-                  tenants.find((tenant) => tenant.status !== "disabled")?.id ??
-                    "",
-                );
+                setTargetTenantId(tenants.find((tenant) => tenant.status !== "disabled")?.id ?? "");
                 setAssignVisible(true);
               }}
             >
@@ -250,9 +242,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
             data={[
               ...tenants.flatMap((tenant) =>
                 tenant.operations
-                  .filter((operation) =>
-                    operation.message.includes(quotaPackage.name),
-                  )
+                  .filter((operation) => operation.message.includes(quotaPackage.name))
                   .map((operation) => ({
                     ...operation,
                     operation: "分配/改绑套餐",

@@ -26,8 +26,7 @@ export function PlatformLogsPage() {
     const query = keyword.trim().toLowerCase();
     return platformLogs.filter((log) => {
       const matchesKeyword =
-        !query ||
-        `${log.message} ${log.requestId}`.toLowerCase().includes(query);
+        !query || `${log.message} ${log.requestId}`.toLowerCase().includes(query);
       return (
         (service === "all" || log.service === service) &&
         (level === "all" || log.level === level) &&
@@ -44,9 +43,7 @@ export function PlatformLogsPage() {
       render: (_, log) => {
         const meta = levelMeta[log.level];
         return (
-          <span
-            className={`inline-flex rounded px-2 py-0.5 text-xs ${meta.className}`}
-          >
+          <span className={`inline-flex rounded px-2 py-0.5 text-xs ${meta.className}`}>
             {meta.label}
           </span>
         );
@@ -56,9 +53,7 @@ export function PlatformLogsPage() {
       title: "服务",
       dataIndex: "service",
       width: 160,
-      render: (_, log) => (
-        <DataTableNameCell name={log.service} secondary={log.id} />
-      ),
+      render: (_, log) => <DataTableNameCell name={log.service} secondary={log.id} />,
     },
     {
       title: "request_id",
@@ -79,16 +74,12 @@ export function PlatformLogsPage() {
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
-              <div className="text-base font-semibold text-gray-900">
-                平台日志检索
-              </div>
+              <div className="text-base font-semibold text-gray-900">平台日志检索</div>
               <div className="mt-1 text-xs text-gray-500">
                 当前为静态样本；时间范围、实时查询和日志下载待接口接入后开放。
               </div>
             </div>
-            <span className="text-xs text-gray-500">
-              共 {filteredLogs.length} 条
-            </span>
+            <span className="text-xs text-gray-500">共 {filteredLogs.length} 条</span>
           </div>
         }
         toolbar={

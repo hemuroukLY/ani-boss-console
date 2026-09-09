@@ -43,10 +43,7 @@ interface DataTableNameCellProps {
   secondary: ReactNode;
 }
 
-export function DataTableNameCell({
-  name,
-  secondary,
-}: DataTableNameCellProps) {
+export function DataTableNameCell({ name, secondary }: DataTableNameCellProps) {
   return (
     <div className={styles.listNameCell}>
       <span className={styles.listName}>{name}</span>
@@ -60,13 +57,7 @@ export const DataTableRowActionButton = forwardRef<
   ButtonProps & { children: ReactNode }
 >(function DataTableRowActionButton({ children, ...buttonProps }, ref) {
   return (
-    <Button
-      ref={ref}
-      type="text"
-      size="small"
-      {...buttonProps}
-      className={styles.rowActionButton}
-    >
+    <Button ref={ref} type="text" size="small" {...buttonProps} className={styles.rowActionButton}>
       {children}
     </Button>
   );

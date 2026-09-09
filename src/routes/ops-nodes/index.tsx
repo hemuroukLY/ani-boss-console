@@ -101,190 +101,174 @@ function formatNow() {
 }
 
 export const Route = createFileRoute("/ops-nodes/")({
-  component: NodeStatusRoute,
-});
+  component: function NodeStatusRoute() {
+    const [nodes, setNodes] = useState(initialNodes);
+    const [region, setRegion] = useState("all");
+    const [pool, setPool] = useState("all");
+    const [status, setStatus] = useState<"all" | NodeStatus>("all");
+    const [keyword, setKeyword] = useState("");
 
-function NodeStatusRoute() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [region, setRegion] = useState("all");
-  const [pool, setPool] = useState("all");
-  const [status, setStatus] = useState<"all" | NodeStatus>("all");
-  const [keyword, setKeyword] = useState("");
+    const regions = useMemo(() => [...new Set(nodes.map((node) => node.region))], [nodes]);
+    const pools = useMemo(() => [...new Set(nodes.map((node) => node.pool))], [nodes]);
+    const filteredNodes = useMemo(() => {
+      const query = keyword.trim().toLowerCase();
+      return nodes.filter(
+        (node) =>
+          (region === "all" || node.region === region) &&
+          (pool === "all" || node.pool === pool) &&
+          (status === "all" || node.status === status) &&
+          (!query ||
+            [node.name, node.id, node.pool, node.region].some((value) =>
+              value.toLowerCase().includes(query),
+            )),
+      );
+    }, [keyword, nodes, pool, region, status]);
 
-  const regions = useMemo(
-    () => [...new Set(nodes.map((node) => node.region))],
-    [nodes],
-  );
-  const pools = useMemo(
-    () => [...new Set(nodes.map((node) => node.pool))],
-    [nodes],
-  );
-  const filteredNodes = useMemo(() => {
-    const query = keyword.trim().toLowerCase();
-    return nodes.filter(
-      (node) =>
-        (region === "all" || node.region === region) &&
-        (pool === "all" || node.pool === pool) &&
-        (status === "all" || node.status === status) &&
-        (!query ||
-          [node.name, node.id, node.pool, node.region].some((value) =>
-            value.toLowerCase().includes(query),
-          )),
-    );
-  }, [keyword, nodes, pool, region, status]);
+    const refreshNodes = () => {
+      const heartbeat = formatNow();
+      setNodes((current) =>
+        current.map((node) => (node.status === "Ready" ? { ...node, heartbeat } : node)),
+      );
+      Message.success("节点状态已刷新");
+    };
 
-  const refreshNodes = () => {
-    const heartbeat = formatNow();
-    setNodes((current) =>
-      current.map((node) =>
-        node.status === "Ready" ? { ...node, heartbeat } : node,
-      ),
-    );
-    Message.success("节点状态已刷新");
-  };
+    const columns: ListColumn<InfrastructureNode>[] = [
+      {
+        title: "节点 / ID",
+        dataIndex: "name",
+        width: 190,
+        fixed: "left",
+        render: (_, node) => <DataTableNameCell name={node.name} secondary={node.id} />,
+      },
+      {
+        title: "状态",
+        dataIndex: "status",
+        width: 100,
+        render: (value: NodeStatus) => (
+          <span
+            className={clsx(
+              "inline-flex rounded px-2 py-0.5 text-xs font-medium",
+              value === "Ready" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700",
+            )}
+          >
+            {value}
+          </span>
+        ),
+      },
+      { title: "区域", dataIndex: "region", width: 130 },
+      { title: "资源池", dataIndex: "pool", width: 140 },
+      {
+        title: "GPU 可调度 / 总量",
+        width: 160,
+        render: (_, node) => `${node.gpuSchedulable} / ${node.gpuTotal}`,
+      },
+      {
+        title: "CPU / 内存",
+        width: 140,
+        render: (_, node) => `${node.cpu} / ${node.memory}`,
+      },
+      { title: "工作负载", dataIndex: "workloads", width: 100 },
+      {
+        title: "标签",
+        dataIndex: "labels",
+        width: 220,
+        ellipsis: true,
+      },
+      {
+        title: "污点",
+        dataIndex: "taints",
+        width: 260,
+        ellipsis: true,
+      },
+      { title: "最后心跳", dataIndex: "heartbeat", width: 160 },
+    ];
 
-  const columns: ListColumn<InfrastructureNode>[] = [
-    {
-      title: "节点 / ID",
-      dataIndex: "name",
-      width: 190,
-      fixed: "left",
-      render: (_, node) => (
-        <DataTableNameCell name={node.name} secondary={node.id} />
-      ),
-    },
-    {
-      title: "状态",
-      dataIndex: "status",
-      width: 100,
-      render: (value: NodeStatus) => (
-        <span
-          className={clsx(
-            "inline-flex rounded px-2 py-0.5 text-xs font-medium",
-            value === "Ready"
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700",
-          )}
-        >
-          {value}
-        </span>
-      ),
-    },
-    { title: "区域", dataIndex: "region", width: 130 },
-    { title: "资源池", dataIndex: "pool", width: 140 },
-    {
-      title: "GPU 可调度 / 总量",
-      width: 160,
-      render: (_, node) => `${node.gpuSchedulable} / ${node.gpuTotal}`,
-    },
-    {
-      title: "CPU / 内存",
-      width: 140,
-      render: (_, node) => `${node.cpu} / ${node.memory}`,
-    },
-    { title: "工作负载", dataIndex: "workloads", width: 100 },
-    {
-      title: "标签",
-      dataIndex: "labels",
-      width: 220,
-      ellipsis: true,
-    },
-    {
-      title: "污点",
-      dataIndex: "taints",
-      width: 260,
-      ellipsis: true,
-    },
-    { title: "最后心跳", dataIndex: "heartbeat", width: 160 },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <ListPageHeader
-        title="节点状态"
-        subtitle="查看计算节点健康状态、资源规格、调度能力和最后心跳。"
-        extra={
-          <Button type="primary" icon={<IconRefresh />} onClick={refreshNodes}>
-            刷新状态
-          </Button>
-        }
-      />
-
-      <section className="grid grid-cols-3 gap-3.5 max-[900px]:grid-cols-1">
-        <Metric label="全部" value="8" />
-        <Metric label="Ready" value="5" />
-        <Metric label="NotReady" value="3" />
-      </section>
-
-      <ListPageFrame
-        header={
-          <div className="flex items-center justify-between px-5 pt-5">
-            <div>
-              <div className="text-base font-semibold text-gray-900">
-                节点列表
-              </div>
-              <div className="mt-1 text-xs text-gray-500">
-                当前为前端演示状态，尚未接入 ANI 节点接口。
-              </div>
-            </div>
-            <span className="text-xs text-gray-500">
-              显示 {filteredNodes.length} / {nodes.length} 个节点
-            </span>
-          </div>
-        }
-        toolbar={
-          <ListToolbar
-            filters={
-              <div className="flex flex-wrap items-center gap-3">
-                <Select
-                  value={region}
-                  onChange={setRegion}
-                  style={{ width: 150 }}
-                  options={[
-                    { label: "全部区域", value: "all" },
-                    ...regions.map((value) => ({ label: value, value })),
-                  ]}
-                />
-                <Select
-                  value={pool}
-                  onChange={setPool}
-                  style={{ width: 160 }}
-                  options={[
-                    { label: "全部资源池", value: "all" },
-                    ...pools.map((value) => ({ label: value, value })),
-                  ]}
-                />
-                <Select
-                  value={status}
-                  onChange={setStatus}
-                  style={{ width: 140 }}
-                  options={[
-                    { label: "全部状态", value: "all" },
-                    { label: "Ready", value: "Ready" },
-                    { label: "NotReady", value: "NotReady" },
-                  ]}
-                />
-                <Input.Search
-                  allowClear
-                  value={keyword}
-                  onChange={setKeyword}
-                  placeholder="搜索节点、ID、资源池或区域"
-                  style={{ width: 260 }}
-                />
-              </div>
-            }
-          />
-        }
-      >
-        <ListDataTable
-          rowKey="id"
-          columns={columns}
-          data={filteredNodes}
-          pagination={false}
-          scroll={{ x: 1640 }}
-          emptyText="没有符合筛选条件的节点"
+    return (
+      <div className="space-y-4">
+        <ListPageHeader
+          title="节点状态"
+          subtitle="查看计算节点健康状态、资源规格、调度能力和最后心跳。"
+          extra={
+            <Button type="primary" icon={<IconRefresh />} onClick={refreshNodes}>
+              刷新状态
+            </Button>
+          }
         />
-      </ListPageFrame>
-    </div>
-  );
-}
+
+        <section className="grid grid-cols-3 gap-3.5 max-[900px]:grid-cols-1">
+          <Metric label="全部" value="8" />
+          <Metric label="Ready" value="5" />
+          <Metric label="NotReady" value="3" />
+        </section>
+
+        <ListPageFrame
+          header={
+            <div className="flex items-center justify-between px-5 pt-5">
+              <div>
+                <div className="text-base font-semibold text-gray-900">节点列表</div>
+                <div className="mt-1 text-xs text-gray-500">
+                  当前为前端演示状态，尚未接入 ANI 节点接口。
+                </div>
+              </div>
+              <span className="text-xs text-gray-500">
+                显示 {filteredNodes.length} / {nodes.length} 个节点
+              </span>
+            </div>
+          }
+          toolbar={
+            <ListToolbar
+              filters={
+                <div className="flex flex-wrap items-center gap-3">
+                  <Select
+                    value={region}
+                    onChange={setRegion}
+                    style={{ width: 150 }}
+                    options={[
+                      { label: "全部区域", value: "all" },
+                      ...regions.map((value) => ({ label: value, value })),
+                    ]}
+                  />
+                  <Select
+                    value={pool}
+                    onChange={setPool}
+                    style={{ width: 160 }}
+                    options={[
+                      { label: "全部资源池", value: "all" },
+                      ...pools.map((value) => ({ label: value, value })),
+                    ]}
+                  />
+                  <Select
+                    value={status}
+                    onChange={setStatus}
+                    style={{ width: 140 }}
+                    options={[
+                      { label: "全部状态", value: "all" },
+                      { label: "Ready", value: "Ready" },
+                      { label: "NotReady", value: "NotReady" },
+                    ]}
+                  />
+                  <Input.Search
+                    allowClear
+                    value={keyword}
+                    onChange={setKeyword}
+                    placeholder="搜索节点、ID、资源池或区域"
+                    style={{ width: 260 }}
+                  />
+                </div>
+              }
+            />
+          }
+        >
+          <ListDataTable
+            rowKey="id"
+            columns={columns}
+            data={filteredNodes}
+            pagination={false}
+            scroll={{ x: 1640 }}
+            emptyText="没有符合筛选条件的节点"
+          />
+        </ListPageFrame>
+      </div>
+    );
+  },
+});

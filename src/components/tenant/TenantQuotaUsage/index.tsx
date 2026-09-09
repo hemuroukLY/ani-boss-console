@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { Message, Modal } from "@arco-design/web-react";
-import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
-import type {
-  Tenant,
-  TenantQuotaRequest,
-} from "@/components/tenant/model";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
+import type { Tenant, TenantQuotaRequest } from "@/components/tenant/model";
 import { CreateQuotaRequestModal } from "./CreateQuotaRequestModal";
 import { formatNumber } from "./formatters";
 import { QuotaOverview } from "./QuotaOverview";
@@ -27,16 +24,11 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
   const [packageModalVisible, setPackageModalVisible] = useState(false);
   const [selectedPlanCode, setSelectedPlanCode] = useState(tenant.planCode);
   const [requestModalVisible, setRequestModalVisible] = useState(false);
-  const [requestedGpuHours, setRequestedGpuHours] = useState(
-    tenant.quotaLimits.gpuHours,
-  );
-  const [requestedStorageGi, setRequestedStorageGi] = useState(
-    tenant.quotaLimits.storageGi,
-  );
+  const [requestedGpuHours, setRequestedGpuHours] = useState(tenant.quotaLimits.gpuHours);
+  const [requestedStorageGi, setRequestedStorageGi] = useState(tenant.quotaLimits.storageGi);
   const [requestReason, setRequestReason] = useState("");
   const [requestBy, setRequestBy] = useState(tenant.contact);
-  const [rejectingRequest, setRejectingRequest] =
-    useState<TenantQuotaRequest>();
+  const [rejectingRequest, setRejectingRequest] = useState<TenantQuotaRequest>();
   const [rejectReason, setRejectReason] = useState("");
 
   const confirmPackageChange = () => {
@@ -98,12 +90,7 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
       return;
     }
     if (
-      resolveTenantQuotaRequest(
-        tenant.id,
-        rejectingRequest.id,
-        "rejected",
-        rejectReason.trim(),
-      )
+      resolveTenantQuotaRequest(tenant.id, rejectingRequest.id, "rejected", rejectReason.trim())
     ) {
       setRejectingRequest(undefined);
       setRejectReason("");

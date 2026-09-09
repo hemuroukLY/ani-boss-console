@@ -9,11 +9,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
-import {
-  percentOf,
-  registryTenantQuotas,
-  type RegistryTenantQuota,
-} from "../model";
+import { percentOf, registryTenantQuotas, type RegistryTenantQuota } from "../model";
 
 type QuotaStatus = "normal" | "attention" | "full" | "pending";
 
@@ -40,8 +36,7 @@ export function RegistryQuotaPage() {
     const query = keyword.trim().toLowerCase();
     return registryTenantQuotas.filter((quota) => {
       const matchesStatus = status === "all" || quotaStatus(quota) === status;
-      const matchesKeyword =
-        !query || `${quota.name} ${quota.code}`.toLowerCase().includes(query);
+      const matchesKeyword = !query || `${quota.name} ${quota.code}`.toLowerCase().includes(query);
       return matchesStatus && matchesKeyword;
     });
   }, [keyword, status]);
@@ -49,17 +44,9 @@ export function RegistryQuotaPage() {
   const fullCount = registryTenantQuotas.filter(
     (quota) => percentOf(quota.usedGi, quota.maxGi) >= 100,
   ).length;
-  const pendingCount = registryTenantQuotas.filter(
-    (quota) => quota.pendingExpandGi,
-  ).length;
-  const totalUsed = registryTenantQuotas.reduce(
-    (total, quota) => total + quota.usedGi,
-    0,
-  );
-  const totalQuota = registryTenantQuotas.reduce(
-    (total, quota) => total + quota.maxGi,
-    0,
-  );
+  const pendingCount = registryTenantQuotas.filter((quota) => quota.pendingExpandGi).length;
+  const totalUsed = registryTenantQuotas.reduce((total, quota) => total + quota.usedGi, 0);
+  const totalQuota = registryTenantQuotas.reduce((total, quota) => total + quota.maxGi, 0);
 
   const columns: ListColumn<RegistryTenantQuota>[] = [
     {
@@ -67,9 +54,7 @@ export function RegistryQuotaPage() {
       dataIndex: "name",
       width: 220,
       fixed: "left",
-      render: (_, quota) => (
-        <DataTableNameCell name={quota.name} secondary={quota.code} />
-      ),
+      render: (_, quota) => <DataTableNameCell name={quota.name} secondary={quota.code} />,
     },
     {
       title: "状态",
@@ -77,9 +62,7 @@ export function RegistryQuotaPage() {
       render: (_, quota) => {
         const meta = statusMeta[quotaStatus(quota)];
         return (
-          <span
-            className={`inline-flex rounded px-2 py-0.5 text-xs ${meta.className}`}
-          >
+          <span className={`inline-flex rounded px-2 py-0.5 text-xs ${meta.className}`}>
             {meta.label}
           </span>
         );
@@ -95,9 +78,7 @@ export function RegistryQuotaPage() {
             <Progress
               percent={percent}
               showText={false}
-              status={
-                percent >= 100 ? "error" : percent >= 80 ? "warning" : "normal"
-              }
+              status={percent >= 100 ? "error" : percent >= 80 ? "warning" : "normal"}
               className="min-w-36 flex-1"
             />
             <span className="w-24 text-right text-xs text-gray-600">
@@ -124,8 +105,7 @@ export function RegistryQuotaPage() {
     {
       title: "剩余容量",
       width: 120,
-      render: (_, quota) =>
-        `${Math.max(0, quota.maxGi - quota.usedGi).toFixed(1)} Gi`,
+      render: (_, quota) => `${Math.max(0, quota.maxGi - quota.usedGi).toFixed(1)} Gi`,
     },
     {
       title: "操作",
@@ -147,21 +127,13 @@ export function RegistryQuotaPage() {
       />
 
       <section className="grid grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
-        <Metric
-          label="租户数"
-          value={String(registryTenantQuotas.length)}
-          hint="全平台"
-        />
+        <Metric label="租户数" value={String(registryTenantQuotas.length)} hint="全平台" />
         <Metric
           label="平台镜像用量"
           value={`${totalUsed.toFixed(1)} Gi`}
           hint={`总配额 ${totalQuota} Gi`}
         />
-        <Metric
-          label="已满租户"
-          value={String(fullCount)}
-          hint="推送将被拦截"
-        />
+        <Metric label="已满租户" value={String(fullCount)} hint="推送将被拦截" />
         <Metric label="待审批" value={String(pendingCount)} hint="扩容申请" />
       </section>
 
@@ -169,17 +141,13 @@ export function RegistryQuotaPage() {
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
-              <div className="text-base font-semibold text-gray-900">
-                租户镜像配额
-              </div>
+              <div className="text-base font-semibold text-gray-900">租户镜像配额</div>
               <div className="mt-1 text-xs text-gray-500">
-                镜像 Gi
-                与算力配额、租户存储配额相互独立；调整能力待接口接入后开放。
+                镜像 Gi 与算力配额、租户存储配额相互独立；调整能力待接口接入后开放。
               </div>
             </div>
             <span className="text-xs text-gray-500">
-              显示 {filteredQuotas.length} / {registryTenantQuotas.length}{" "}
-              个租户
+              显示 {filteredQuotas.length} / {registryTenantQuotas.length} 个租户
             </span>
           </div>
         }

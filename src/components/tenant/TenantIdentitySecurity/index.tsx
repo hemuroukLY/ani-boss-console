@@ -1,17 +1,6 @@
-import {
-  Button,
-  Message,
-  Modal,
-  Space,
-  Tag,
-  Typography,
-} from "@arco-design/web-react";
+import { Button, Message, Modal, Space, Tag, Typography } from "@arco-design/web-react";
 import { useState } from "react";
-import {
-  tenantRegions,
-  type Tenant,
-  type TenantSsoStatus,
-} from "@/components/tenant/model";
+import { tenantRegions, type Tenant, type TenantSsoStatus } from "@/components/tenant/model";
 import { RegionChangeModal } from "./RegionChangeModal";
 import { SsoConfigurationModal } from "./SsoConfigurationModal";
 
@@ -36,10 +25,7 @@ function formatCurrentTime() {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function TenantIdentitySecurity({
-  tenant,
-  onUpdate,
-}: TenantIdentitySecurityProps) {
+export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecurityProps) {
   const [ssoVisible, setSsoVisible] = useState(false);
   const [regionVisible, setRegionVisible] = useState(false);
   const [ssoEnabled, setSsoEnabled] = useState(tenant.ssoEnabled);
@@ -52,9 +38,7 @@ export function TenantIdentitySecurity({
 
   const openSsoModal = () => {
     setSsoEnabled(tenant.ssoEnabled);
-    setSsoProvider(
-      tenant.ssoProvider === "-" ? "Azure AD" : tenant.ssoProvider,
-    );
+    setSsoProvider(tenant.ssoProvider === "-" ? "Azure AD" : tenant.ssoProvider);
     setSsoStatus(tenant.ssoStatus);
     setSsoLastTestAt(tenant.ssoLastTestAt);
     setSsoVisible(true);
@@ -129,10 +113,7 @@ export function TenantIdentitySecurity({
               <Typography.Text type="secondary" className="block text-xs">
                 企业 SSO
               </Typography.Text>
-              <Tag
-                color={tenant.ssoEnabled ? "green" : "gray"}
-                className="mt-1"
-              >
+              <Tag color={tenant.ssoEnabled ? "green" : "gray"} className="mt-1">
                 {tenant.ssoEnabled ? "启用" : "关闭"}
               </Tag>
             </div>

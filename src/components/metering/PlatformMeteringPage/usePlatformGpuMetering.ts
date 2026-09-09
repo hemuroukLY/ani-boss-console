@@ -10,9 +10,7 @@ import type { MeteringTenantRow } from "../model";
 const GPU_SECONDS_PER_HOUR = 3600;
 
 function startOfUtcDay(value: Date) {
-  return new Date(
-    Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()),
-  );
+  return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
 }
 
 function addUtcDays(value: Date, days: number) {
@@ -22,9 +20,7 @@ function addUtcDays(value: Date, days: number) {
 }
 
 function getMeteringRanges(reference: Date) {
-  const currentStart = new Date(
-    Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1),
-  );
+  const currentStart = new Date(Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1));
   const previousStart = new Date(
     Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth() - 1, 1),
   );
@@ -72,10 +68,7 @@ function sumTenantItems(items: PlatformMeteringUsageItem[]) {
   const result = new Map<string, number>();
   items.forEach((item) => {
     if (!item.tenantId) return;
-    result.set(
-      item.tenantId,
-      (result.get(item.tenantId) || 0) + toGpuHours(item.totalQuantity),
-    );
+    result.set(item.tenantId, (result.get(item.tenantId) || 0) + toGpuHours(item.totalQuantity));
   });
   return result;
 }
@@ -95,20 +88,13 @@ function buildTenantRows(
         id,
         current: currentUsage,
         previous: previousUsage,
-        trend:
-          currentUsage > previousUsage
-            ? "up"
-            : currentUsage < previousUsage
-              ? "down"
-              : "flat",
+        trend: currentUsage > previousUsage ? "up" : currentUsage < previousUsage ? "down" : "flat",
       };
     },
   );
 }
 
-export function usePlatformGpuMetering(
-  resourceType?: PlatformMeteringResourceType,
-) {
+export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceType) {
   const ranges = useMemo(() => getMeteringRanges(new Date()), []);
   const query = useQuery({
     queryKey: ["platform", "metering-dashboard", resourceType, ranges],
@@ -116,33 +102,32 @@ export function usePlatformGpuMetering(
     queryFn: async () => {
       if (!resourceType) throw new Error("当前计量维度尚未接入");
       const common = { resourceType } as const;
-      const [currentTenants, previousTenants, currentDays, trendDays] =
-        await Promise.all([
-          fetchPlatformMeteringUsage({
-            ...common,
-            startTime: ranges.currentStart,
-            endTime: ranges.currentEnd,
-            groupBy: "tenant_id",
-          }),
-          fetchPlatformMeteringUsage({
-            ...common,
-            startTime: ranges.previousStart,
-            endTime: ranges.previousEnd,
-            groupBy: "tenant_id",
-          }),
-          fetchPlatformMeteringUsage({
-            ...common,
-            startTime: ranges.currentStart,
-            endTime: ranges.currentEnd,
-            groupBy: "day",
-          }),
-          fetchPlatformMeteringUsage({
-            ...common,
-            startTime: ranges.trendStart,
-            endTime: ranges.currentEnd,
-            groupBy: "day",
-          }),
-        ]);
+      const [currentTenants, previousTenants, currentDays, trendDays] = await Promise.all([
+        fetchPlatformMeteringUsage({
+          ...common,
+          startTime: ranges.currentStart,
+          endTime: ranges.currentEnd,
+          groupBy: "tenant_id",
+        }),
+        fetchPlatformMeteringUsage({
+          ...common,
+          startTime: ranges.previousStart,
+          endTime: ranges.previousEnd,
+          groupBy: "tenant_id",
+        }),
+        fetchPlatformMeteringUsage({
+          ...common,
+          startTime: ranges.currentStart,
+          endTime: ranges.currentEnd,
+          groupBy: "day",
+        }),
+        fetchPlatformMeteringUsage({
+          ...common,
+          startTime: ranges.trendStart,
+          endTime: ranges.currentEnd,
+          groupBy: "day",
+        }),
+      ]);
 
       return { currentTenants, previousTenants, currentDays, trendDays };
     },
@@ -151,24 +136,12 @@ export function usePlatformGpuMetering(
 
   const view = useMemo(() => {
     if (!query.data) return undefined;
-    const { currentTenants, previousTenants, currentDays, trendDays } =
-      query.data;
-    const tenantRows = buildTenantRows(
-      currentTenants.items,
-      previousTenants.items,
-    );
-    const currentTotal = tenantRows.reduce(
-      (total, item) => total + item.current,
-      0,
-    );
-    const previousTotal = tenantRows.reduce(
-      (total, item) => total + item.previous,
-      0,
-    );
+    const { currentTenants, previousTenants, currentDays, trendDays } = query.data;
+    const tenantRows = buildTenantRows(currentTenants.items, previousTenants.items);
+    const currentTotal = tenantRows.reduce((total, item) => total + item.current, 0);
+    const previousTotal = tenantRows.reduce((total, item) => total + item.previous, 0);
     const dailyUsage = sumByPeriod(currentDays.items);
-    const peak = Array.from(dailyUsage.entries()).sort(
-      (left, right) => right[1] - left[1],
-    )[0];
+    const peak = Array.from(dailyUsage.entries()).sort((left, right) => right[1] - left[1])[0];
     const trendUsage = sumByPeriod(trendDays.items);
     const trendStart = new Date(ranges.trendStart);
     const trendDates = Array.from({ length: 7 }, (_, index) =>

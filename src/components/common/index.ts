@@ -12,14 +12,7 @@ export type {
   DetailInfoCard,
   DetailTab,
 } from "./DetailPageFrame";
-export {
-  ListDataTable,
-  ListRowMore,
-} from "./ListDataTable";
+export { ListDataTable, ListRowMore } from "./ListDataTable";
 export type { ListDataTableProps } from "./ListDataTable";
-export {
-  ListPageFrame,
-  ListPageHeader,
-  ListToolbar,
-} from "./ListPageFrame";
+export { ListPageFrame, ListPageHeader, ListToolbar } from "./ListPageFrame";
 export { PagePlaceholder } from "./PagePlaceholder";

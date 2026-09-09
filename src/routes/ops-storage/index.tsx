@@ -109,214 +109,198 @@ function formatCapacity(valueGi: number) {
 }
 
 export const Route = createFileRoute("/ops-storage/")({
-  component: StorageInfrastructureRoute,
-});
+  component: function StorageInfrastructureRoute() {
+    const [type, setType] = useState<"all" | StorageType>("all");
+    const [status, setStatus] = useState<"all" | StorageStatus>("all");
+    const [region, setRegion] = useState("all");
+    const [keyword, setKeyword] = useState("");
 
-function StorageInfrastructureRoute() {
-  const [type, setType] = useState<"all" | StorageType>("all");
-  const [status, setStatus] = useState<"all" | StorageStatus>("all");
-  const [region, setRegion] = useState("all");
-  const [keyword, setKeyword] = useState("");
-
-  const regions = useMemo(
-    () => [...new Set(storageBackends.map((backend) => backend.region))],
-    [],
-  );
-  const filteredBackends = useMemo(() => {
-    const query = keyword.trim().toLowerCase();
-    return storageBackends.filter(
-      (backend) =>
-        (type === "all" || backend.type === type) &&
-        (status === "all" || backend.status === status) &&
-        (region === "all" || backend.region === region) &&
-        (!query ||
-          [backend.name, backend.note, backend.endpoint].some((value) =>
-            value.toLowerCase().includes(query),
-          )),
+    const regions = useMemo(
+      () => [...new Set(storageBackends.map((backend) => backend.region))],
+      [],
     );
-  }, [keyword, region, status, type]);
+    const filteredBackends = useMemo(() => {
+      const query = keyword.trim().toLowerCase();
+      return storageBackends.filter(
+        (backend) =>
+          (type === "all" || backend.type === type) &&
+          (status === "all" || backend.status === status) &&
+          (region === "all" || backend.region === region) &&
+          (!query ||
+            [backend.name, backend.note, backend.endpoint].some((value) =>
+              value.toLowerCase().includes(query),
+            )),
+      );
+    }, [keyword, region, status, type]);
 
-  const totalUsed = storageBackends.reduce(
-    (sum, backend) => sum + backend.usedGi,
-    0,
-  );
-  const totalCapacity = storageBackends.reduce(
-    (sum, backend) => sum + backend.totalGi,
-    0,
-  );
-  const healthyCount = storageBackends.filter(
-    (backend) => backend.status === "healthy",
-  ).length;
-  const degradedCount = storageBackends.filter(
-    (backend) => backend.status === "degraded",
-  ).length;
-  const utilization = Math.round((totalUsed / totalCapacity) * 100);
+    const totalUsed = storageBackends.reduce((sum, backend) => sum + backend.usedGi, 0);
+    const totalCapacity = storageBackends.reduce((sum, backend) => sum + backend.totalGi, 0);
+    const healthyCount = storageBackends.filter((backend) => backend.status === "healthy").length;
+    const degradedCount = storageBackends.filter((backend) => backend.status === "degraded").length;
+    const utilization = Math.round((totalUsed / totalCapacity) * 100);
 
-  const columns: ListColumn<StorageBackend>[] = [
-    {
-      title: "存储后端 / ID",
-      dataIndex: "name",
-      width: 220,
-      fixed: "left",
-      render: (_, backend) => (
-        <DataTableNameCell name={backend.name} secondary={backend.id} />
-      ),
-    },
-    {
-      title: "状态",
-      dataIndex: "status",
-      width: 90,
-      render: (value: StorageStatus) => (
-        <span
-          className={clsx(
-            "inline-flex rounded px-2 py-0.5 text-xs font-medium",
-            statusMeta[value].className,
-          )}
-        >
-          {statusMeta[value].label}
-        </span>
-      ),
-    },
-    { title: "类型", dataIndex: "type", width: 90 },
-    { title: "区域", dataIndex: "region", width: 130 },
-    {
-      title: "容量使用",
-      width: 210,
-      render: (_, backend) => {
-        const percent = Math.round((backend.usedGi / backend.totalGi) * 100);
-        return (
-          <div className="min-w-40">
-            <div className="mb-1 text-sm text-gray-700">
-              {formatCapacity(backend.usedGi)} / {formatCapacity(backend.totalGi)}
-            </div>
-            <Progress
-              percent={percent}
-              showText={false}
-              status={percent >= 85 ? "warning" : "normal"}
-            />
-          </div>
-        );
+    const columns: ListColumn<StorageBackend>[] = [
+      {
+        title: "存储后端 / ID",
+        dataIndex: "name",
+        width: 220,
+        fixed: "left",
+        render: (_, backend) => <DataTableNameCell name={backend.name} secondary={backend.id} />,
       },
-    },
-    { title: "租户数", dataIndex: "tenants", width: 90 },
-    { title: "版本", dataIndex: "version", width: 190 },
-    {
-      title: "副本 / 节点",
-      width: 150,
-      render: (_, backend) => `${backend.replicas} / ${backend.nodes}`,
-    },
-    {
-      title: "端点",
-      dataIndex: "endpoint",
-      width: 230,
-      ellipsis: true,
-    },
-    {
-      title: "说明",
-      dataIndex: "note",
-      width: 240,
-      ellipsis: true,
-    },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <ListPageHeader
-        title="存储基础设施"
-        subtitle="查看平台块、对象、文件和向量存储后端的健康与容量状态。"
-      />
-
-      <section className="grid grid-cols-4 gap-3.5 max-[1180px]:grid-cols-2">
-        <Metric
-          label="存储后端"
-          value={String(storageBackends.length)}
-          hint="块、对象、文件、向量"
-        />
-        <Metric label="健康" value={String(healthyCount)} hint="运行正常" />
-        <Metric label="降级" value={String(degradedCount)} hint="需要关注" />
-        <Metric
-          label="综合利用率"
-          value={`${utilization}%`}
-          hint={`${formatCapacity(totalUsed)} / ${formatCapacity(totalCapacity)}`}
-        />
-      </section>
-
-      <ListPageFrame
-        header={
-          <div className="flex items-center justify-between px-5 pt-5">
-            <div>
-              <div className="text-base font-semibold text-gray-900">
-                存储后端
+      {
+        title: "状态",
+        dataIndex: "status",
+        width: 90,
+        render: (value: StorageStatus) => (
+          <span
+            className={clsx(
+              "inline-flex rounded px-2 py-0.5 text-xs font-medium",
+              statusMeta[value].className,
+            )}
+          >
+            {statusMeta[value].label}
+          </span>
+        ),
+      },
+      { title: "类型", dataIndex: "type", width: 90 },
+      { title: "区域", dataIndex: "region", width: 130 },
+      {
+        title: "容量使用",
+        width: 210,
+        render: (_, backend) => {
+          const percent = Math.round((backend.usedGi / backend.totalGi) * 100);
+          return (
+            <div className="min-w-40">
+              <div className="mb-1 text-sm text-gray-700">
+                {formatCapacity(backend.usedGi)} / {formatCapacity(backend.totalGi)}
               </div>
-              <div className="mt-1 text-xs text-gray-500">
-                当前为前端展示数据，尚未接入 ANI 存储接口。
-              </div>
+              <Progress
+                percent={percent}
+                showText={false}
+                status={percent >= 85 ? "warning" : "normal"}
+              />
             </div>
-            <span className="text-xs text-gray-500">
-              显示 {filteredBackends.length} / {storageBackends.length} 个后端
-            </span>
-          </div>
-        }
-        toolbar={
-          <ListToolbar
-            filters={
-              <div className="flex flex-wrap items-center gap-3">
-                <Select
-                  value={type}
-                  onChange={setType}
-                  style={{ width: 130 }}
-                  options={[
-                    { label: "全部类型", value: "all" },
-                    { label: "块存储", value: "块" },
-                    { label: "对象存储", value: "对象" },
-                    { label: "文件存储", value: "文件" },
-                    { label: "向量存储", value: "向量" },
-                  ]}
-                />
-                <Select
-                  value={status}
-                  onChange={setStatus}
-                  style={{ width: 130 }}
-                  options={[
-                    { label: "全部状态", value: "all" },
-                    { label: "健康", value: "healthy" },
-                    { label: "降级", value: "degraded" },
-                    { label: "异常", value: "error" },
-                  ]}
-                />
-                <Select
-                  value={region}
-                  onChange={setRegion}
-                  style={{ width: 150 }}
-                  options={[
-                    { label: "全部区域", value: "all" },
-                    ...regions.map((value) => ({ label: value, value })),
-                  ]}
-                />
-                <Input.Search
-                  allowClear
-                  value={keyword}
-                  onChange={setKeyword}
-                  placeholder="搜索后端、端点或说明"
-                  style={{ width: 260 }}
-                />
-              </div>
-            }
-          />
-        }
-      >
-        <ListDataTable
-          rowKey="id"
-          columns={columns}
-          data={filteredBackends}
-          pagination={false}
-          scroll={{ x: 1650 }}
-          emptyText="没有符合筛选条件的存储后端"
-        />
-      </ListPageFrame>
+          );
+        },
+      },
+      { title: "租户数", dataIndex: "tenants", width: 90 },
+      { title: "版本", dataIndex: "version", width: 190 },
+      {
+        title: "副本 / 节点",
+        width: 150,
+        render: (_, backend) => `${backend.replicas} / ${backend.nodes}`,
+      },
+      {
+        title: "端点",
+        dataIndex: "endpoint",
+        width: 230,
+        ellipsis: true,
+      },
+      {
+        title: "说明",
+        dataIndex: "note",
+        width: 240,
+        ellipsis: true,
+      },
+    ];
 
-      <StorageClassOperations />
-      <RecentStorageEvents />
-    </div>
-  );
-}
+    return (
+      <div className="space-y-4">
+        <ListPageHeader
+          title="存储基础设施"
+          subtitle="查看平台块、对象、文件和向量存储后端的健康与容量状态。"
+        />
+
+        <section className="grid grid-cols-4 gap-3.5 max-[1180px]:grid-cols-2">
+          <Metric
+            label="存储后端"
+            value={String(storageBackends.length)}
+            hint="块、对象、文件、向量"
+          />
+          <Metric label="健康" value={String(healthyCount)} hint="运行正常" />
+          <Metric label="降级" value={String(degradedCount)} hint="需要关注" />
+          <Metric
+            label="综合利用率"
+            value={`${utilization}%`}
+            hint={`${formatCapacity(totalUsed)} / ${formatCapacity(totalCapacity)}`}
+          />
+        </section>
+
+        <ListPageFrame
+          header={
+            <div className="flex items-center justify-between px-5 pt-5">
+              <div>
+                <div className="text-base font-semibold text-gray-900">存储后端</div>
+                <div className="mt-1 text-xs text-gray-500">
+                  当前为前端展示数据，尚未接入 ANI 存储接口。
+                </div>
+              </div>
+              <span className="text-xs text-gray-500">
+                显示 {filteredBackends.length} / {storageBackends.length} 个后端
+              </span>
+            </div>
+          }
+          toolbar={
+            <ListToolbar
+              filters={
+                <div className="flex flex-wrap items-center gap-3">
+                  <Select
+                    value={type}
+                    onChange={setType}
+                    style={{ width: 130 }}
+                    options={[
+                      { label: "全部类型", value: "all" },
+                      { label: "块存储", value: "块" },
+                      { label: "对象存储", value: "对象" },
+                      { label: "文件存储", value: "文件" },
+                      { label: "向量存储", value: "向量" },
+                    ]}
+                  />
+                  <Select
+                    value={status}
+                    onChange={setStatus}
+                    style={{ width: 130 }}
+                    options={[
+                      { label: "全部状态", value: "all" },
+                      { label: "健康", value: "healthy" },
+                      { label: "降级", value: "degraded" },
+                      { label: "异常", value: "error" },
+                    ]}
+                  />
+                  <Select
+                    value={region}
+                    onChange={setRegion}
+                    style={{ width: 150 }}
+                    options={[
+                      { label: "全部区域", value: "all" },
+                      ...regions.map((value) => ({ label: value, value })),
+                    ]}
+                  />
+                  <Input.Search
+                    allowClear
+                    value={keyword}
+                    onChange={setKeyword}
+                    placeholder="搜索后端、端点或说明"
+                    style={{ width: 260 }}
+                  />
+                </div>
+              }
+            />
+          }
+        >
+          <ListDataTable
+            rowKey="id"
+            columns={columns}
+            data={filteredBackends}
+            pagination={false}
+            scroll={{ x: 1650 }}
+            emptyText="没有符合筛选条件的存储后端"
+          />
+        </ListPageFrame>
+
+        <StorageClassOperations />
+        <RecentStorageEvents />
+      </div>
+    );
+  },
+});

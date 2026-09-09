@@ -31,13 +31,9 @@ export function DisableTenantModal({
       okButtonProps={{ status: "danger" }}
     >
       <div className="space-y-4">
-        <div className="text-red-600">
-          禁用是不可恢复的终态，并会清理该租户名下资源。
-        </div>
+        <div className="text-red-600">禁用是不可恢复的终态，并会清理该租户名下资源。</div>
         <div>
-          <div className="mb-2 text-sm text-gray-600">
-            输入租户标识 {tenantName} 以确认
-          </div>
+          <div className="mb-2 text-sm text-gray-600">输入租户标识 {tenantName} 以确认</div>
           <Input value={confirmName} onChange={onConfirmNameChange} />
         </div>
         <div>

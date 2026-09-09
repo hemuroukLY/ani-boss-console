@@ -1,24 +1,11 @@
-import {
-  Avatar,
-  Button,
-  Menu,
-  Message,
-  Typography,
-} from "@arco-design/web-react";
+import { Avatar, Button, Menu, Message, Typography } from "@arco-design/web-react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  IconMenuFold,
-  IconMenuUnfold,
-  IconNotification,
-} from "@arco-design/web-react/icon";
+import { IconMenuFold, IconMenuUnfold, IconNotification } from "@arco-design/web-react/icon";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useState, type ReactNode } from "react";
 import { logoutPlatform } from "@/api/auth";
-import {
-  clearAuthSession,
-  useAuthState,
-} from "@/components/auth/store";
+import { clearAuthSession, useAuthState } from "@/components/auth/store";
 import { PlatformOverviewProvider } from "@/components/overview/PlatformOverviewProvider";
 import { TenantManagementProvider } from "@/components/tenant/TenantManagementProvider";
 import {
@@ -113,13 +100,10 @@ export function AppShell() {
   const currentPageItem =
     [...sidePages]
       .sort((a, b) => b.to.length - a.to.length)
-      .find(
-        (item) => item.to === pathname || pathname.startsWith(`${item.to}/`),
-      ) ?? sidePages[0];
+      .find((item) => item.to === pathname || pathname.startsWith(`${item.to}/`)) ?? sidePages[0];
   const currentMenu = sideNavigation.find(
     (item) =>
-      isNavigationGroup(item) &&
-      item.children.some((child) => child.to === currentPageItem.to),
+      isNavigationGroup(item) && item.children.some((child) => child.to === currentPageItem.to),
   );
   const currentPage = currentPageItem.label;
   const showShellBreadcrumb = pathname === currentPageItem.to;
@@ -142,40 +126,27 @@ export function AppShell() {
       <span className="side-menu-label-icon" aria-hidden="true">
         {icon}
       </span>
-      <Typography.Ellipsis
-        rows={1}
-        expandable={false}
-        showTooltip
-        className="side-menu-label-text"
-      >
+      <Typography.Ellipsis rows={1} expandable={false} showTooltip className="side-menu-label-text">
         {label}
       </Typography.Ellipsis>
     </span>
   );
 
   const renderMenuItem = (item: NavigationLeaf, depth = 0) => (
-    <Menu.Item
-      key={item.to}
-      className="side-menu-leaf"
-      renderItemInTooltip={() => item.label}
-    >
-      <Link
-        to={item.to}
-        activeOptions={{ exact: true }}
-        className="side-menu-link"
-      >
-        {depth === 0 && item.icon
-          ? renderMenuLabel(item.label, item.icon)
-          : (
-              <Typography.Ellipsis
-                rows={1}
-                expandable={false}
-                showTooltip
-                className="side-menu-label-text"
-              >
-                {item.label}
-              </Typography.Ellipsis>
-            )}
+    <Menu.Item key={item.to} className="side-menu-leaf" renderItemInTooltip={() => item.label}>
+      <Link to={item.to} activeOptions={{ exact: true }} className="side-menu-link">
+        {depth === 0 && item.icon ? (
+          renderMenuLabel(item.label, item.icon)
+        ) : (
+          <Typography.Ellipsis
+            rows={1}
+            expandable={false}
+            showTooltip
+            className="side-menu-label-text"
+          >
+            {item.label}
+          </Typography.Ellipsis>
+        )}
       </Link>
     </Menu.Item>
   );
@@ -214,21 +185,10 @@ export function AppShell() {
               )}
             </nav>
             <div className="top-actions">
-              <Button
-                type="text"
-                aria-label="通知"
-                icon={<IconNotification />}
-              />
-              <Avatar size={28}>
-                {(authState.username || "平台管理员").slice(0, 1)}
-              </Avatar>
+              <Button type="text" aria-label="通知" icon={<IconNotification />} />
+              <Avatar size={28}>{(authState.username || "平台管理员").slice(0, 1)}</Avatar>
               <span>{authState.username || "平台管理员"}</span>
-              <Button
-                type="text"
-                size="small"
-                loading={loggingOut}
-                onClick={() => void logout()}
-              >
+              <Button type="text" size="small" loading={loggingOut} onClick={() => void logout()}>
                 退出
               </Button>
             </div>
@@ -240,14 +200,9 @@ export function AppShell() {
                   id="sidebar-navigation-menu"
                   collapse={collapsed}
                   selectedKeys={[currentPageItem.to]}
-                  openKeys={
-                    isInfrastructure || isObservability ? openMenuKeys : []
-                  }
+                  openKeys={isInfrastructure || isObservability ? openMenuKeys : []}
                   onClickSubMenu={(_, keys) => setOpenMenuKeys(keys)}
-                  className={clsx(
-                    "side-menu border-none",
-                    collapsed && "side-menu--collapsed",
-                  )}
+                  className={clsx("side-menu border-none", collapsed && "side-menu--collapsed")}
                 >
                   {sideNavigation.map((item) =>
                     isNavigationGroup(item) ? (
@@ -257,9 +212,7 @@ export function AppShell() {
                         selectable={false}
                         className="side-menu-submenu"
                       >
-                        {item.children.map((child) =>
-                          renderMenuItem(child, 1),
-                        )}
+                        {item.children.map((child) => renderMenuItem(child, 1))}
                       </Menu.SubMenu>
                     ) : (
                       renderMenuItem(item)

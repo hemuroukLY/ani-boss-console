@@ -1,14 +1,5 @@
-import {
-  Button,
-  Descriptions,
-  Space,
-  Tag,
-  Typography,
-} from "@arco-design/web-react";
-import {
-  tenantStatusMeta,
-  type Tenant,
-} from "@/components/tenant/model";
+import { Button, Descriptions, Space, Tag, Typography } from "@arco-design/web-react";
+import { tenantStatusMeta, type Tenant } from "@/components/tenant/model";
 
 interface LifecycleStatusSectionProps {
   tenant: Tenant;
@@ -32,11 +23,7 @@ export function LifecycleStatusSection({
         </Typography.Title>
         {tenant.status !== "disabled" ? (
           <Space wrap>
-            <Button
-              onClick={
-                tenant.status === "active" ? onOpenSuspend : onOpenResume
-              }
-            >
+            <Button onClick={tenant.status === "active" ? onOpenSuspend : onOpenResume}>
               {tenant.status === "active" ? "冻结" : "解冻"}
             </Button>
             <Button status="danger" onClick={onOpenDisable}>

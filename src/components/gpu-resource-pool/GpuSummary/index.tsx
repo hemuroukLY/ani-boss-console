@@ -10,10 +10,7 @@ function metricValue(value: number | undefined, pending: boolean) {
   return pending || value === undefined ? "-" : String(value);
 }
 
-export function GpuSummary({
-  occupancy,
-  occupancyPending,
-}: GpuSummaryProps) {
+export function GpuSummary({ occupancy, occupancyPending }: GpuSummaryProps) {
   return (
     <section className="grid grid-cols-4 gap-3.5 max-[1280px]:grid-cols-2">
       <Metric

@@ -1,12 +1,6 @@
 import type { PlatformMeteringResourceType } from "@/api/platform";
 
-export type MeteringDimension =
-  | "gpu"
-  | "cpu"
-  | "memory"
-  | "storage"
-  | "tokens"
-  | "kb-queries";
+export type MeteringDimension = "gpu" | "cpu" | "memory" | "storage" | "tokens" | "kb-queries";
 
 export interface MeteringTenantRow {
   id: string;

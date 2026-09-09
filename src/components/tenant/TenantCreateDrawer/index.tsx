@@ -1,9 +1,6 @@
 import { Button, Drawer, Message, Space, Steps } from "@arco-design/web-react";
 import { useState } from "react";
-import {
-  initialTenantDraft,
-  type TenantDraft,
-} from "@/components/tenant/model";
+import { initialTenantDraft, type TenantDraft } from "@/components/tenant/model";
 import { StepContent } from "./StepContent";
 
 const steps = ["租户资料", "开通区域", "配额套餐", "初始管理员", "确认"];
@@ -14,18 +11,11 @@ interface TenantCreateDrawerProps {
   onSubmit: (draft: TenantDraft) => boolean;
 }
 
-export function TenantCreateDrawer({
-  visible,
-  onCancel,
-  onSubmit,
-}: TenantCreateDrawerProps) {
+export function TenantCreateDrawer({ visible, onCancel, onSubmit }: TenantCreateDrawerProps) {
   const [current, setCurrent] = useState(0);
   const [draft, setDraft] = useState<TenantDraft>(initialTenantDraft);
 
-  const updateDraft = <Key extends keyof TenantDraft>(
-    field: Key,
-    value: TenantDraft[Key],
-  ) => {
+  const updateDraft = <Key extends keyof TenantDraft>(field: Key, value: TenantDraft[Key]) => {
     setDraft((currentDraft) => ({ ...currentDraft, [field]: value }));
   };
 
@@ -74,9 +64,7 @@ export function TenantCreateDrawer({
           <Button onClick={close}>取消</Button>
           <Space>
             {current > 0 ? (
-              <Button onClick={() => setCurrent((step) => step - 1)}>
-                上一步
-              </Button>
+              <Button onClick={() => setCurrent((step) => step - 1)}>上一步</Button>
             ) : null}
             {current < 4 ? (
               <Button type="primary" onClick={next}>

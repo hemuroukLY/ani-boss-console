@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Message, Modal, Result } from "@arco-design/web-react";
-import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant } from "@/components/tenant/model";
 import { BillingAccountOverview } from "./BillingAccountOverview";
 import { BillingRecords } from "./BillingRecords";
@@ -21,11 +21,7 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
     [tenant.id, tenantBillings],
   );
 
-  const showResult = (result: {
-    ok: boolean;
-    reason?: string;
-    message?: string;
-  }) => {
+  const showResult = (result: { ok: boolean; reason?: string; message?: string }) => {
     if (result.ok) {
       Message.success(result.message || "操作成功");
       return true;
@@ -35,13 +31,7 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
   };
 
   if (!billing) {
-    return (
-      <Result
-        status="404"
-        title="未找到计费账户"
-        subTitle="当前租户尚未建立计费账户。"
-      />
-    );
+    return <Result status="404" title="未找到计费账户" subTitle="当前租户尚未建立计费账户。" />;
   }
 
   const confirmAction = (
@@ -105,9 +95,7 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
             "确认将当前欠费账单标记为已结清？欠费冻结的租户将同时恢复。",
           )
         }
-        onExport={() =>
-          showResult(applyTenantBillingAction(tenant.id, "export_statement"))
-        }
+        onExport={() => showResult(applyTenantBillingAction(tenant.id, "export_statement"))}
       />
       <BillingRecords billing={billing} />
       <CreditAdjustmentModal

@@ -29,9 +29,7 @@ export function GpuDeviceTable() {
           title: "操作",
           width: 120,
           fixed: "right" as const,
-          render: (_: unknown, device: Device) => (
-            <DeviceActions device={device} />
-          ),
+          render: (_: unknown, device: Device) => <DeviceActions device={device} />,
         },
       ]}
     />

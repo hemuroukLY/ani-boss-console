@@ -1,40 +1,22 @@
-import {
-  Alert,
-  Form,
-  Input,
-  InputNumber,
-  Message,
-  Modal,
-  Select,
-} from "@arco-design/web-react";
-import { useEffect, useMemo, useState } from "react";
-import type {
-  CreateGpuSpecInput,
-  GpuInventoryDevice,
-  GpuSpecMode,
-} from "../types";
+import { Alert, Form, Input, InputNumber, Message, Modal, Select } from "@arco-design/web-react";
+import { useMemo, useState } from "react";
+import type { CreateGpuSpecInput, GpuInventoryDevice, GpuSpecMode } from "../types";
 
 type CreateGpuSpecFormValues = Omit<CreateGpuSpecInput, "memoryTotalMb">;
 
 const SPEC_ID_PATTERN = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/;
 
-function gpuTypesForMode(
-  devices: GpuInventoryDevice[],
-  mode: GpuSpecMode,
-) {
+function gpuTypesForMode(devices: GpuInventoryDevice[], mode: GpuSpecMode) {
   return Array.from(
     new Set(
       devices
-        .map((device) =>
-          mode === "wholecard" ? device.gpuSpec : device.gpuSharingSpec,
-        )
+        .map((device) => (mode === "wholecard" ? device.gpuSpec : device.gpuSharingSpec))
         .filter((value): value is string => Boolean(value)),
     ),
   ).sort();
 }
 
 interface GpuSpecCreateModalProps {
-  visible: boolean;
   devices: GpuInventoryDevice[];
   submitting: boolean;
   onCancel: () => void;
@@ -42,7 +24,6 @@ interface GpuSpecCreateModalProps {
 }
 
 export function GpuSpecCreateModal({
-  visible,
   devices,
   submitting,
   onCancel,
@@ -50,22 +31,7 @@ export function GpuSpecCreateModal({
 }: GpuSpecCreateModalProps) {
   const [mode, setMode] = useState<GpuSpecMode>("wholecard");
   const [form] = Form.useForm<CreateGpuSpecFormValues>();
-  const gpuTypes = useMemo(
-    () => gpuTypesForMode(devices, mode),
-    [devices, mode],
-  );
-
-  useEffect(() => {
-    if (!visible) return;
-    setMode("wholecard");
-    form.setFieldsValue({
-      specId: "",
-      gpuType: "",
-      gpuMode: "wholecard",
-      shares: 1,
-      mbPerShare: 0,
-    });
-  }, [form, visible]);
+  const gpuTypes = useMemo(() => gpuTypesForMode(devices, mode), [devices, mode]);
 
   const submit = () => {
     form.validate().then((values) => {
@@ -83,9 +49,7 @@ export function GpuSpecCreateModal({
         .map((device) => device.memoryTotalMb || 0);
       const maxMemoryMb = Math.max(0, ...matchingMemory);
       if (maxMemoryMb && memoryTotalMb > maxMemoryMb) {
-        Message.warning(
-          `切分显存总量不能超过匹配物理卡的 ${maxMemoryMb} MiB`,
-        );
+        Message.warning(`切分显存总量不能超过匹配物理卡的 ${maxMemoryMb} MiB`);
         return;
       }
       onSubmit({ ...values, memoryTotalMb });
@@ -95,7 +59,7 @@ export function GpuSpecCreateModal({
   return (
     <Modal
       title="新建 GPU 调度规格"
-      visible={visible}
+      visible
       confirmLoading={submitting}
       onOk={submit}
       onCancel={() => {
@@ -104,7 +68,17 @@ export function GpuSpecCreateModal({
         form.resetFields();
       }}
     >
-      <Form form={form} layout="vertical">
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{
+          specId: "",
+          gpuType: "",
+          gpuMode: "wholecard",
+          shares: 1,
+          mbPerShare: 0,
+        }}
+      >
         <Form.Item
           label="规格 ID"
           field="specId"
@@ -112,11 +86,7 @@ export function GpuSpecCreateModal({
         >
           <Input placeholder="例如 nvidia-a100-vgpu-half" />
         </Form.Item>
-        <Form.Item
-          label="模式"
-          field="gpuMode"
-          rules={[{ required: true }]}
-        >
+        <Form.Item label="模式" field="gpuMode" rules={[{ required: true }]}>
           <Select
             options={[
               { label: "整卡", value: "wholecard" },
@@ -178,11 +148,7 @@ export function GpuSpecCreateModal({
             },
           ]}
         >
-          <InputNumber
-            min={mode === "vgpu" ? 10 : 1}
-            precision={0}
-            className="w-full"
-          />
+          <InputNumber min={mode === "vgpu" ? 10 : 1} precision={0} className="w-full" />
         </Form.Item>
       </Form>
     </Modal>

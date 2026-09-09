@@ -39,8 +39,7 @@ function readStoredState(): AuthState {
             }
           : null,
       username: typeof stored.username === "string" ? stored.username : "",
-      developmentBypass:
-        import.meta.env.DEV && stored.developmentBypass === true,
+      developmentBypass: import.meta.env.DEV && stored.developmentBypass === true,
     };
   } catch {
     return EMPTY_STATE;
@@ -64,7 +63,11 @@ function subscribe(listener: () => void) {
 }
 
 export function useAuthState() {
-  return useSyncExternalStore(subscribe, () => state, () => state);
+  return useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => state,
+  );
 }
 
 export function getAuthState() {
@@ -120,10 +123,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
   try {
     const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = normalized.padEnd(
-      normalized.length + ((4 - (normalized.length % 4)) % 4),
-      "=",
-    );
+    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), "=");
     return JSON.parse(atob(padded)) as Record<string, unknown>;
   } catch {
     return null;
@@ -134,7 +134,5 @@ export function getAccessTokenJti() {
   const token = state.tokens?.access_token;
   if (!token) return null;
   const payload = decodeJwtPayload(token);
-  return typeof payload?.jti === "string" && payload.jti
-    ? payload.jti
-    : null;
+  return typeof payload?.jti === "string" && payload.jti ? payload.jti : null;
 }

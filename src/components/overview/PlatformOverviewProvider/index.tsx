@@ -1,38 +1,16 @@
 import { Message } from "@arco-design/web-react";
-import {
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import { platformAlerts, type AlertItem, type AlertStatus } from "../model";
+import { useMemo, useState, type ReactNode } from "react";
+import { platformAlerts } from "../model";
+import { PlatformOverviewContext, type PlatformOverviewContextValue } from "./context";
 
-interface PlatformOverviewContextValue {
-  alerts: AlertItem[];
-  updateAlert: (id: number, status: AlertStatus) => void;
-  resetDemo: () => void;
-}
-
-const PlatformOverviewContext =
-  createContext<PlatformOverviewContextValue | null>(null);
-
-export function PlatformOverviewProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [alerts, setAlerts] = useState(() =>
-    platformAlerts.map((item) => ({ ...item })),
-  );
+export function PlatformOverviewProvider({ children }: { children: ReactNode }) {
+  const [alerts, setAlerts] = useState(() => platformAlerts.map((item) => ({ ...item })));
 
   const value = useMemo<PlatformOverviewContextValue>(
     () => ({
       alerts,
       updateAlert: (id, status) => {
-        setAlerts((items) =>
-          items.map((item) => (item.id === id ? { ...item, status } : item)),
-        );
+        setAlerts((items) => items.map((item) => (item.id === id ? { ...item, status } : item)));
         Message.success(status === "已处理" ? "告警已处理" : "告警已忽略");
       },
       resetDemo: () => {
@@ -44,18 +22,6 @@ export function PlatformOverviewProvider({
   );
 
   return (
-    <PlatformOverviewContext.Provider value={value}>
-      {children}
-    </PlatformOverviewContext.Provider>
+    <PlatformOverviewContext.Provider value={value}>{children}</PlatformOverviewContext.Provider>
   );
-}
-
-export function usePlatformOverview() {
-  const context = useContext(PlatformOverviewContext);
-  if (!context) {
-    throw new Error(
-      "usePlatformOverview 必须在 PlatformOverviewProvider 内使用",
-    );
-  }
-  return context;
 }

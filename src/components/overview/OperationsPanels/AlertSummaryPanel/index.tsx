@@ -11,10 +11,7 @@ interface AlertSummaryPanelProps {
   onUpdate: (id: number, status: AlertItem["status"]) => void;
 }
 
-export function AlertSummaryPanel({
-  alerts,
-  onUpdate,
-}: AlertSummaryPanelProps) {
+export function AlertSummaryPanel({ alerts, onUpdate }: AlertSummaryPanelProps) {
   const navigate = useNavigate();
 
   return (
@@ -38,11 +35,7 @@ export function AlertSummaryPanel({
             meta={
               <>
                 {item.time}
-                <Button
-                  type="text"
-                  size="mini"
-                  onClick={() => onUpdate(item.id, "已处理")}
-                >
+                <Button type="text" size="mini" onClick={() => onUpdate(item.id, "已处理")}>
                   处理
                 </Button>
               </>

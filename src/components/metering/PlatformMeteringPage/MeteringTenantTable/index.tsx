@@ -1,12 +1,7 @@
 import { Input } from "@arco-design/web-react";
 import { IconSearch } from "@arco-design/web-react/icon";
 import { useMemo, useState } from "react";
-import {
-  ListDataTable,
-  ListPageFrame,
-  ListToolbar,
-  type ListColumn,
-} from "@/components/common";
+import { ListDataTable, ListPageFrame, ListToolbar, type ListColumn } from "@/components/common";
 import type { MeteringTenantRow } from "../../model";
 import { formatUsage, getChangeRate } from "../usePlatformGpuMetering";
 
@@ -16,19 +11,12 @@ interface MeteringTenantTableProps {
   loading: boolean;
 }
 
-export function MeteringTenantTable({
-  rows,
-  unit,
-  loading,
-}: MeteringTenantTableProps) {
+export function MeteringTenantTable({ rows, unit, loading }: MeteringTenantTableProps) {
   const [keyword, setKeyword] = useState("");
   const filteredRows = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
     return rows
-      .filter(
-        (tenant) =>
-          !normalizedKeyword || tenant.id.toLowerCase().includes(normalizedKeyword),
-      )
+      .filter((tenant) => !normalizedKeyword || tenant.id.toLowerCase().includes(normalizedKeyword))
       .sort((left, right) => right.current - left.current);
   }, [keyword, rows]);
 
@@ -79,16 +67,12 @@ export function MeteringTenantTable({
       header={
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
-            <div className="text-base font-semibold text-gray-900">
-              租户用量排行
-            </div>
+            <div className="text-base font-semibold text-gray-900">租户用量排行</div>
             <div className="mt-1 text-xs text-gray-500">
               按本月累计用量降序排列；接口当前仅返回租户 ID。
             </div>
           </div>
-          <span className="text-xs text-gray-500">
-            共 {filteredRows.length} 个租户
-          </span>
+          <span className="text-xs text-gray-500">共 {filteredRows.length} 个租户</span>
         </div>
       }
       toolbar={

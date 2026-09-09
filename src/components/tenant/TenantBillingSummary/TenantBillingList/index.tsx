@@ -1,12 +1,4 @@
-import {
-  Button,
-  Menu,
-  Message,
-  Modal,
-  Space,
-  Tag,
-  Typography,
-} from "@arco-design/web-react";
+import { Button, Menu, Message, Modal, Tag, Typography } from "@arco-design/web-react";
 import { IconDownload } from "@arco-design/web-react/icon";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -22,14 +14,9 @@ import {
 } from "@/components/common";
 import { CreditAdjustmentModal } from "@/components/tenant/TenantBillingSummary/CreditAdjustmentModal";
 import { formatUsd } from "@/components/tenant/TenantBillingSummary/formatters";
-import {
-  useTenantManagement,
-  type TenantBillingAction,
-} from "@/components/tenant/TenantManagementProvider";
-import {
-  tenantBillingStatusMeta,
-  type TenantBilling,
-} from "@/components/tenant/model";
+import type { TenantBillingAction } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
+import { tenantBillingStatusMeta, type TenantBilling } from "@/components/tenant/model";
 
 export function TenantBillingList() {
   const { tenantBillings, applyTenantBillingAction } = useTenantManagement();
@@ -59,11 +46,7 @@ export function TenantBillingList() {
     Modal.confirm({
       title,
       content,
-      onOk: () =>
-        void showResult(
-          applyTenantBillingAction(billing.tenantId, action),
-          success,
-        ),
+      onOk: () => void showResult(applyTenantBillingAction(billing.tenantId, action), success),
     });
   };
 
@@ -116,10 +99,7 @@ export function TenantBillingList() {
       return;
     }
     if (action === "export_statement") {
-      showResult(
-        applyTenantBillingAction(billing.tenantId, "export_statement"),
-        "对账单已导出",
-      );
+      showResult(applyTenantBillingAction(billing.tenantId, "export_statement"), "对账单已导出");
     }
   };
 
@@ -132,10 +112,7 @@ export function TenantBillingList() {
       render: (_, item) => (
         <DataTableNameCell
           name={
-            <Link
-              to="/tenants-billing/$tenantId"
-              params={{ tenantId: item.tenantId }}
-            >
+            <Link to="/tenants-billing/$tenantId" params={{ tenantId: item.tenantId }}>
               {item.tenantName}
             </Link>
           }
@@ -167,9 +144,7 @@ export function TenantBillingList() {
       width: 130,
       align: "right",
       render: (value: number) => (
-        <Typography.Text type={value < 0 ? "error" : undefined}>
-          {formatUsd(value)}
-        </Typography.Text>
+        <Typography.Text type={value < 0 ? "error" : undefined}>{formatUsd(value)}</Typography.Text>
       ),
     },
     {
@@ -208,16 +183,9 @@ export function TenantBillingList() {
           </DataTableRowActionButton>
           <ListRowMore
             droplist={
-              <Menu
-                onClickMenuItem={(action) => handleMoreAction(action, item)}
-              >
-                <Menu.Item key="adjust_credit">
-                  授信调账
-                </Menu.Item>
-                <Menu.Item
-                  key="generate_invoice"
-                  disabled={item.usageCostUsd <= 0}
-                >
+              <Menu onClickMenuItem={(action) => handleMoreAction(action, item)}>
+                <Menu.Item key="adjust_credit">授信调账</Menu.Item>
+                <Menu.Item key="generate_invoice" disabled={item.usageCostUsd <= 0}>
                   生成账单
                 </Menu.Item>
                 <Menu.Item
@@ -226,9 +194,7 @@ export function TenantBillingList() {
                 >
                   标记结清
                 </Menu.Item>
-                <Menu.Item key="export_statement">
-                  导出对账单
-                </Menu.Item>
+                <Menu.Item key="export_statement">导出对账单</Menu.Item>
               </Menu>
             }
           />
@@ -246,18 +212,14 @@ export function TenantBillingList() {
           extra={
             <Button
               icon={<IconDownload />}
-              onClick={() =>
-                Message.success(`已导出 ${tenantBillings.length} 条计费记录`)
-              }
+              onClick={() => Message.success(`已导出 ${tenantBillings.length} 条计费记录`)}
             >
               导出计费记录
             </Button>
           }
         />
 
-        <ListPageFrame
-          header={null}
-        >
+        <ListPageFrame header={null}>
           <ListDataTable
             rowKey="id"
             columns={columns}

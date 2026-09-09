@@ -26,7 +26,7 @@ import {
   ListRowMore,
   type ListColumn,
 } from "@/components/common";
-import { useTenantManagement } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { TenantQuotaLimits } from "@/components/tenant/model";
 
 type QuotaPackageStatus = "enabled" | "draft" | "disabled";
@@ -87,8 +87,7 @@ export function QuotaPolicyList() {
     quotaPackages,
   } = useTenantManagement();
   const [createVisible, setCreateVisible] = useState(false);
-  const [assigningPackage, setAssigningPackage] =
-    useState<QuotaPackageRow | null>(null);
+  const [assigningPackage, setAssigningPackage] = useState<QuotaPackageRow | null>(null);
   const [targetTenantId, setTargetTenantId] = useState("");
   const [draft, setDraft] = useState<QuotaPackageDraft>(initialDraft);
 
@@ -110,9 +109,7 @@ export function QuotaPolicyList() {
                 : "按企业合同定制限额"),
         isTrial: item.isTrial,
         limits: { ...item.limits },
-        updatedAt:
-          item.updatedAt ??
-          `2026-08-${String(25 - index).padStart(2, `0`)} 10:30`,
+        updatedAt: item.updatedAt ?? `2026-08-${String(25 - index).padStart(2, `0`)} 10:30`,
       })),
     [quotaPackages],
   );
@@ -145,11 +142,7 @@ export function QuotaPolicyList() {
       Message.warning("请填写套餐名称和编码");
       return;
     }
-    if (
-      packages.some(
-        (item) => item.planCode.toLowerCase() === draft.planCode.toLowerCase(),
-      )
-    ) {
+    if (packages.some((item) => item.planCode.toLowerCase() === draft.planCode.toLowerCase())) {
       Message.warning("套餐编码已存在");
       return;
     }
@@ -204,10 +197,7 @@ export function QuotaPolicyList() {
       render: (_, item) => (
         <DataTableNameCell
           name={
-            <Link
-              to="/tenants-quotas/$planCode"
-              params={{ planCode: item.planCode }}
-            >
+            <Link to="/tenants-quotas/$planCode" params={{ planCode: item.planCode }}>
               {item.name}
             </Link>
           }
@@ -259,13 +249,8 @@ export function QuotaPolicyList() {
               }
             }}
           >
-            {item.status === "draft" ? (
-              <Menu.Item key="publish">发布</Menu.Item>
-            ) : null}
-            <Menu.Item
-              key="delete"
-              disabled={boundCount(item.planCode) > 0}
-            >
+            {item.status === "draft" ? <Menu.Item key="publish">发布</Menu.Item> : null}
+            <Menu.Item key="delete" disabled={boundCount(item.planCode) > 0}>
               删除
             </Menu.Item>
           </Menu>
@@ -277,10 +262,7 @@ export function QuotaPolicyList() {
               disabled={item.status !== "enabled"}
               onClick={() => {
                 setAssigningPackage(item);
-                setTargetTenantId(
-                  tenants.find((tenant) => tenant.status !== "disabled")?.id ??
-                    "",
-                );
+                setTargetTenantId(tenants.find((tenant) => tenant.status !== "disabled")?.id ?? "");
               }}
             >
               分配/改绑
@@ -301,17 +283,10 @@ export function QuotaPolicyList() {
             subtitle="管理租户配额套餐；套餐发布后限额只读，变更请新建套餐。"
             extra={
               <Space>
-                <Button
-                  icon={<IconDownload />}
-                  onClick={() => Message.success("配额套餐已导出")}
-                >
+                <Button icon={<IconDownload />} onClick={() => Message.success("配额套餐已导出")}>
                   导出
                 </Button>
-                <Button
-                  type="primary"
-                  icon={<IconPlus />}
-                  onClick={() => setCreateVisible(true)}
-                >
+                <Button type="primary" icon={<IconPlus />} onClick={() => setCreateVisible(true)}>
                   新建套餐
                 </Button>
               </Space>
@@ -360,9 +335,7 @@ export function QuotaPolicyList() {
                 <Input
                   value={draft.planCode}
                   placeholder="例如：custom-01"
-                  onChange={(planCode) =>
-                    setDraft((current) => ({ ...current, planCode }))
-                  }
+                  onChange={(planCode) => setDraft((current) => ({ ...current, planCode }))}
                 />
               </Form.Item>
             </Grid.Col>
@@ -371,9 +344,7 @@ export function QuotaPolicyList() {
             <Input.TextArea
               value={draft.description}
               placeholder="按合同定制限额"
-              onChange={(description) =>
-                setDraft((current) => ({ ...current, description }))
-              }
+              onChange={(description) => setDraft((current) => ({ ...current, description }))}
             />
           </Form.Item>
           <Typography.Title heading={6}>限额配置</Typography.Title>
@@ -442,14 +413,9 @@ export function QuotaPolicyList() {
           {targetTenantId ? (
             <Typography.Text type="secondary">
               当前套餐：
-              {tenants.find((tenant) => tenant.id === targetTenantId)
-                ?.quotaPackage ?? "-"}
+              {tenants.find((tenant) => tenant.id === targetTenantId)?.quotaPackage ?? "-"}
               ，确认后可前往
-              <Link
-                to="/tenants/$tenantId"
-                params={{ tenantId: targetTenantId }}
-                className="ml-1"
-              >
+              <Link to="/tenants/$tenantId" params={{ tenantId: targetTenantId }} className="ml-1">
                 租户详情
               </Link>
               查看。

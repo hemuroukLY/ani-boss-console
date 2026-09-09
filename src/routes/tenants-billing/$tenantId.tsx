@@ -2,10 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TenantBillingDetail } from "@/components/tenant/TenantBillingSummary/TenantBillingDetail";
 
 export const Route = createFileRoute("/tenants-billing/$tenantId")({
-  component: TenantBillingDetailRoute,
+  component: function TenantBillingDetailRoute() {
+    const { tenantId } = Route.useParams();
+    return <TenantBillingDetail tenantId={tenantId} />;
+  },
 });
-
-function TenantBillingDetailRoute() {
-  const { tenantId } = Route.useParams();
-  return <TenantBillingDetail tenantId={tenantId} />;
-}

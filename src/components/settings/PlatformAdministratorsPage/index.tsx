@@ -1,10 +1,4 @@
-import {
-  Button,
-  Descriptions,
-  Drawer,
-  Input,
-  Select,
-} from "@arco-design/web-react";
+import { Button, Descriptions, Drawer, Input, Select } from "@arco-design/web-react";
 import { IconPlus, IconSearch } from "@arco-design/web-react/icon";
 import { useMemo, useState } from "react";
 import {
@@ -29,9 +23,7 @@ import {
 export function PlatformAdministratorsPage() {
   const [keyword, setKeyword] = useState("");
   const [role, setRole] = useState<"all" | PlatformAdministratorRole>("all");
-  const [status, setStatus] = useState<"all" | PlatformAdministratorStatus>(
-    "all",
-  );
+  const [status, setStatus] = useState<"all" | PlatformAdministratorStatus>("all");
   const [selected, setSelected] = useState<PlatformAdministrator>();
   const filteredAdministrators = useMemo(() => {
     const normalized = keyword.trim().toLowerCase();
@@ -40,34 +32,25 @@ export function PlatformAdministratorsPage() {
         (role === "all" || administrator.role === role) &&
         (status === "all" || administrator.status === status) &&
         (!normalized ||
-          [
-            administrator.username,
-            administrator.displayName,
-            administrator.email,
-          ].some((value) => value.toLowerCase().includes(normalized))),
+          [administrator.username, administrator.displayName, administrator.email].some((value) =>
+            value.toLowerCase().includes(normalized),
+          )),
     );
   }, [keyword, role, status]);
   const activeCount = platformAdministrators.filter(
     (administrator) => administrator.status === "active",
   ).length;
   const superCount = platformAdministrators.filter(
-    (administrator) =>
-      administrator.status === "active" &&
-      administrator.role === "平台超级管理员",
+    (administrator) => administrator.status === "active" && administrator.role === "平台超级管理员",
   ).length;
-  const mfaCount = platformAdministrators.filter(
-    (administrator) => administrator.mfa,
-  ).length;
+  const mfaCount = platformAdministrators.filter((administrator) => administrator.mfa).length;
   const columns: ListColumn<PlatformAdministrator>[] = [
     {
       title: "账号",
       width: 240,
       fixed: "left",
       render: (_, administrator) => (
-        <DataTableNameCell
-          name={administrator.displayName}
-          secondary={administrator.username}
-        />
+        <DataTableNameCell name={administrator.displayName} secondary={administrator.username} />
       ),
     },
     { title: "邮箱", dataIndex: "email", width: 230 },
@@ -122,11 +105,7 @@ export function PlatformAdministratorsPage() {
           hint="本地登录身份"
         />
         <Metric label="活跃" value={String(activeCount)} hint="可登录管理端" />
-        <Metric
-          label="活跃超级管理员"
-          value={String(superCount)}
-          hint="至少保留 1 名"
-        />
+        <Metric label="活跃超级管理员" value={String(superCount)} hint="至少保留 1 名" />
         <Metric label="已启用 MFA" value={String(mfaCount)} hint="账号安全" />
       </section>
       <ListPageFrame
@@ -138,9 +117,7 @@ export function PlatformAdministratorsPage() {
                 密码重置、角色修改和启停操作将在身份接口接入后开放。
               </div>
             </div>
-            <span className="text-xs text-gray-500">
-              共 {filteredAdministrators.length} 个账号
-            </span>
+            <span className="text-xs text-gray-500">共 {filteredAdministrators.length} 个账号</span>
           </div>
         }
         toolbar={
@@ -157,23 +134,17 @@ export function PlatformAdministratorsPage() {
                 />
                 <Select
                   value={role}
-                  onChange={(value) =>
-                    setRole(value as "all" | PlatformAdministratorRole)
-                  }
+                  onChange={(value) => setRole(value as "all" | PlatformAdministratorRole)}
                   className="w-44"
                 >
                   <Select.Option value="all">全部角色</Select.Option>
-                  <Select.Option value="平台超级管理员">
-                    平台超级管理员
-                  </Select.Option>
+                  <Select.Option value="平台超级管理员">平台超级管理员</Select.Option>
                   <Select.Option value="平台运维">平台运维</Select.Option>
                   <Select.Option value="平台只读">平台只读</Select.Option>
                 </Select>
                 <Select
                   value={status}
-                  onChange={(value) =>
-                    setStatus(value as "all" | PlatformAdministratorStatus)
-                  }
+                  onChange={(value) => setStatus(value as "all" | PlatformAdministratorStatus)}
                   className="w-32"
                 >
                   <Select.Option value="all">全部状态</Select.Option>

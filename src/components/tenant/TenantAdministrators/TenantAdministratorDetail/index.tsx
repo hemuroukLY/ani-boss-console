@@ -20,14 +20,9 @@ import {
 } from "@/components/common";
 import { AdministratorPasswordModal } from "@/components/tenant/TenantAdministrators/AdministratorPasswordModal";
 import { AdministratorRoleModal } from "@/components/tenant/TenantAdministrators/AdministratorRoleModal";
-import {
-  useTenantManagement,
-  type TenantAdminAction,
-} from "@/components/tenant/TenantManagementProvider";
-import {
-  tenantAdminStatusMeta,
-  type TenantAdminRole,
-} from "@/components/tenant/model";
+import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
+import { tenantAdminStatusMeta, type TenantAdminRole } from "@/components/tenant/model";
 
 interface PermissionRow {
   resource: string;
@@ -55,16 +50,12 @@ interface TenantAdministratorDetailProps {
   adminId: string;
 }
 
-export function TenantAdministratorDetail({
-  adminId,
-}: TenantAdministratorDetailProps) {
+export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetailProps) {
   const navigate = useNavigate();
-  const { tenantAdmins, tenants, applyTenantAdminAction } =
-    useTenantManagement();
+  const { tenantAdmins, tenants, applyTenantAdminAction } = useTenantManagement();
   const admin = tenantAdmins.find((item) => item.id === adminId);
   const [roleVisible, setRoleVisible] = useState(false);
-  const [selectedRole, setSelectedRole] =
-    useState<TenantAdminRole>("租户管理员");
+  const [selectedRole, setSelectedRole] = useState<TenantAdminRole>("租户管理员");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [newPassword, setNewPassword] = useState("");
 
@@ -86,10 +77,7 @@ export function TenantAdministratorDetail({
   const tenant = tenants.find((item) => item.id === admin.tenantId);
   const status = tenantAdminStatusMeta[admin.status];
 
-  const showResult = (
-    result: { ok: boolean; reason?: string },
-    successMessage: string,
-  ) => {
+  const showResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
       Message.success(successMessage);
       return true;
@@ -109,8 +97,7 @@ export function TenantAdministratorDetail({
       title,
       content,
       okButtonProps: danger ? { status: "danger" } : undefined,
-      onOk: () =>
-        showResult(applyTenantAdminAction(admin.id, action), successMessage),
+      onOk: () => showResult(applyTenantAdminAction(admin.id, action), successMessage),
     });
   };
 
@@ -197,12 +184,7 @@ export function TenantAdministratorDetail({
         <Menu.Item
           key="enable"
           onClick={() =>
-            confirmAction(
-              "enable",
-              "启用管理员",
-              `确认启用 ${admin.email}？`,
-              "管理员已启用",
-            )
+            confirmAction("enable", "启用管理员", `确认启用 ${admin.email}？`, "管理员已启用")
           }
         >
           启用
@@ -241,10 +223,7 @@ export function TenantAdministratorDetail({
             {
               label: "所属租户",
               value: tenant ? (
-                <Link
-                  to="/tenants/$tenantId"
-                  params={{ tenantId: tenant.id }}
-                >
+                <Link to="/tenants/$tenantId" params={{ tenantId: tenant.id }}>
                   {tenant.name}
                 </Link>
               ) : (

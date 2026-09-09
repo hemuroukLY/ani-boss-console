@@ -1,7 +1,6 @@
 import { apiRequest } from "@/api/client";
 import type {
   ApiRuntimeProfile,
-  GpuInventoryDevice,
   GpuInventorySnapshot,
   GpuInventoryStatus,
   GpuOccupancy,
@@ -70,9 +69,7 @@ export const gpuResourcePoolQueryKeys = {
   tenants: ["gpu-resource-pool", "tenants"] as const,
 };
 
-function mapRuntimeProfile(
-  profile: ApiRuntimeProfileResponse,
-): ApiRuntimeProfile {
+function mapRuntimeProfile(profile: ApiRuntimeProfileResponse): ApiRuntimeProfile {
   return {
     mode: profile.mode,
     provider: profile.provider,
@@ -104,9 +101,7 @@ export async function fetchGpuInventory(): Promise<GpuInventorySnapshot> {
 }
 
 export async function fetchGpuOccupancy(): Promise<GpuOccupancy> {
-  const response = await apiRequest<GpuOccupancyResponse>(
-    "/gpu-inventory/occupancy",
-  );
+  const response = await apiRequest<GpuOccupancyResponse>("/gpu-inventory/occupancy");
   return {
     total: response.total,
     inUse: response.in_use,
@@ -123,9 +118,7 @@ async function fetchAllTenantQuotas() {
   do {
     const query = new URLSearchParams({ limit: "100" });
     if (cursor) query.set("cursor", cursor);
-    const response = await apiRequest<QuotaListResponse>(
-      `/quotas?${query.toString()}`,
-    );
+    const response = await apiRequest<QuotaListResponse>(`/quotas?${query.toString()}`);
     items.push(...(response.items || []));
     cursor = response.next_cursor || undefined;
     if (cursor && seenCursors.has(cursor)) break;
@@ -135,18 +128,15 @@ async function fetchAllTenantQuotas() {
   return items;
 }
 
-export async function fetchTenantGpuAllocations(): Promise<
-  TenantGpuAllocation[]
-> {
+export async function fetchTenantGpuAllocations(): Promise<TenantGpuAllocation[]> {
   const quotas = await fetchAllTenantQuotas();
   const gpuQuotas = quotas
     .map((quota) => ({
       quota,
       gpu: quota.items.find((item) => item.resource_type === GPU_RESOURCE_TYPE),
     }))
-    .filter(
-      (item): item is { quota: TenantQuotaResponse; gpu: QuotaItemResponse } =>
-        Boolean(item.gpu),
+    .filter((item): item is { quota: TenantQuotaResponse; gpu: QuotaItemResponse } =>
+      Boolean(item.gpu),
     );
 
   return gpuQuotas.map(({ quota, gpu }) => ({
@@ -159,13 +149,10 @@ export async function fetchTenantGpuAllocations(): Promise<
 }
 
 export function updateTenantGpuQuota(tenantId: string, total: number) {
-  return apiRequest(
-    `/admin/tenants/${encodeURIComponent(tenantId)}/quota`,
-    {
-      method: "PUT",
-      body: JSON.stringify({
-        items: [{ resource_type: GPU_RESOURCE_TYPE, total }],
-      }),
-    },
-  );
+  return apiRequest(`/admin/tenants/${encodeURIComponent(tenantId)}/quota`, {
+    method: "PUT",
+    body: JSON.stringify({
+      items: [{ resource_type: GPU_RESOURCE_TYPE, total }],
+    }),
+  });
 }

@@ -104,10 +104,7 @@ export interface PlatformCapacity {
   profile: PlatformRuntimeProfile;
 }
 
-export type PlatformServiceScrapeStatus =
-  | "reachable"
-  | "unreachable"
-  | "unknown";
+export type PlatformServiceScrapeStatus = "reachable" | "unreachable" | "unknown";
 
 export interface PlatformServiceHealthComponent {
   serviceName: string;
@@ -159,9 +156,7 @@ export const platformQueryKeys = {
     ["platform", "metering-usage", params] as const,
 };
 
-function mapRuntimeProfile(
-  profile: DevProfileResponse,
-): PlatformRuntimeProfile {
+function mapRuntimeProfile(profile: DevProfileResponse): PlatformRuntimeProfile {
   return {
     mode: profile.mode,
     provider: profile.provider,
@@ -171,9 +166,7 @@ function mapRuntimeProfile(
 }
 
 export async function fetchPlatformCapacity(): Promise<PlatformCapacity> {
-  const response = await apiRequest<PlatformCapacityResponse>(
-    "/platform/capacity",
-  );
+  const response = await apiRequest<PlatformCapacityResponse>("/platform/capacity");
 
   return {
     regions: (response.regions || []).map((region) => ({
@@ -206,9 +199,7 @@ export async function fetchPlatformCapacity(): Promise<PlatformCapacity> {
 }
 
 export async function fetchPlatformServiceHealth(): Promise<PlatformServiceHealth> {
-  const response = await apiRequest<PlatformServiceHealthResponse>(
-    "/platform/services/health",
-  );
+  const response = await apiRequest<PlatformServiceHealthResponse>("/platform/services/health");
 
   return {
     scope: response.scope,

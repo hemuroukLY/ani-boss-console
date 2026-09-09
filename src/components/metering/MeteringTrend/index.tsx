@@ -8,12 +8,7 @@ interface MeteringTrendProps {
   unit: string;
 }
 
-export function MeteringTrend({
-  labels,
-  values,
-  label,
-  unit,
-}: MeteringTrendProps) {
+export function MeteringTrend({ labels, values, label, unit }: MeteringTrendProps) {
   const option: EChartsOption = {
     animationDuration: 400,
     color: ["#165dff"],
@@ -44,12 +39,5 @@ export function MeteringTrend({
     ],
   };
 
-  return (
-    <ReactECharts
-      option={option}
-      notMerge
-      lazyUpdate
-      className="h-[280px] w-full"
-    />
-  );
+  return <ReactECharts option={option} notMerge lazyUpdate className="h-[280px] w-full" />;
 }

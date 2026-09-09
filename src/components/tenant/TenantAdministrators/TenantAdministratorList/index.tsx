@@ -26,10 +26,8 @@ import {
   initialInviteDraft,
   type InviteDraft,
 } from "@/components/tenant/TenantAdministrators/types";
-import {
-  useTenantManagement,
-  type TenantAdminAction,
-} from "@/components/tenant/TenantManagementProvider";
+import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import {
   tenantAdminRoles,
   tenantAdminStatusMeta,
@@ -38,25 +36,17 @@ import {
 } from "@/components/tenant/model";
 
 export function TenantAdministratorList() {
-  const {
-    tenants,
-    tenantAdmins,
-    inviteTenantAdmin,
-    applyTenantAdminAction,
-  } = useTenantManagement();
+  const { tenants, tenantAdmins, inviteTenantAdmin, applyTenantAdminAction } =
+    useTenantManagement();
   const [inviteVisible, setInviteVisible] = useState(false);
   const [inviteTenantId, setInviteTenantId] = useState("");
   const [inviteDraft, setInviteDraft] = useState<InviteDraft>(initialInviteDraft);
   const [roleAdmin, setRoleAdmin] = useState<TenantAdmin>();
-  const [selectedRole, setSelectedRole] =
-    useState<TenantAdminRole>("租户管理员");
+  const [selectedRole, setSelectedRole] = useState<TenantAdminRole>("租户管理员");
   const [passwordAdmin, setPasswordAdmin] = useState<TenantAdmin>();
   const [newPassword, setNewPassword] = useState("");
 
-  const showResult = (
-    result: { ok: boolean; reason?: string },
-    successMessage: string,
-  ) => {
+  const showResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
       Message.success(successMessage);
       return true;
@@ -77,8 +67,7 @@ export function TenantAdministratorList() {
       title,
       content,
       okButtonProps: danger ? { status: "danger" } : undefined,
-      onOk: () =>
-        void showResult(applyTenantAdminAction(admin.id, action), successMessage),
+      onOk: () => void showResult(applyTenantAdminAction(admin.id, action), successMessage),
     });
   };
 
@@ -91,12 +80,7 @@ export function TenantAdministratorList() {
       Message.warning("请输入有效邮箱");
       return;
     }
-    if (
-      showResult(
-        inviteTenantAdmin(inviteTenantId, inviteDraft),
-        "管理员邀请已发送",
-      )
-    ) {
+    if (showResult(inviteTenantAdmin(inviteTenantId, inviteDraft), "管理员邀请已发送")) {
       setInviteVisible(false);
       setInviteDraft(initialInviteDraft);
       setInviteTenantId("");
@@ -174,13 +158,7 @@ export function TenantAdministratorList() {
           setSelectedRole(admin.role);
           setRoleAdmin(admin);
         } else if (key === "enable") {
-          confirmAction(
-            admin,
-            "enable",
-            "启用管理员",
-            `确认启用 ${admin.email}？`,
-            "管理员已启用",
-          );
+          confirmAction(admin, "enable", "启用管理员", `确认启用 ${admin.email}？`, "管理员已启用");
         } else if (key === "disable") {
           confirmAction(
             admin,
@@ -203,9 +181,7 @@ export function TenantAdministratorList() {
         <>
           <Menu.Item key="impersonate">模拟登录</Menu.Item>
           <Menu.Item key="password">重置密码</Menu.Item>
-          {admin.role !== "租户所有者" ? (
-            <Menu.Item key="transfer">移交所有者</Menu.Item>
-          ) : null}
+          {admin.role !== "租户所有者" ? <Menu.Item key="transfer">移交所有者</Menu.Item> : null}
         </>
       ) : null}
       <Menu.Item key="role">改角色</Menu.Item>
@@ -225,10 +201,7 @@ export function TenantAdministratorList() {
       render: (_, admin) => (
         <DataTableNameCell
           name={
-            <Link
-              to="/tenants-admins/$adminId"
-              params={{ adminId: admin.id }}
-            >
+            <Link to="/tenants-admins/$adminId" params={{ adminId: admin.id }}>
               {admin.name}
             </Link>
           }
@@ -250,8 +223,7 @@ export function TenantAdministratorList() {
     {
       title: "MFA",
       width: 90,
-      render: (_, admin) =>
-        admin.mfa ? <Tag color="green">已开启</Tag> : <Tag>未开启</Tag>,
+      render: (_, admin) => (admin.mfa ? <Tag color="green">已开启</Tag> : <Tag>未开启</Tag>),
     },
     { title: "来源", dataIndex: "source", width: 90 },
     { title: "最近登录", dataIndex: "lastLogin", width: 170 },
@@ -259,9 +231,7 @@ export function TenantAdministratorList() {
       title: "操作",
       width: 120,
       fixed: "right",
-      render: (_, admin) => (
-        <ListRowMore droplist={moreMenu(admin)} />
-      ),
+      render: (_, admin) => <ListRowMore droplist={moreMenu(admin)} />,
     },
   ];
 
@@ -285,8 +255,7 @@ export function TenantAdministratorList() {
                   icon={<IconPlus />}
                   onClick={() => {
                     setInviteTenantId(
-                      tenants.find((tenant) => tenant.status !== "disabled")?.id ??
-                        "",
+                      tenants.find((tenant) => tenant.status !== "disabled")?.id ?? "",
                     );
                     setInviteDraft(initialInviteDraft);
                     setInviteVisible(true);
@@ -332,34 +301,26 @@ export function TenantAdministratorList() {
             <Input
               value={inviteDraft.email}
               placeholder="name@example.com"
-              onChange={(email) =>
-                setInviteDraft((current) => ({ ...current, email }))
-              }
+              onChange={(email) => setInviteDraft((current) => ({ ...current, email }))}
             />
           </Form.Item>
           <Form.Item label="用户名">
             <Input
               value={inviteDraft.name}
               placeholder="未填写时使用邮箱前缀"
-              onChange={(name) =>
-                setInviteDraft((current) => ({ ...current, name }))
-              }
+              onChange={(name) => setInviteDraft((current) => ({ ...current, name }))}
             />
           </Form.Item>
           <Form.Item label="显示名">
             <Input
               value={inviteDraft.displayName}
-              onChange={(displayName) =>
-                setInviteDraft((current) => ({ ...current, displayName }))
-              }
+              onChange={(displayName) => setInviteDraft((current) => ({ ...current, displayName }))}
             />
           </Form.Item>
           <Form.Item label="角色">
             <Select
               value={inviteDraft.role}
-              onChange={(role) =>
-                setInviteDraft((current) => ({ ...current, role }))
-              }
+              onChange={(role) => setInviteDraft((current) => ({ ...current, role }))}
               options={tenantAdminRoles.map((role) => ({ label: role, value: role }))}
             />
           </Form.Item>

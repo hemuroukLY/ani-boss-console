@@ -8,11 +8,7 @@ interface UseListErrorNotificationOptions {
   error?: unknown;
 }
 
-export function useListErrorNotification({
-  id,
-  title,
-  error,
-}: UseListErrorNotificationOptions) {
+export function useListErrorNotification({ id, title, error }: UseListErrorNotificationOptions) {
   useEffect(() => {
     if (!error) return;
     showErrorNotification({

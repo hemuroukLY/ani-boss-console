@@ -1,9 +1,6 @@
 import { Tag, Typography } from "@arco-design/web-react";
 import { DataTable } from "@/components/common";
-import type {
-  Tenant,
-  TenantOperationStatus,
-} from "@/components/tenant/model";
+import type { Tenant, TenantOperationStatus } from "@/components/tenant/model";
 
 interface TenantOperationHistoryProps {
   tenant: Tenant;
@@ -28,58 +25,49 @@ const operationLabels: Record<string, string> = {
   simulate_overdue: "模拟欠费",
 };
 
-const statusMeta: Record<
-  TenantOperationStatus,
-  { label: string; color: string }
-> = {
+const statusMeta: Record<TenantOperationStatus, { label: string; color: string }> = {
   success: { label: "成功", color: "green" },
   failed: { label: "失败", color: "red" },
 };
 
-export function TenantOperationHistory({
-  tenant,
-}: TenantOperationHistoryProps) {
+export function TenantOperationHistory({ tenant }: TenantOperationHistoryProps) {
   return (
     <DataTable
-        rowKey="id"
-        data={tenant.operations}
-        pagination={false}
-        columns={[
-          {
-            title: "操作",
-            dataIndex: "operation",
-            width: 180,
-            render: (value: string) => operationLabels[value] ?? value,
-          },
-          {
-            title: "状态",
-            dataIndex: "status",
-            width: 100,
-            render: (value: TenantOperationStatus) => (
-              <Tag color={statusMeta[value].color}>
-                {statusMeta[value].label}
-              </Tag>
-            ),
-          },
-          {
-            title: "说明",
-            dataIndex: "message",
-            render: (value: string) => value || "-",
-          },
-          {
-            title: "操作人",
-            dataIndex: "by",
-            width: 180,
-            render: (value: string) => (
-              <Typography.Text copyable>{value}</Typography.Text>
-            ),
-          },
-          {
-            title: "时间",
-            dataIndex: "createdAt",
-            width: 180,
-          },
-        ]}
-      />
+      rowKey="id"
+      data={tenant.operations}
+      pagination={false}
+      columns={[
+        {
+          title: "操作",
+          dataIndex: "operation",
+          width: 180,
+          render: (value: string) => operationLabels[value] ?? value,
+        },
+        {
+          title: "状态",
+          dataIndex: "status",
+          width: 100,
+          render: (value: TenantOperationStatus) => (
+            <Tag color={statusMeta[value].color}>{statusMeta[value].label}</Tag>
+          ),
+        },
+        {
+          title: "说明",
+          dataIndex: "message",
+          render: (value: string) => value || "-",
+        },
+        {
+          title: "操作人",
+          dataIndex: "by",
+          width: 180,
+          render: (value: string) => <Typography.Text copyable>{value}</Typography.Text>,
+        },
+        {
+          title: "时间",
+          dataIndex: "createdAt",
+          width: 180,
+        },
+      ]}
+    />
   );
 }

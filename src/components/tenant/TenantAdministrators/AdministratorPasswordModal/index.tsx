@@ -25,11 +25,7 @@ export function AdministratorPasswordModal({
       okText="确认重置"
     >
       <div className="mb-2 text-sm text-gray-600">新密码</div>
-      <Input.Password
-        value={password}
-        placeholder="至少 8 位"
-        onChange={onPasswordChange}
-      />
+      <Input.Password value={password} placeholder="至少 8 位" onChange={onPasswordChange} />
     </Modal>
   );
 }

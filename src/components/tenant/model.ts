@@ -14,8 +14,7 @@ export type TenantLifecycleEventType =
   | "overdue_detected"
   | "overdue_suspended"
   | "arrears_policy_updated";
-export type TenantBillingStatus =
-  "current" | "overdue" | "settled" | "credited";
+export type TenantBillingStatus = "current" | "overdue" | "settled" | "credited";
 export type TenantAdminRole = "租户所有者" | "租户管理员" | "只读审计";
 
 export interface TenantAdmin {
@@ -212,11 +211,7 @@ export const tenantStatusMeta = {
   disabled: { label: "禁用", color: "gray" },
 } as const;
 
-export const tenantAdminRoles: TenantAdminRole[] = [
-  "租户所有者",
-  "租户管理员",
-  "只读审计",
-];
+export const tenantAdminRoles: TenantAdminRole[] = ["租户所有者", "租户管理员", "只读审计"];
 
 export const tenantAdminStatusMeta = {
   active: { label: "活跃", color: "green" },
@@ -343,10 +338,7 @@ const defaultArrearsPolicy: TenantArrearsPolicy = {
   emailNotification: true,
 };
 
-function getCreatedLifecycle(
-  tenantId: string,
-  createdAt: string,
-): TenantLifecycleEvent[] {
+function getCreatedLifecycle(tenantId: string, createdAt: string): TenantLifecycleEvent[] {
   return [
     {
       id: `lifecycle-${tenantId}-created`,
@@ -358,10 +350,7 @@ function getCreatedLifecycle(
   ];
 }
 
-function getCreatedOperation(
-  tenantId: string,
-  createdAt: string,
-): TenantOperation {
+function getCreatedOperation(tenantId: string, createdAt: string): TenantOperation {
   return {
     id: `operation-${tenantId}-created`,
     operation: "create",
@@ -408,9 +397,7 @@ export function getTenantUsageBreakdown(usage: TenantUsage): TenantUsageCost[] {
 }
 
 function getPackageLimits(planCode: string): TenantQuotaLimits {
-  const quotaPackage = tenantQuotaPackages.find(
-    (item) => item.planCode === planCode,
-  );
+  const quotaPackage = tenantQuotaPackages.find((item) => item.planCode === planCode);
   return { ...(quotaPackage ?? tenantQuotaPackages[0]).limits };
 }
 
@@ -659,146 +646,139 @@ export const initialTenants: Tenant[] = [
   },
 ];
 
-export const initialTenantBillings: TenantBilling[] = initialTenants.map(
-  (tenant) => {
-    const billingByTenant: Record<
-      string,
-      Pick<
-        TenantBilling,
-        | "status"
-        | "usageCostUsd"
-        | "invoiceNo"
-        | "dueDate"
-        | "adjustments"
-        | "invoices"
-      >
-    > = {
-      "tn-1001": {
-        status: "current",
-        usageCostUsd: 4200,
-        invoiceNo: "INV-2607-02",
-        dueDate: "2026-08-05",
-        adjustments: [
-          {
-            id: "adj-acme-001",
-            at: "2026-07-08 10:00",
-            amountUsd: 500,
-            reason: "合同优惠调账",
-            by: "finance",
-          },
-        ],
-        invoices: [
-          {
-            id: "invoice-acme-001",
-            no: "INV-2607-02",
-            period: "2026-07",
-            amountUsd: 4200,
-            status: "issued",
-            issuedAt: "2026-07-31",
-          },
-        ],
-      },
-      "tn-1002": {
-        status: "current",
-        usageCostUsd: 1800,
-        invoiceNo: "INV-2607-01",
-        dueDate: "2026-08-05",
-        adjustments: [],
-        invoices: [
-          {
-            id: "invoice-future-001",
-            no: "INV-2607-01",
-            period: "2026-07",
-            amountUsd: 1800,
-            status: "issued",
-            issuedAt: "2026-07-31",
-          },
-        ],
-      },
-      "tn-1003": {
-        status: "overdue",
-        usageCostUsd: 9600,
-        invoiceNo: "INV-2606-88",
-        dueDate: "2026-07-05",
-        adjustments: [],
-        invoices: [
-          {
-            id: "invoice-ocean-001",
-            no: "INV-2606-88",
-            period: "2026-07",
-            amountUsd: 9600,
-            status: "issued",
-            issuedAt: "2026-06-30",
-          },
-        ],
-      },
-      tn_r5vcfu: {
-        status: "current",
-        usageCostUsd: 0,
-        invoiceNo: undefined,
-        dueDate: "-",
-        adjustments: [],
-        invoices: [],
-      },
-      "tn-1005": {
-        status: "settled",
-        usageCostUsd: 0,
-        invoiceNo: undefined,
-        dueDate: "-",
-        adjustments: [],
-        invoices: [],
-      },
-    };
-    const preset = billingByTenant[tenant.id] ?? {
-      status: tenant.balanceUsd < 0 ? "overdue" : "current",
+export const initialTenantBillings: TenantBilling[] = initialTenants.map((tenant) => {
+  const billingByTenant: Record<
+    string,
+    Pick<
+      TenantBilling,
+      "status" | "usageCostUsd" | "invoiceNo" | "dueDate" | "adjustments" | "invoices"
+    >
+  > = {
+    "tn-1001": {
+      status: "current",
+      usageCostUsd: 4200,
+      invoiceNo: "INV-2607-02",
+      dueDate: "2026-08-05",
+      adjustments: [
+        {
+          id: "adj-acme-001",
+          at: "2026-07-08 10:00",
+          amountUsd: 500,
+          reason: "合同优惠调账",
+          by: "finance",
+        },
+      ],
+      invoices: [
+        {
+          id: "invoice-acme-001",
+          no: "INV-2607-02",
+          period: "2026-07",
+          amountUsd: 4200,
+          status: "issued",
+          issuedAt: "2026-07-31",
+        },
+      ],
+    },
+    "tn-1002": {
+      status: "current",
+      usageCostUsd: 1800,
+      invoiceNo: "INV-2607-01",
+      dueDate: "2026-08-05",
+      adjustments: [],
+      invoices: [
+        {
+          id: "invoice-future-001",
+          no: "INV-2607-01",
+          period: "2026-07",
+          amountUsd: 1800,
+          status: "issued",
+          issuedAt: "2026-07-31",
+        },
+      ],
+    },
+    "tn-1003": {
+      status: "overdue",
+      usageCostUsd: 9600,
+      invoiceNo: "INV-2606-88",
+      dueDate: "2026-07-05",
+      adjustments: [],
+      invoices: [
+        {
+          id: "invoice-ocean-001",
+          no: "INV-2606-88",
+          period: "2026-07",
+          amountUsd: 9600,
+          status: "issued",
+          issuedAt: "2026-06-30",
+        },
+      ],
+    },
+    tn_r5vcfu: {
+      status: "current",
       usageCostUsd: 0,
       invoiceNo: undefined,
       dueDate: "-",
       adjustments: [],
       invoices: [],
-    };
+    },
+    "tn-1005": {
+      status: "settled",
+      usageCostUsd: 0,
+      invoiceNo: undefined,
+      dueDate: "-",
+      adjustments: [],
+      invoices: [],
+    },
+  };
+  const preset = billingByTenant[tenant.id] ?? {
+    status: tenant.balanceUsd < 0 ? "overdue" : "current",
+    usageCostUsd: 0,
+    invoiceNo: undefined,
+    dueDate: "-",
+    adjustments: [],
+    invoices: [],
+  };
 
-    return {
-      id: `billing-${tenant.id}`,
-      tenantId: tenant.id,
-      tenantName: tenant.name,
-      status: preset.status,
-      period: "2026-07",
-      usageCostUsd: preset.usageCostUsd,
-      creditUsd: tenant.creditUsd,
-      balanceUsd: tenant.balanceUsd,
-      invoiceNo: preset.invoiceNo,
-      dueDate: preset.dueDate,
-      usageBreakdown: getTenantUsageBreakdown(tenant.usage),
-      adjustments: preset.adjustments,
-      invoices: preset.invoices,
-      operations: [
-        ...preset.adjustments.map((adjustment) => ({
-          id: `operation-${adjustment.id}`,
-          operation: "授信调账",
-          message: `${adjustment.amountUsd > 0 ? "+" : ""}${adjustment.amountUsd} USD · ${adjustment.reason}`,
-          createdAt: adjustment.at,
-          by: adjustment.by,
-        })),
-        ...preset.invoices.map((invoice) => ({
-          id: `operation-${invoice.id}`,
-          operation: "生成账单",
-          message: `${invoice.no} · ${invoice.amountUsd} USD`,
-          createdAt: `${invoice.issuedAt} 00:00`,
-          by: "finance",
-        })),
-        {
-          id: `billing-operation-${tenant.id}-created`,
-          operation: "开通计费账户",
-          message: `创建 ${tenant.name} 计费账户`,
-          createdAt: tenant.createdAt,
-          by: "system",
-        },
-      ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-      updatedAt: "2026-07-31 23:59",
-    };
-  },
-);
+  return {
+    id: `billing-${tenant.id}`,
+    tenantId: tenant.id,
+    tenantName: tenant.name,
+    status: preset.status,
+    period: "2026-07",
+    usageCostUsd: preset.usageCostUsd,
+    creditUsd: tenant.creditUsd,
+    balanceUsd: tenant.balanceUsd,
+    invoiceNo: preset.invoiceNo,
+    dueDate: preset.dueDate,
+    usageBreakdown: getTenantUsageBreakdown(tenant.usage),
+    adjustments: preset.adjustments,
+    invoices: preset.invoices,
+    operations: [
+      ...preset.adjustments.map((adjustment) => ({
+        id: `operation-${adjustment.id}`,
+        operation: "授信调账",
+        message: `${adjustment.amountUsd > 0 ? "+" : ""}${adjustment.amountUsd} USD · ${adjustment.reason}`,
+        createdAt: adjustment.at,
+        by: adjustment.by,
+      })),
+      ...preset.invoices.map((invoice) => ({
+        id: `operation-${invoice.id}`,
+        operation: "生成账单",
+        message: `${invoice.no} · ${invoice.amountUsd} USD`,
+        createdAt: `${invoice.issuedAt} 00:00`,
+        by: "finance",
+      })),
+      {
+        id: `billing-operation-${tenant.id}-created`,
+        operation: "开通计费账户",
+        message: `创建 ${tenant.name} 计费账户`,
+        createdAt: tenant.createdAt,
+        by: "system",
+      },
+    ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    updatedAt: "2026-07-31 23:59",
+  };
+});
 
 export const initialTenantAdmins: TenantAdmin[] = [
   {

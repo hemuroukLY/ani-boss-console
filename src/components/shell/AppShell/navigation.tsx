@@ -79,9 +79,7 @@ export interface NavigationGroup {
 
 export type NavigationItem = NavigationLeaf | NavigationGroup;
 
-export function isNavigationGroup(
-  item: NavigationItem,
-): item is NavigationGroup {
+export function isNavigationGroup(item: NavigationItem): item is NavigationGroup {
   return "children" in item;
 }
 

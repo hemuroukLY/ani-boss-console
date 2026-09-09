@@ -98,8 +98,7 @@ function percent(value: QuotaValue) {
 
 function blockTotal(tenant: TenantStorageQuota): QuotaValue {
   return {
-    used:
-      tenant.blockEssd.used + tenant.blockSsd.used + tenant.blockHdd.used,
+    used: tenant.blockEssd.used + tenant.blockSsd.used + tenant.blockHdd.used,
     max: tenant.blockEssd.max + tenant.blockSsd.max + tenant.blockHdd.max,
   };
 }
@@ -135,11 +134,7 @@ function UsageCell({
       <div className="mb-1 text-xs text-gray-700">
         {formatter(value.used)} / {formatter(value.max)}
       </div>
-      <Progress
-        percent={usage}
-        showText={false}
-        status={usage >= 90 ? "warning" : "normal"}
-      />
+      <Progress percent={usage} showText={false} status={usage >= 90 ? "warning" : "normal"} />
     </div>
   );
 }
@@ -159,21 +154,14 @@ export function TenantStorageQuotaPage() {
         (scope === "normal" && hot < 85 && !tenant.pendingExpand);
       return (
         matchesScope &&
-        (!query ||
-          `${tenant.displayName} ${tenant.name}`.toLowerCase().includes(query))
+        (!query || `${tenant.displayName} ${tenant.name}`.toLowerCase().includes(query))
       );
     });
   }, [keyword, scope]);
 
-  const pendingCount = tenantQuotas.filter(
-    (tenant) => tenant.pendingExpand,
-  ).length;
-  const highCount = tenantQuotas.filter(
-    (tenant) => highestUsage(tenant) >= 85,
-  ).length;
-  const fullCount = tenantQuotas.filter(
-    (tenant) => highestUsage(tenant) >= 100,
-  ).length;
+  const pendingCount = tenantQuotas.filter((tenant) => tenant.pendingExpand).length;
+  const highCount = tenantQuotas.filter((tenant) => highestUsage(tenant) >= 85).length;
+  const fullCount = tenantQuotas.filter((tenant) => highestUsage(tenant) >= 100).length;
 
   const columns: ListColumn<TenantStorageQuota>[] = [
     {
@@ -182,10 +170,7 @@ export function TenantStorageQuotaPage() {
       width: 190,
       fixed: "left",
       render: (_, tenant) => (
-        <DataTableNameCell
-          name={tenant.displayName}
-          secondary={tenant.name}
-        />
+        <DataTableNameCell name={tenant.displayName} secondary={tenant.name} />
       ),
     },
     {
@@ -212,16 +197,12 @@ export function TenantStorageQuotaPage() {
     {
       title: "块存储",
       width: 180,
-      render: (_, tenant) => (
-        <UsageCell value={blockTotal(tenant)} formatter={formatCapacity} />
-      ),
+      render: (_, tenant) => <UsageCell value={blockTotal(tenant)} formatter={formatCapacity} />,
     },
     {
       title: "对象存储",
       width: 180,
-      render: (_, tenant) => (
-        <UsageCell value={tenant.object} formatter={formatCapacity} />
-      ),
+      render: (_, tenant) => <UsageCell value={tenant.object} formatter={formatCapacity} />,
     },
     {
       title: "对象数",
@@ -231,9 +212,7 @@ export function TenantStorageQuotaPage() {
     {
       title: "NFS",
       width: 180,
-      render: (_, tenant) => (
-        <UsageCell value={tenant.nfs} formatter={formatCapacity} />
-      ),
+      render: (_, tenant) => <UsageCell value={tenant.nfs} formatter={formatCapacity} />,
     },
     {
       title: "向量数",
@@ -260,9 +239,7 @@ export function TenantStorageQuotaPage() {
               {tenant.pendingExpand.kind}：{tenant.pendingExpand.current} →{" "}
               {tenant.pendingExpand.requested}
             </div>
-            <div className="truncate text-gray-500">
-              {tenant.pendingExpand.reason}
-            </div>
+            <div className="truncate text-gray-500">{tenant.pendingExpand.reason}</div>
           </div>
         ) : (
           <span className="text-gray-400">-</span>
@@ -290,9 +267,7 @@ export function TenantStorageQuotaPage() {
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
-              <div className="text-base font-semibold text-gray-900">
-                租户配额明细
-              </div>
+              <div className="text-base font-semibold text-gray-900">租户配额明细</div>
               <div className="mt-1 text-xs text-gray-500">
                 当前为前端展示数据，尚未接入 ANI 存储配额接口。
               </div>

@@ -1,9 +1,5 @@
 import { Tag, Typography } from "@arco-design/web-react";
-import {
-  DataTable,
-  DataTableRowActionButton,
-  DataTableRowActions,
-} from "@/components/common";
+import { DataTable, DataTableRowActionButton, DataTableRowActions } from "@/components/common";
 import type { AlertItem } from "@/components/overview/model";
 import { LevelTag } from "../../LevelTag";
 
@@ -25,9 +21,7 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
           title: "级别",
           dataIndex: "level",
           width: 90,
-          render: (_: unknown, item: AlertItem) => (
-            <LevelTag level={item.level} />
-          ),
+          render: (_: unknown, item: AlertItem) => <LevelTag level={item.level} />,
         },
         {
           title: "标题 / 摘要",
@@ -62,9 +56,7 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
           dataIndex: "status",
           width: 100,
           render: (_: unknown, item: AlertItem) => (
-            <Tag color={item.status === "待处理" ? "orange" : "green"}>
-              {item.status}
-            </Tag>
+            <Tag color={item.status === "待处理" ? "orange" : "green"}>{item.status}</Tag>
           ),
         },
         {
@@ -74,14 +66,10 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
           render: (_: unknown, item: AlertItem) =>
             item.status === "待处理" ? (
               <DataTableRowActions>
-                <DataTableRowActionButton
-                  onClick={() => onUpdate(item.id, "已处理")}
-                >
+                <DataTableRowActionButton onClick={() => onUpdate(item.id, "已处理")}>
                   处理
                 </DataTableRowActionButton>
-                <DataTableRowActionButton
-                  onClick={() => onUpdate(item.id, "已忽略")}
-                >
+                <DataTableRowActionButton onClick={() => onUpdate(item.id, "已忽略")}>
                   忽略
                 </DataTableRowActionButton>
               </DataTableRowActions>

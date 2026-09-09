@@ -1,15 +1,9 @@
 import { Card } from "@arco-design/web-react";
 import clsx from "clsx";
 import { DataTable, type ListColumn } from "@/components/common";
-import type {
-  GpuInventoryDevice,
-  GpuInventoryStatus,
-} from "../types";
+import type { GpuInventoryDevice, GpuInventoryStatus } from "../types";
 
-const statusMeta: Record<
-  GpuInventoryStatus,
-  { label: string; className: string }
-> = {
+const statusMeta: Record<GpuInventoryStatus, { label: string; className: string }> = {
   available: {
     label: "空闲（未分配）",
     className: "bg-green-50 text-green-700",
@@ -30,8 +24,7 @@ function formatProfile(device: GpuInventoryDevice) {
   if (mode === "wholecard") return "整卡";
 
   if (mode === "vgpu") {
-    const detail =
-      device.gpuSharingSpec || device.gpuSpec || device.gpuSharingPolicy;
+    const detail = device.gpuSharingSpec || device.gpuSpec || device.gpuSharingPolicy;
     return detail ? `vGPU · ${detail}` : "vGPU";
   }
 
@@ -46,9 +39,7 @@ function formatProfile(device: GpuInventoryDevice) {
 
 function formatModel(device: GpuInventoryDevice) {
   const memory = formatMemory(device.memoryTotalMb);
-  return memory === "-"
-    ? device.gpuType || "-"
-    : `${device.gpuType} · ${memory}`;
+  return memory === "-" ? device.gpuType || "-" : `${device.gpuType} · ${memory}`;
 }
 
 function formatOwnership(device: GpuInventoryDevice) {
@@ -82,12 +73,7 @@ const columns: ListColumn<GpuInventoryDevice>[] = [
         className: "bg-gray-100 text-gray-700",
       };
       return (
-        <span
-          className={clsx(
-            "inline-flex rounded px-2 py-0.5 text-xs",
-            meta.className,
-          )}
-        >
+        <span className={clsx("inline-flex rounded px-2 py-0.5 text-xs", meta.className)}>
           {meta.label}
         </span>
       );
@@ -111,10 +97,7 @@ interface GpuInventoryTableProps {
   loading: boolean;
 }
 
-export function GpuInventoryTable({
-  data,
-  loading,
-}: GpuInventoryTableProps) {
+export function GpuInventoryTable({ data, loading }: GpuInventoryTableProps) {
   return (
     <Card
       title="设备列表 · 切分 / 分配"

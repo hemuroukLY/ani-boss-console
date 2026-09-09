@@ -19,10 +19,7 @@ import {
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { Metric } from "@/components/overview/Metric";
 
-const healthMeta: Record<
-  PlatformServiceScrapeStatus,
-  { label: string; className: string }
-> = {
+const healthMeta: Record<PlatformServiceScrapeStatus, { label: string; className: string }> = {
   reachable: { label: "正常", className: "bg-green-50 text-green-700" },
   unknown: { label: "未知", className: "bg-orange-50 text-orange-700" },
   unreachable: { label: "异常", className: "bg-red-50 text-red-700" },
@@ -41,9 +38,7 @@ const serviceNames: Record<string, string> = {
 function HealthBadge({ status }: { status: PlatformServiceScrapeStatus }) {
   const meta = healthMeta[status];
   return (
-    <span
-      className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${meta.className}`}
-    >
+    <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${meta.className}`}>
       {meta.label}
     </span>
   );
@@ -75,15 +70,9 @@ export function PlatformHealthPage() {
     error: healthQuery.error,
   });
   const components = healthQuery.data?.components || [];
-  const reachableCount = components.filter(
-    (item) => item.scrapeStatus === "reachable",
-  ).length;
-  const unknownCount = components.filter(
-    (item) => item.scrapeStatus === "unknown",
-  ).length;
-  const unreachableCount = components.filter(
-    (item) => item.scrapeStatus === "unreachable",
-  ).length;
+  const reachableCount = components.filter((item) => item.scrapeStatus === "reachable").length;
+  const unknownCount = components.filter((item) => item.scrapeStatus === "unknown").length;
+  const unreachableCount = components.filter((item) => item.scrapeStatus === "unreachable").length;
   const total = components.length;
   const overall = healthQuery.isPending
     ? "加载中"
@@ -94,12 +83,7 @@ export function PlatformHealthPage() {
         : unknownCount > 0
           ? "部分未知"
           : "正常";
-  const overallTone =
-    unreachableCount > 0
-      ? "danger"
-      : unknownCount > 0
-        ? "warning"
-        : undefined;
+  const overallTone = unreachableCount > 0 ? "danger" : unknownCount > 0 ? "warning" : undefined;
 
   const columns: ListColumn<PlatformServiceHealthComponent>[] = [
     { title: "范围", width: 100, render: () => "核心服务" },
@@ -117,9 +101,7 @@ export function PlatformHealthPage() {
     {
       title: "状态",
       width: 90,
-      render: (_, component) => (
-        <HealthBadge status={component.scrapeStatus} />
-      ),
+      render: (_, component) => <HealthBadge status={component.scrapeStatus} />,
     },
     {
       title: "版本",
@@ -129,14 +111,12 @@ export function PlatformHealthPage() {
     {
       title: "可达 / 观测副本",
       width: 150,
-      render: (_, component) =>
-        `${component.reachableReplicas} / ${component.observedReplicas}`,
+      render: (_, component) => `${component.reachableReplicas} / ${component.observedReplicas}`,
     },
     {
       title: "最近采集",
       width: 110,
-      render: (_, component) =>
-        formatLastCollected(component.sampleAgeSeconds),
+      render: (_, component) => formatLastCollected(component.sampleAgeSeconds),
     },
     {
       title: "操作",
@@ -170,10 +150,7 @@ export function PlatformHealthPage() {
         title="平台健康"
         subtitle="ANI 核心服务的 Prometheus 抓取状态与可达副本。"
         extra={
-          <Button
-            loading={healthQuery.isFetching}
-            onClick={() => void healthQuery.refetch()}
-          >
+          <Button loading={healthQuery.isFetching} onClick={() => void healthQuery.refetch()}>
             刷新
           </Button>
         }
@@ -185,38 +162,21 @@ export function PlatformHealthPage() {
       />
 
       <section className="grid grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
-        <Metric
-          label="整体状态"
-          value={overall}
-          hint="七个核心服务"
-          tone={overallTone}
-        />
+        <Metric label="整体状态" value={overall} hint="七个核心服务" tone={overallTone} />
         <Metric
           label="正常"
-          value={
-            healthQuery.isPending || healthQuery.isError
-              ? "-"
-              : String(reachableCount)
-          }
+          value={healthQuery.isPending || healthQuery.isError ? "-" : String(reachableCount)}
           hint="scrape_status = reachable"
         />
         <Metric
           label="未知"
-          value={
-            healthQuery.isPending || healthQuery.isError
-              ? "-"
-              : String(unknownCount)
-          }
+          value={healthQuery.isPending || healthQuery.isError ? "-" : String(unknownCount)}
           hint="未观测到目标"
           tone="warning"
         />
         <Metric
           label="异常"
-          value={
-            healthQuery.isPending || healthQuery.isError
-              ? "-"
-              : String(unreachableCount)
-          }
+          value={healthQuery.isPending || healthQuery.isError ? "-" : String(unreachableCount)}
           hint="已观测但不可达"
           tone="danger"
         />
@@ -224,9 +184,7 @@ export function PlatformHealthPage() {
 
       <section className="grid grid-cols-2 gap-3.5 max-[980px]:grid-cols-1">
         <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <div className="text-base font-semibold text-gray-900">
-            服务状态分布
-          </div>
+          <div className="text-base font-semibold text-gray-900">服务状态分布</div>
           <div className="mt-5 space-y-4">
             {distribution.map(([label, count, color]) => (
               <div
@@ -270,9 +228,7 @@ export function PlatformHealthPage() {
                 : healthQuery.data?.sourceStatus || "-"}
             </dd>
             <dt className="text-gray-500">观测时间</dt>
-            <dd className="m-0 text-gray-900">
-              {formatObservedAt(healthQuery.data?.observedAt)}
-            </dd>
+            <dd className="m-0 text-gray-900">{formatObservedAt(healthQuery.data?.observedAt)}</dd>
           </dl>
         </div>
       </section>
@@ -281,9 +237,7 @@ export function PlatformHealthPage() {
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
-              <div className="text-base font-semibold text-gray-900">
-                服务分组健康
-              </div>
+              <div className="text-base font-semibold text-gray-900">服务分组健康</div>
               <div className="mt-1 text-xs text-gray-500">
                 本页只读巡检，不提供服务重启或扩缩容操作。
               </div>

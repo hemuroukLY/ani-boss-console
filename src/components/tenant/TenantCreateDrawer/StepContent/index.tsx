@@ -1,29 +1,14 @@
-import {
-  Checkbox,
-  Descriptions,
-  Form,
-  Input,
-  Select,
-  Typography,
-} from "@arco-design/web-react";
-import {
-  quotaPackages,
-  tenantRegions,
-  type TenantDraft,
-} from "@/components/tenant/model";
+import { Checkbox, Descriptions, Form, Input, Select, Typography } from "@arco-design/web-react";
+import { quotaPackages, tenantRegions, type TenantDraft } from "@/components/tenant/model";
 
 interface StepContentProps {
   current: number;
   draft: TenantDraft;
-  onChange: <Key extends keyof TenantDraft>(
-    field: Key,
-    value: TenantDraft[Key],
-  ) => void;
+  onChange: <Key extends keyof TenantDraft>(field: Key, value: TenantDraft[Key]) => void;
 }
 
 export function StepContent({ current, draft, onChange }: StepContentProps) {
-  const regionName =
-    tenantRegions.find((item) => item.value === draft.region)?.label ?? "-";
+  const regionName = tenantRegions.find((item) => item.value === draft.region)?.label ?? "-";
 
   return (
     <Form layout="vertical" className="mx-auto max-w-[560px]">
@@ -51,10 +36,7 @@ export function StepContent({ current, draft, onChange }: StepContentProps) {
             />
           </Form.Item>
           <Form.Item label="行业">
-            <Input
-              value={draft.industry}
-              onChange={(value) => onChange("industry", value)}
-            />
+            <Input value={draft.industry} onChange={(value) => onChange("industry", value)} />
           </Form.Item>
         </>
       ) : null}
@@ -81,10 +63,7 @@ export function StepContent({ current, draft, onChange }: StepContentProps) {
               options={quotaPackages.map((value) => ({ label: value, value }))}
             />
           </Form.Item>
-          <Checkbox
-            checked={draft.isTrial}
-            onChange={(checked) => onChange("isTrial", checked)}
-          >
+          <Checkbox checked={draft.isTrial} onChange={(checked) => onChange("isTrial", checked)}>
             标记为试用租户
           </Checkbox>
         </>

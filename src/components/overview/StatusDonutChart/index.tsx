@@ -37,12 +37,5 @@ const statusOption: EChartsOption = {
 };
 
 export function StatusDonutChart() {
-  return (
-    <ReactECharts
-      option={statusOption}
-      notMerge
-      lazyUpdate
-      className="h-[260px] w-full"
-    />
-  );
+  return <ReactECharts option={statusOption} notMerge lazyUpdate className="h-[260px] w-full" />;
 }

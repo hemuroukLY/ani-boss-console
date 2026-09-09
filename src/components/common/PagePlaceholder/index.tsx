@@ -16,9 +16,7 @@ export function PagePlaceholder({ title, priority }: PagePlaceholderProps) {
           <Typography.Title heading={6} className="!m-0">
             页面能力暂未开放
           </Typography.Title>
-          <Typography.Text type="secondary">
-            该页尚未纳入有状态操作台种子数据。
-          </Typography.Text>
+          <Typography.Text type="secondary">该页尚未纳入有状态操作台种子数据。</Typography.Text>
         </div>
       </Card>
     </div>

@@ -1,14 +1,8 @@
 import { useMemo, useState } from "react";
 import { Button, Message, Modal, Typography } from "@arco-design/web-react";
-import {
-  useTenantManagement,
-  type TenantAdminAction,
-} from "@/components/tenant/TenantManagementProvider";
-import type {
-  Tenant,
-  TenantAdmin,
-  TenantAdminRole,
-} from "@/components/tenant/model";
+import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
+import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
+import type { Tenant, TenantAdmin, TenantAdminRole } from "@/components/tenant/model";
 import { AdministratorPasswordModal } from "./AdministratorPasswordModal";
 import { AdministratorRoleModal } from "./AdministratorRoleModal";
 import { AdministratorTable } from "./AdministratorTable";
@@ -20,14 +14,11 @@ interface TenantAdministratorsProps {
 }
 
 export function TenantAdministrators({ tenant }: TenantAdministratorsProps) {
-  const { tenantAdmins, inviteTenantAdmin, applyTenantAdminAction } =
-    useTenantManagement();
+  const { tenantAdmins, inviteTenantAdmin, applyTenantAdminAction } = useTenantManagement();
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
-  const [inviteDraft, setInviteDraft] =
-    useState<InviteDraft>(initialInviteDraft);
+  const [inviteDraft, setInviteDraft] = useState<InviteDraft>(initialInviteDraft);
   const [roleAdmin, setRoleAdmin] = useState<TenantAdmin>();
-  const [selectedRole, setSelectedRole] =
-    useState<TenantAdminRole>("租户管理员");
+  const [selectedRole, setSelectedRole] = useState<TenantAdminRole>("租户管理员");
   const [passwordAdmin, setPasswordAdmin] = useState<TenantAdmin>();
   const [newPassword, setNewPassword] = useState("");
   const admins = useMemo(
@@ -35,10 +26,7 @@ export function TenantAdministrators({ tenant }: TenantAdministratorsProps) {
     [tenant.id, tenantAdmins],
   );
 
-  const showActionResult = (
-    result: { ok: boolean; reason?: string },
-    successMessage: string,
-  ) => {
+  const showActionResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
       Message.success(successMessage);
       return true;
@@ -90,11 +78,7 @@ export function TenantAdministrators({ tenant }: TenantAdministratorsProps) {
       title,
       content,
       okButtonProps: danger ? { status: "danger" } : undefined,
-      onOk: () =>
-        showActionResult(
-          applyTenantAdminAction(admin.id, action),
-          successMessage,
-        ),
+      onOk: () => showActionResult(applyTenantAdminAction(admin.id, action), successMessage),
     });
   };
 

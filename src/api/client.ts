@@ -60,9 +60,7 @@ function apiErrorFromBody(status: number, body: unknown) {
 }
 
 function isPublicAuthPath(path: string) {
-  return (
-    path === "/auth/platform/password/login" || path === "/auth/refresh"
-  );
+  return path === "/auth/platform/password/login" || path === "/auth/refresh";
 }
 
 async function requestAccessTokenRefresh(refreshToken: string) {
@@ -101,10 +99,7 @@ function refreshAccessToken(refreshToken: string) {
 }
 
 export function redirectToLogin() {
-  if (
-    typeof window === "undefined" ||
-    window.location.pathname.startsWith("/login")
-  ) {
+  if (typeof window === "undefined" || window.location.pathname.startsWith("/login")) {
     return;
   }
   const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -126,28 +121,18 @@ function createRequestHeaders(init: RequestInit, accessToken?: string) {
   return headers;
 }
 
-export async function apiRequest<T>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const isPublicRequest = isPublicAuthPath(path);
   const send = (accessToken?: string) =>
     fetch(`${API_BASE}${path}`, {
       ...init,
-      headers: createRequestHeaders(
-        init,
-        isPublicRequest ? undefined : accessToken,
-      ),
+      headers: createRequestHeaders(init, isPublicRequest ? undefined : accessToken),
       credentials: "include",
     });
 
   let response = await send(getAuthState().tokens?.access_token);
 
-  if (
-    response.status === 401 &&
-    !isPublicRequest &&
-    !isDevelopmentAuthBypassActive()
-  ) {
+  if (response.status === 401 && !isPublicRequest && !isDevelopmentAuthBypassActive()) {
     const refreshToken = getAuthState().tokens?.refresh_token;
     if (!refreshToken) {
       expireAuthSession();

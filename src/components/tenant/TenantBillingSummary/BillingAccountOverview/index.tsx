@@ -1,14 +1,5 @@
-import {
-  Button,
-  Descriptions,
-  Space,
-  Tag,
-  Typography,
-} from "@arco-design/web-react";
-import {
-  tenantBillingStatusMeta,
-  type TenantBilling,
-} from "@/components/tenant/model";
+import { Button, Descriptions, Space, Tag, Typography } from "@arco-design/web-react";
+import { tenantBillingStatusMeta, type TenantBilling } from "@/components/tenant/model";
 import { formatUsd } from "../formatters";
 
 interface BillingAccountOverviewProps {
@@ -37,9 +28,7 @@ export function BillingAccountOverview({
           <Typography.Title heading={6} className="!mb-1">
             计费账户
           </Typography.Title>
-          <Typography.Text type="secondary">
-            最近更新 {billing.updatedAt}
-          </Typography.Text>
+          <Typography.Text type="secondary">最近更新 {billing.updatedAt}</Typography.Text>
         </div>
         <Space wrap>
           <Button onClick={onRefresh}>刷新用量</Button>

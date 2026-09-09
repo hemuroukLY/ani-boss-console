@@ -48,10 +48,7 @@ export function ArrearsPolicyModal({
         </div>
         <div className="flex items-center justify-between gap-4">
           <span>发送欠费邮件通知</span>
-          <Switch
-            checked={emailNotification}
-            onChange={onEmailNotificationChange}
-          />
+          <Switch checked={emailNotification} onChange={onEmailNotificationChange} />
         </div>
       </div>
     </Modal>

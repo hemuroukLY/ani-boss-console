@@ -34,9 +34,7 @@ const TabPane = Tabs.TabPane;
 
 export function GpuResourcePoolPage() {
   const queryClient = useQueryClient();
-  const [quotaTarget, setQuotaTarget] = useState<TenantGpuAllocation | null>(
-    null,
-  );
+  const [quotaTarget, setQuotaTarget] = useState<TenantGpuAllocation | null>(null);
   const [quotaForm] = Form.useForm<QuotaFormValues>();
 
   const inventoryQuery = useQuery({
@@ -86,11 +84,7 @@ export function GpuResourcePoolPage() {
   });
 
   const refreshAll = async () => {
-    await Promise.all([
-      inventoryQuery.refetch(),
-      occupancyQuery.refetch(),
-      tenantsQuery.refetch(),
-    ]);
+    await Promise.all([inventoryQuery.refetch(), occupancyQuery.refetch(), tenantsQuery.refetch()]);
   };
 
   const openQuotaModal = (tenant: TenantGpuAllocation) => {
@@ -106,9 +100,7 @@ export function GpuResourcePoolPage() {
   };
 
   const refreshing =
-    inventoryQuery.isFetching ||
-    occupancyQuery.isFetching ||
-    tenantsQuery.isFetching;
+    inventoryQuery.isFetching || occupancyQuery.isFetching || tenantsQuery.isFetching;
   const inventory = inventoryQuery.data?.items || [];
   const inventoryProfile = inventoryQuery.data?.profile;
 
@@ -150,31 +142,16 @@ export function GpuResourcePoolPage() {
           />
         </TabPane>
         <TabPane key="inventory" title="设备列表">
-          <GpuInventoryTable
-            data={inventory}
-            loading={inventoryQuery.isPending}
-          />
+          <GpuInventoryTable data={inventory} loading={inventoryQuery.isPending} />
         </TabPane>
         <TabPane key="scheduling-queues" title="调度队列">
-          <Card
-            title="调度队列"
-            className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0"
-          >
-            <Empty
-              className="py-12"
-              description="ANI 暂未提供 BOSS 平台级 GPU 调度队列接口"
-            />
+          <Card title="调度队列" className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0">
+            <Empty className="py-12" description="ANI 暂未提供 BOSS 平台级 GPU 调度队列接口" />
           </Card>
         </TabPane>
         <TabPane key="events" title="事件">
-          <Card
-            title="事件"
-            className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0"
-          >
-            <Empty
-              className="py-12"
-              description="ANI 暂未提供 GPU 资源池事件接口"
-            />
+          <Card title="事件" className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0">
+            <Empty className="py-12" description="ANI 暂未提供 GPU 资源池事件接口" />
           </Card>
         </TabPane>
       </Tabs>

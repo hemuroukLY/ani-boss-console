@@ -9,10 +9,7 @@ interface PlatformAlertTableProps {
   onUpdate: (id: number, status: AlertItem["status"]) => void;
 }
 
-export function PlatformAlertTable({
-  alerts,
-  onUpdate,
-}: PlatformAlertTableProps) {
+export function PlatformAlertTable({ alerts, onUpdate }: PlatformAlertTableProps) {
   const [keyword, setKeyword] = useState("");
   const [level, setLevel] = useState("全部级别");
   const [status, setStatus] = useState("全部状态");

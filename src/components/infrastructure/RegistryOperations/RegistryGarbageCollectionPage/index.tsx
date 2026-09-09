@@ -16,18 +16,9 @@ import {
 } from "../model";
 
 export function RegistryGarbageCollectionPage() {
-  const reclaimableGi = registryGcCandidates.reduce(
-    (total, layer) => total + layer.sizeGi,
-    0,
-  );
-  const currentUsedGi = registryTenantQuotas.reduce(
-    (total, quota) => total + quota.usedGi,
-    0,
-  );
-  const currentQuotaGi = registryTenantQuotas.reduce(
-    (total, quota) => total + quota.maxGi,
-    0,
-  );
+  const reclaimableGi = registryGcCandidates.reduce((total, layer) => total + layer.sizeGi, 0);
+  const currentUsedGi = registryTenantQuotas.reduce((total, quota) => total + quota.usedGi, 0);
+  const currentQuotaGi = registryTenantQuotas.reduce((total, quota) => total + quota.maxGi, 0);
   const lastRun = registryGcRuns[0];
 
   const candidateColumns: ListColumn<RegistryGcCandidate>[] = [
@@ -36,9 +27,7 @@ export function RegistryGarbageCollectionPage() {
       dataIndex: "digest",
       width: 220,
       fixed: "left",
-      render: (_, layer) => (
-        <DataTableNameCell name={layer.digest} secondary={layer.id} />
-      ),
+      render: (_, layer) => <DataTableNameCell name={layer.digest} secondary={layer.id} />,
     },
     { title: "所属仓库", dataIndex: "repository", width: 240 },
     {
@@ -56,9 +45,7 @@ export function RegistryGarbageCollectionPage() {
       title: "任务",
       dataIndex: "id",
       width: 170,
-      render: (_, run) => (
-        <DataTableNameCell name={run.id} secondary="镜像仓库 GC" />
-      ),
+      render: (_, run) => <DataTableNameCell name={run.id} secondary="镜像仓库 GC" />,
     },
     { title: "状态", dataIndex: "status", width: 110 },
     {
@@ -90,11 +77,7 @@ export function RegistryGarbageCollectionPage() {
           value={`${reclaimableGi.toFixed(1)} Gi`}
           hint={`${registryGcCandidates.length} 个候选层`}
         />
-        <Metric
-          label="上次回收"
-          value={`${lastRun.reclaimedGi} Gi`}
-          hint={lastRun.startedAt}
-        />
+        <Metric label="上次回收" value={`${lastRun.reclaimedGi} Gi`} hint={lastRun.startedAt} />
         <Metric
           label="当前镜像用量"
           value={`${currentUsedGi.toFixed(1)} / ${currentQuotaGi} Gi`}
@@ -105,9 +88,7 @@ export function RegistryGarbageCollectionPage() {
       <ListPageFrame
         header={
           <div className="px-5 pt-5">
-            <div className="text-base font-semibold text-gray-900">
-              待回收层
-            </div>
+            <div className="text-base font-semibold text-gray-900">待回收层</div>
             <div className="mt-1 text-xs text-gray-500">
               当前仅展示预估结果；执行操作待仓库任务接口接入后开放。
             </div>

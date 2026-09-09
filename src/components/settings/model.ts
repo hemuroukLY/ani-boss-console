@@ -1,5 +1,4 @@
-export type PlatformAdministratorRole =
-  "平台超级管理员" | "平台运维" | "平台只读";
+export type PlatformAdministratorRole = "平台超级管理员" | "平台运维" | "平台只读";
 
 export type PlatformAdministratorStatus = "active" | "invited" | "disabled";
 

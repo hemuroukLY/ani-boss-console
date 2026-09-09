@@ -24,12 +24,5 @@ const trendOption: EChartsOption = {
 };
 
 export function TrendChart() {
-  return (
-    <ReactECharts
-      option={trendOption}
-      notMerge
-      lazyUpdate
-      className="h-[260px] w-full"
-    />
-  );
+  return <ReactECharts option={trendOption} notMerge lazyUpdate className="h-[260px] w-full" />;
 }

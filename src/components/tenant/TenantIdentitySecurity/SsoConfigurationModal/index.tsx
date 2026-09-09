@@ -1,21 +1,7 @@
-import {
-  Button,
-  Form,
-  Modal,
-  Radio,
-  Select,
-  Space,
-  Typography,
-} from "@arco-design/web-react";
+import { Button, Form, Modal, Radio, Select, Space, Typography } from "@arco-design/web-react";
 import type { TenantSsoStatus } from "@/components/tenant/model";
 
-const idpProviders = [
-  "Azure AD",
-  "Okta",
-  "钉钉",
-  "企业微信",
-  "自定义 SAML",
-] as const;
+const idpProviders = ["Azure AD", "Okta", "钉钉", "企业微信", "自定义 SAML"] as const;
 
 interface SsoConfigurationModalProps {
   visible: boolean;

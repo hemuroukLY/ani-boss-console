@@ -52,6 +52,7 @@
 
 ## 开发记录
 
+- 完成代码或工程配置修改后，在最终回复前必须运行 `pnpm lint` 和 `pnpm fmt:check`；检查失败时应先修复，无法在当前范围处理的既有问题必须如实记录。
 - 完成并验证实现、修复或文档调整后，在最终回复前更新 `docs/PROJECT-STATUS.md`。
 - 记录应简短、事实准确，覆盖变更区域、用户可见行为、重要集成说明和已执行验证；不粘贴冗长命令输出。
 - 不创建重复的状态或记录文件；更新记录后运行 `git diff --check`。
@@ -70,7 +71,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **ani-boss-console** (1328 symbols, 2783 relationships, 104 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ani-boss-console** (1410 symbols, 2962 relationships, 111 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 

@@ -6,11 +6,7 @@ interface ErrorNotificationOptions {
   content: string;
 }
 
-export function showErrorNotification({
-  id,
-  title,
-  content,
-}: ErrorNotificationOptions) {
+export function showErrorNotification({ id, title, content }: ErrorNotificationOptions) {
   Notification.error({
     id,
     title,

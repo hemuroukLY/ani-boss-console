@@ -1,31 +1,19 @@
 import { Dropdown, Empty } from "@arco-design/web-react";
 import { IconDown } from "@arco-design/web-react/icon";
 import type { ReactElement } from "react";
-import {
-  DataTable,
-  DataTableRowActionButton,
-  type DataTableProps,
-} from "../DataTable";
+import { DataTable, DataTableRowActionButton, type DataTableProps } from "../DataTable";
 import styles from "./index.module.css";
 
-export type ListDataTableProps<T> = Omit<
-  DataTableProps<T>,
-  "className" | "noDataElement"
-> & {
+export type ListDataTableProps<T> = Omit<DataTableProps<T>, "className" | "noDataElement"> & {
   emptyText?: string;
 };
 
-export function ListDataTable<T>({
-  emptyText = "暂无数据",
-  ...tableProps
-}: ListDataTableProps<T>) {
+export function ListDataTable<T>({ emptyText = "暂无数据", ...tableProps }: ListDataTableProps<T>) {
   return (
     <DataTable<T>
       {...tableProps}
       className={styles.listDataTable}
-      noDataElement={
-        <Empty className={styles.tableState} description={emptyText} />
-      }
+      noDataElement={<Empty className={styles.tableState} description={emptyText} />}
     />
   );
 }

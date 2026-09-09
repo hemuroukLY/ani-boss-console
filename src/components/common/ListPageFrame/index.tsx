@@ -8,11 +8,7 @@ interface ListPageHeaderProps {
   extra?: ReactNode;
 }
 
-export function ListPageHeader({
-  title,
-  subtitle,
-  extra,
-}: ListPageHeaderProps) {
+export function ListPageHeader({ title, subtitle, extra }: ListPageHeaderProps) {
   return (
     <header className={styles.pageHeader}>
       <div className={styles.pageHeaderTitleArea}>
@@ -53,12 +49,7 @@ interface ListPageFrameProps {
   children: ReactNode;
 }
 
-export function ListPageFrame({
-  header,
-  tabs,
-  toolbar,
-  children,
-}: ListPageFrameProps) {
+export function ListPageFrame({ header, tabs, toolbar, children }: ListPageFrameProps) {
   const hasPageHeader = isValidElement(header) && header.type === ListPageHeader;
 
   return (

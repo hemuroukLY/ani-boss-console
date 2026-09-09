@@ -4,11 +4,7 @@ import { useEffect } from "react";
 import { ApiError } from "@/api/client";
 import { loginPlatform } from "@/api/auth";
 import { AuthCenterLayout } from "@/components/shell/AuthCenterLayout";
-import {
-  isAuthenticated,
-  setAuthSession,
-  setDevelopmentAuthBypass,
-} from "../store";
+import { isAuthenticated, setAuthSession, setDevelopmentAuthBypass } from "../store";
 
 interface PlatformLoginValues {
   username: string;
@@ -16,11 +12,7 @@ interface PlatformLoginValues {
 }
 
 function normalizeRedirect(redirect?: string) {
-  return (
-    redirect?.startsWith("/") &&
-    !redirect.startsWith("//") &&
-    !redirect.includes("\\")
-  )
+  return redirect?.startsWith("/") && !redirect.startsWith("//") && !redirect.includes("\\")
     ? redirect
     : "/";
 }
@@ -73,12 +65,7 @@ export function LoginPage({ redirect }: { redirect?: string }) {
             field="username"
             rules={[{ required: true, message: "请输入平台管理员用户名" }]}
           >
-            <Input
-              placeholder="请输入用户名"
-              maxLength={64}
-              allowClear
-              autoComplete="username"
-            />
+            <Input placeholder="请输入用户名" maxLength={64} allowClear autoComplete="username" />
           </Form.Item>
           <Form.Item
             label="密码"

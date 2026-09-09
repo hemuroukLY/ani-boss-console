@@ -28,8 +28,7 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
             },
             {
               title: "单价（USD）",
-              render: (_, item: TenantUsageCost) =>
-                `$${formatAmount(item.unitCost)}`,
+              render: (_, item: TenantUsageCost) => `$${formatAmount(item.unitCost)}`,
             },
             {
               title: "费用（USD）",

@@ -1,9 +1,5 @@
 import { Button, Tag, Typography } from "@arco-design/web-react";
-import {
-  DataTable,
-  DataTableRowActionButton,
-  DataTableRowActions,
-} from "@/components/common";
+import { DataTable, DataTableRowActionButton, DataTableRowActions } from "@/components/common";
 import type { TenantQuotaRequest } from "@/components/tenant/model";
 import { formatNumber } from "../formatters";
 
@@ -62,9 +58,7 @@ export function QuotaRequestTable({
               <div>
                 <div>{request.reason}</div>
                 {request.rejectReason ? (
-                  <div className="mt-1 text-xs text-red-500">
-                    驳回：{request.rejectReason}
-                  </div>
+                  <div className="mt-1 text-xs text-red-500">驳回：{request.rejectReason}</div>
                 ) : null}
               </div>
             ),
@@ -87,10 +81,7 @@ export function QuotaRequestTable({
                   <DataTableRowActionButton onClick={() => onApprove(request)}>
                     通过
                   </DataTableRowActionButton>
-                  <DataTableRowActionButton
-                    status="danger"
-                    onClick={() => onReject(request)}
-                  >
+                  <DataTableRowActionButton status="danger" onClick={() => onReject(request)}>
                     驳回
                   </DataTableRowActionButton>
                 </DataTableRowActions>

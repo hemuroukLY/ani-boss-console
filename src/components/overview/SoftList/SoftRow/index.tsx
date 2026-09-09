@@ -7,7 +7,5 @@ interface SoftRowProps {
 }
 
 export function SoftRow({ title, meta }: SoftRowProps) {
-  return (
-    <List.Item actions={[<span key="meta">{meta}</span>]}>{title}</List.Item>
-  );
+  return <List.Item actions={[<span key="meta">{meta}</span>]}>{title}</List.Item>;
 }

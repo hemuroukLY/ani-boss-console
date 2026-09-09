@@ -6,8 +6,7 @@ import { traceSamples } from "../model";
 
 export function PlatformTracePage() {
   const [traceId, setTraceId] = useState(traceSamples[0].id);
-  const trace =
-    traceSamples.find((item) => item.id === traceId) ?? traceSamples[0];
+  const trace = traceSamples.find((item) => item.id === traceId) ?? traceSamples[0];
 
   return (
     <div className="space-y-4">
@@ -40,32 +39,19 @@ export function PlatformTracePage() {
           hint={trace.operation}
           tone={trace.totalMs > 1000 ? "warning" : ""}
         />
-        <Metric
-          label="Span 数"
-          value={String(trace.spans.length)}
-          hint="跨服务调用"
-        />
-        <Metric
-          label="入口服务"
-          value={trace.entryService}
-          hint={trace.startedAt}
-        />
+        <Metric label="Span 数" value={String(trace.spans.length)} hint="跨服务调用" />
+        <Metric label="入口服务" value={trace.entryService} hint={trace.startedAt} />
       </section>
 
       <section className="rounded-lg border border-gray-200 bg-white p-5">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-base font-semibold text-gray-900">
-              调用链瀑布图
-            </div>
+            <div className="text-base font-semibold text-gray-900">调用链瀑布图</div>
             <div className="mt-1 text-xs text-gray-500">
-              request_id: <code>{trace.requestId}</code> · trace_id:{" "}
-              <code>{trace.id}</code>
+              request_id: <code>{trace.requestId}</code> · trace_id: <code>{trace.id}</code>
             </div>
           </div>
-          <span className="text-xs text-gray-500">
-            时间轴 0 - {trace.totalMs} ms
-          </span>
+          <span className="text-xs text-gray-500">时间轴 0 - {trace.totalMs} ms</span>
         </div>
         <div className="mt-5 space-y-3">
           {trace.spans.map((span, index) => {
@@ -77,12 +63,8 @@ export function PlatformTracePage() {
                 className="grid grid-cols-[220px_1fr_110px] items-center gap-4"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-gray-800">
-                    {span.service}
-                  </div>
-                  <div className="truncate text-xs text-gray-500">
-                    {span.operation}
-                  </div>
+                  <div className="truncate text-sm font-medium text-gray-800">{span.service}</div>
+                  <div className="truncate text-xs text-gray-500">{span.operation}</div>
                 </div>
                 <div className="h-5 overflow-hidden rounded bg-gray-100">
                   <div
@@ -125,11 +107,7 @@ export function PlatformTracePage() {
                 <span>
                   {span.service} · {span.operation}
                 </span>
-                <span
-                  className={
-                    span.status === "error" ? "text-red-600" : "text-gray-600"
-                  }
-                >
+                <span className={span.status === "error" ? "text-red-600" : "text-gray-600"}>
                   {span.durationMs} ms · {span.status}
                 </span>
               </div>
