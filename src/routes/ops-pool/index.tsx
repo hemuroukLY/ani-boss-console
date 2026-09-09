@@ -195,7 +195,7 @@ export const Route = createFileRoute("/ops-pool/")({
         title: "区域 / 编码",
         dataIndex: "name",
         width: 180,
-        render: (_, region) => <DataTableNameCell name={region.name} secondary={region.code} />,
+        render: (_, region) => <DataTableNameCell name={region.name} id={region.code} />,
       },
       {
         title: "状态",

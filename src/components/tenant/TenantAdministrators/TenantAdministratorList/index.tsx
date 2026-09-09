@@ -45,6 +45,8 @@ export function TenantAdministratorList() {
   const [selectedRole, setSelectedRole] = useState<TenantAdminRole>("租户管理员");
   const [passwordAdmin, setPasswordAdmin] = useState<TenantAdmin>();
   const [newPassword, setNewPassword] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const showResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
@@ -205,7 +207,7 @@ export function TenantAdministratorList() {
               {admin.name}
             </Link>
           }
-          secondary={admin.displayName || "-"}
+          id={admin.displayName || "-"}
         />
       ),
     },
@@ -272,7 +274,16 @@ export function TenantAdministratorList() {
           rowKey="id"
           columns={columns}
           data={tenantAdmins}
-          pagination={{ pageSize: 10, showTotal: true, hideOnSinglePage: true }}
+          pagination={{
+            page,
+            pageSize,
+            total: tenantAdmins.length,
+            onPageChange: setPage,
+            onPageSizeChange: (nextPageSize) => {
+              setPage(1);
+              setPageSize(nextPageSize);
+            },
+          }}
           emptyText="还没有租户管理员"
         />
       </ListPageFrame>

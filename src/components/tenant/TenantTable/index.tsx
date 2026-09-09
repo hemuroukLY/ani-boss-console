@@ -1,5 +1,6 @@
 import { Link, Menu, Modal, Popconfirm, Tag, Typography } from "@arco-design/web-react";
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   ListDataTable,
   DataTableNameCell,
@@ -25,6 +26,8 @@ export function TenantTable({
   onAdmins,
 }: TenantTableProps) {
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const columns = [
     {
       title: "租户 / 显示名",
@@ -47,7 +50,7 @@ export function TenantTable({
               {tenant.name}
             </Link>
           }
-          secondary={tenant.displayName || "-"}
+          id={tenant.displayName || "-"}
         />
       ),
     },
@@ -134,8 +137,16 @@ export function TenantTable({
       rowKey="id"
       columns={columns}
       data={data}
-      border={false}
-      pagination={{ pageSize: 10, showTotal: true, hideOnSinglePage: true }}
+      pagination={{
+        page,
+        pageSize,
+        total: data.length,
+        onPageChange: setPage,
+        onPageSizeChange: (nextPageSize) => {
+          setPage(1);
+          setPageSize(nextPageSize);
+        },
+      }}
       emptyText="暂无符合条件的租户"
     />
   );

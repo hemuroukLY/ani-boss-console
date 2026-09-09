@@ -14,7 +14,6 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
       rowKey="id"
       data={rows}
       pagination={false}
-      border={false}
       noDataElement="暂无平台告警"
       columns={[
         {

@@ -90,6 +90,8 @@ export function QuotaPolicyList() {
   const [assigningPackage, setAssigningPackage] = useState<QuotaPackageRow | null>(null);
   const [targetTenantId, setTargetTenantId] = useState("");
   const [draft, setDraft] = useState<QuotaPackageDraft>(initialDraft);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const packages = useMemo<QuotaPackageRow[]>(
     () =>
@@ -201,7 +203,7 @@ export function QuotaPolicyList() {
               {item.name}
             </Link>
           }
-          secondary={item.planCode}
+          id={item.planCode}
         />
       ),
     },
@@ -298,7 +300,16 @@ export function QuotaPolicyList() {
           rowKey="id"
           columns={columns}
           data={packages}
-          pagination={{ pageSize: 10, showTotal: true }}
+          pagination={{
+            page,
+            pageSize,
+            total: packages.length,
+            onPageChange: setPage,
+            onPageSizeChange: (nextPageSize) => {
+              setPage(1);
+              setPageSize(nextPageSize);
+            },
+          }}
           emptyText="还没有配额套餐"
         />
       </ListPageFrame>

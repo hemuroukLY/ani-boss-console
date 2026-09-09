@@ -53,7 +53,7 @@ export function PlatformLogsPage() {
       title: "服务",
       dataIndex: "service",
       width: 160,
-      render: (_, log) => <DataTableNameCell name={log.service} secondary={log.id} />,
+      render: (_, log) => <DataTableNameCell name={log.service} id={log.id} />,
     },
     {
       title: "request_id",

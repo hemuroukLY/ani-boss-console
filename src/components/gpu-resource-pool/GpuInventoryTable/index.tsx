@@ -1,6 +1,7 @@
 import { Card } from "@arco-design/web-react";
 import clsx from "clsx";
-import { DataTable, type ListColumn } from "@/components/common";
+import type { ReactNode } from "react";
+import { ListDataTable, type ListColumn } from "@/components/common";
 import type { GpuInventoryDevice, GpuInventoryStatus } from "../types";
 
 const statusMeta: Record<GpuInventoryStatus, { label: string; className: string }> = {
@@ -24,17 +25,12 @@ function formatProfile(device: GpuInventoryDevice) {
   if (mode === "wholecard") return "整卡";
 
   if (mode === "vgpu") {
-    const detail = device.gpuSharingSpec || device.gpuSpec || device.gpuSharingPolicy;
-    return detail ? `vGPU · ${detail}` : "vGPU";
+    return device.shares && device.shares > 1 ? `vGPU · ${device.shares} 份` : "vGPU";
   }
 
-  const parts = [
-    device.gpuMode,
-    device.gpuSharingSpec,
-    device.gpuSpec,
-    device.gpuSharingPolicy,
-  ].filter(Boolean);
-  return parts.length ? parts.join(" · ") : "整卡";
+  if (device.shares === 1) return "整卡";
+  if (device.shares && device.shares > 1) return `vGPU · ${device.shares} 份`;
+  return "整卡";
 }
 
 function formatModel(device: GpuInventoryDevice) {
@@ -95,21 +91,24 @@ const columns: ListColumn<GpuInventoryDevice>[] = [
 interface GpuInventoryTableProps {
   data: GpuInventoryDevice[];
   loading: boolean;
+  extra?: ReactNode;
 }
 
-export function GpuInventoryTable({ data, loading }: GpuInventoryTableProps) {
+export function GpuInventoryTable({ data, loading, extra }: GpuInventoryTableProps) {
   return (
     <Card
-      title="设备列表 · 切分 / 分配"
+      title="设备列表 · 分配"
+      extra={extra}
       className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0"
     >
-      <DataTable
+      <ListDataTable
         tableLabel="GPU 设备列表"
         rowKey="id"
         columns={columns}
         data={data}
         loading={loading}
         pagination={false}
+        emptyText="暂无 GPU 设备"
       />
     </Card>
   );

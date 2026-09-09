@@ -169,9 +169,7 @@ export function TenantStorageQuotaPage() {
       dataIndex: "displayName",
       width: 190,
       fixed: "left",
-      render: (_, tenant) => (
-        <DataTableNameCell name={tenant.displayName} secondary={tenant.name} />
-      ),
+      render: (_, tenant) => <DataTableNameCell name={tenant.displayName} id={tenant.name} />,
     },
     {
       title: "风险",

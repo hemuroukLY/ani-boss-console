@@ -94,7 +94,7 @@ export function PlatformHealthPage() {
       render: (_, component) => (
         <DataTableNameCell
           name={serviceNames[component.serviceName] || component.serviceName}
-          secondary={component.serviceName}
+          id={component.serviceName}
         />
       ),
     },

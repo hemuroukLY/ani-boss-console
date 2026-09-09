@@ -54,7 +54,7 @@ export function RegistryQuotaPage() {
       dataIndex: "name",
       width: 220,
       fixed: "left",
-      render: (_, quota) => <DataTableNameCell name={quota.name} secondary={quota.code} />,
+      render: (_, quota) => <DataTableNameCell name={quota.name} id={quota.code} />,
     },
     {
       title: "状态",

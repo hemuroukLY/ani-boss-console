@@ -1,28 +1,28 @@
-.listNameCell {
+.nameCell {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.listName {
+.name {
   width: fit-content;
-  color: var(--list-primary, rgb(var(--primary-6)));
+  color: var(--list-primary);
   font-size: 14px;
   line-height: 20px;
 }
 
-.listName :global(a) {
+.name :global(a) {
   color: inherit;
   text-decoration: none;
 }
 
-.listName :global(a:hover) {
-  color: var(--list-primary-hover, rgb(var(--primary-7)));
+.name :global(a:hover) {
+  color: var(--list-primary-hover);
   text-decoration: none;
 }
 
-.listNameSecondary {
-  color: var(--list-text-secondary, var(--color-text-2));
+.nameId {
+  color: var(--list-text-secondary);
   font-size: 12px;
   line-height: 16px;
 }
@@ -38,11 +38,11 @@
 .rowActionButton {
   height: 28px;
   padding: 0 4px;
-  color: var(--list-primary, rgb(var(--primary-6)));
+  color: var(--list-primary);
   white-space: nowrap;
 }
 
 .rowActionButton:hover {
-  color: var(--list-primary-hover, rgb(var(--primary-7)));
-  background: var(--list-primary-soft, var(--color-primary-light-1));
+  background: var(--list-primary-soft);
+  color: var(--list-primary-hover);
 }

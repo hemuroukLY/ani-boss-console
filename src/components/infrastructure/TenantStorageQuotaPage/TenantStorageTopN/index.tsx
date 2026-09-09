@@ -56,7 +56,7 @@ const columns: ListColumn<TenantHotItem>[] = [
     title: "租户 / ID",
     dataIndex: "name",
     width: 220,
-    render: (_, item) => <DataTableNameCell name={item.name} secondary={item.id} />,
+    render: (_, item) => <DataTableNameCell name={item.name} id={item.id} />,
   },
   {
     title: "最高水位",

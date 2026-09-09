@@ -9,7 +9,6 @@ export function GpuDeviceTable() {
       rowKey="id"
       data={devices}
       pagination={false}
-      border={false}
       columns={[
         { title: "设备 ID", dataIndex: "id", width: 120 },
         { title: "节点 / 设备", dataIndex: "location", width: 150 },

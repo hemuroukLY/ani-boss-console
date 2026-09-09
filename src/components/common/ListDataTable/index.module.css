@@ -1,12 +1,4 @@
 .listDataTable {
-  --list-primary: #0079d3;
-  --list-primary-hover: #006cbd;
-  --list-primary-soft: rgba(0, 121, 211, 0.08);
-  --list-primary-header: #f2f8fd;
-  --list-text: rgba(0, 0, 0, 0.9);
-  --list-text-secondary: rgba(0, 0, 0, 0.6);
-  --list-text-tertiary: rgba(0, 0, 0, 0.4);
-  --list-table-divider: #e5e6eb;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -18,14 +10,39 @@
 }
 
 .listDataTable > :global(.arco-spin),
-.listDataTable > :global(.arco-spin) > :global(.arco-spin-children),
-.listDataTable :global(.arco-table-container),
-.listDataTable :global(.arco-table-content-scroll),
-.listDataTable :global(.arco-table-content-inner) {
+.listDataTable > :global(.arco-spin) > :global(.arco-spin-children) {
   display: flex;
   flex: 1;
   flex-direction: column;
   width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.listDataTable :global(.arco-table-container) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.listDataTable :global(.arco-table-content-scroll) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.listDataTable :global(.arco-table-content-inner) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -38,7 +55,7 @@
 }
 
 .listDataTable :global(.arco-table-body) {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   min-height: 0;
   overflow: auto;
@@ -96,7 +113,7 @@
 }
 
 .listDataTable :global(.arco-table-tbody .arco-table-tr:hover) {
-  background: var(--list-primary-soft);
+  background: rgba(0, 121, 211, 0.04);
 }
 
 .tableState {
@@ -104,7 +121,13 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  gap: 12px;
   width: 100%;
   min-height: 220px;
   color: var(--list-text-secondary);
+}
+
+.emptyIcon {
+  color: var(--list-text-tertiary);
+  font-size: 48px !important;
 }

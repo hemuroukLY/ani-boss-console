@@ -81,7 +81,7 @@ const columns: ListColumn<StorageClassItem>[] = [
     title: "StorageClass / ID",
     dataIndex: "name",
     width: 210,
-    render: (_, item) => <DataTableNameCell name={item.name} secondary={item.id} />,
+    render: (_, item) => <DataTableNameCell name={item.name} id={item.id} />,
   },
   { title: "类型", dataIndex: "type", width: 80 },
   { title: "存储后端", dataIndex: "backend", width: 190 },

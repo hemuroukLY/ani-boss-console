@@ -138,7 +138,7 @@ export const Route = createFileRoute("/ops-nodes/")({
         dataIndex: "name",
         width: 190,
         fixed: "left",
-        render: (_, node) => <DataTableNameCell name={node.name} secondary={node.id} />,
+        render: (_, node) => <DataTableNameCell name={node.name} id={node.id} />,
       },
       {
         title: "状态",

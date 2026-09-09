@@ -23,6 +23,8 @@ export function TenantBillingList() {
   const [adjustingBilling, setAdjustingBilling] = useState<TenantBilling>();
   const [adjustmentAmount, setAdjustmentAmount] = useState(0);
   const [adjustmentReason, setAdjustmentReason] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const showResult = (
     result: { ok: boolean; reason?: string; message?: string },
@@ -116,7 +118,7 @@ export function TenantBillingList() {
               {item.tenantName}
             </Link>
           }
-          secondary={item.tenantId}
+          id={item.tenantId}
         />
       ),
     },
@@ -224,7 +226,16 @@ export function TenantBillingList() {
             rowKey="id"
             columns={columns}
             data={tenantBillings}
-            pagination={{ pageSize: 10, showTotal: true }}
+            pagination={{
+              page,
+              pageSize,
+              total: tenantBillings.length,
+              onPageChange: setPage,
+              onPageSizeChange: (nextPageSize) => {
+                setPage(1);
+                setPageSize(nextPageSize);
+              },
+            }}
             emptyText="还没有计费记录"
           />
         </ListPageFrame>

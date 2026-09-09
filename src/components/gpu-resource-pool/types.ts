@@ -1,4 +1,5 @@
 export type GpuInventoryStatus = "available" | "in_use" | "fault" | "maintenance";
+export type GpuShareCount = 1 | 2 | 4 | 8;
 
 export interface ApiRuntimeProfile {
   mode: string;
@@ -21,6 +22,7 @@ export interface GpuInventoryDevice {
   gpuSpec?: string;
   gpuSharingSpec?: string;
   gpuSharingPolicy?: string;
+  shares?: GpuShareCount;
 }
 
 export interface GpuInventorySnapshot {
@@ -35,33 +37,61 @@ export interface GpuOccupancy {
   fault: number;
 }
 
-export type GpuSpecMode = "wholecard" | "vgpu";
+export type GpuPartitionShares = Exclude<GpuShareCount, 1>;
 
-export interface GpuSpec {
-  id: string;
+export interface GpuPartitionPod {
+  namespace: string;
   name: string;
-  gpuType: string;
-  gpuMode?: GpuSpecMode;
-  memoryTotalMb?: number;
-  shares: number;
-  mbPerShare: number;
-  available: boolean;
-  sharingPolicy?: string;
+  reason?: string;
 }
 
-export interface CreateGpuSpecInput {
-  specId: string;
-  gpuType: string;
-  gpuMode: GpuSpecMode;
-  shares: number;
-  mbPerShare: number;
-  memoryTotalMb: number;
+export interface GpuPartitionSkippedNode {
+  nodeName: string;
+  reason: string;
+  pods: GpuPartitionPod[];
+}
+
+export interface GpuPartitionFailedNode {
+  nodeName: string;
+  ok?: boolean;
+  reason: string;
+}
+
+export interface GpuPartitionTaskResult {
+  shares?: GpuPartitionShares;
+  appliedNodes: string[];
+  skippedNodes: GpuPartitionSkippedNode[];
+  failedNodes: GpuPartitionFailedNode[];
+  lastMessage?: string;
+}
+
+export interface GpuPartitionTask {
+  id: string;
+  idempotencyKey?: string;
+  taskType: string;
+  resourceType?: string;
+  resourceId?: string;
+  status: string;
+  attemptCount?: number;
+  maxAttempts?: number;
+  progressPct: number;
+  result?: GpuPartitionTaskResult;
+  errorMessage?: string;
+  createdAt?: string;
+  completedAt?: string;
+}
+
+export interface CreateGpuPartitionInput {
+  shares: GpuPartitionShares;
+  idempotencyKey: string;
 }
 
 export interface TenantGpuAllocation {
   tenantId: string;
   tenantName: string;
   quotaTotal: number;
+  allocatedGpuCount: number;
   used: number;
   reserved: number;
+  available: number;
 }

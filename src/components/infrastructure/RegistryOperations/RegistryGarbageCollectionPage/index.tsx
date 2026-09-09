@@ -27,7 +27,7 @@ export function RegistryGarbageCollectionPage() {
       dataIndex: "digest",
       width: 220,
       fixed: "left",
-      render: (_, layer) => <DataTableNameCell name={layer.digest} secondary={layer.id} />,
+      render: (_, layer) => <DataTableNameCell name={layer.digest} id={layer.id} />,
     },
     { title: "所属仓库", dataIndex: "repository", width: 240 },
     {
@@ -45,7 +45,7 @@ export function RegistryGarbageCollectionPage() {
       title: "任务",
       dataIndex: "id",
       width: 170,
-      render: (_, run) => <DataTableNameCell name={run.id} secondary="镜像仓库 GC" />,
+      render: (_, run) => <DataTableNameCell name={run.id} id="镜像仓库 GC" />,
     },
     { title: "状态", dataIndex: "status", width: 110 },
     {

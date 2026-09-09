@@ -4,7 +4,7 @@ export {
   DataTableRowActionButton,
   DataTableRowActions,
 } from "./DataTable";
-export type { DataTableProps, ListColumn } from "./DataTable";
+export type { DataTableProps, ListColumn, ListPagination } from "./DataTable";
 export { DetailPageFrame } from "./DetailPageFrame";
 export type {
   DetailBreadcrumbItem,
@@ -12,7 +12,8 @@ export type {
   DetailInfoCard,
   DetailTab,
 } from "./DetailPageFrame";
-export { ListDataTable, ListRowMore } from "./ListDataTable";
+export { ListDataTable } from "./ListDataTable";
 export type { ListDataTableProps } from "./ListDataTable";
+export { ListRowMore } from "./ListRowMore";
 export { ListPageFrame, ListPageHeader, ListToolbar } from "./ListPageFrame";
 export { PagePlaceholder } from "./PagePlaceholder";

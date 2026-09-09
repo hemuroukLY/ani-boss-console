@@ -168,9 +168,7 @@ export function NetworkInfrastructurePage() {
       dataIndex: "name",
       width: 220,
       fixed: "left",
-      render: (_, component) => (
-        <DataTableNameCell name={component.name} secondary={component.type} />
-      ),
+      render: (_, component) => <DataTableNameCell name={component.name} id={component.type} />,
     },
     {
       title: "状态",
@@ -218,7 +216,7 @@ export function NetworkInfrastructurePage() {
       title: "地址池",
       dataIndex: "name",
       width: 190,
-      render: (_, pool) => <DataTableNameCell name={pool.name} secondary={pool.id} />,
+      render: (_, pool) => <DataTableNameCell name={pool.name} id={pool.id} />,
     },
     { title: "CIDR", dataIndex: "cidr", width: 160 },
     { title: "区域", dataIndex: "region", width: 130 },

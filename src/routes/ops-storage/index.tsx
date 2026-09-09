@@ -145,7 +145,7 @@ export const Route = createFileRoute("/ops-storage/")({
         dataIndex: "name",
         width: 220,
         fixed: "left",
-        render: (_, backend) => <DataTableNameCell name={backend.name} secondary={backend.id} />,
+        render: (_, backend) => <DataTableNameCell name={backend.name} id={backend.id} />,
       },
       {
         title: "状态",

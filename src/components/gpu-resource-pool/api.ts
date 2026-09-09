@@ -3,6 +3,7 @@ import type {
   ApiRuntimeProfile,
   GpuInventorySnapshot,
   GpuInventoryStatus,
+  GpuShareCount,
   GpuOccupancy,
   TenantGpuAllocation,
 } from "./types";
@@ -28,6 +29,7 @@ interface GpuInventoryItemResponse {
   gpu_spec?: string;
   gpu_sharing_spec?: string;
   gpu_sharing_policy?: string;
+  shares?: GpuShareCount;
 }
 
 interface GpuInventoryListResponse {
@@ -53,6 +55,7 @@ interface TenantQuotaResponse {
   tenant_id: string;
   tenant_name?: string;
   items: QuotaItemResponse[];
+  gpu_reservation: GpuReservationResponse;
 }
 
 interface QuotaListResponse {
@@ -60,12 +63,20 @@ interface QuotaListResponse {
   next_cursor?: string | null;
 }
 
+interface GpuReservationResponse {
+  tenant_id: string;
+  allocated_gpu_count: number;
+  used: number;
+  reserved: number;
+  available: number;
+  tightened?: boolean;
+}
+
 const GPU_RESOURCE_TYPE = "gpu_count";
 
 export const gpuResourcePoolQueryKeys = {
   inventory: ["gpu-resource-pool", "inventory"] as const,
   occupancy: ["gpu-resource-pool", "occupancy"] as const,
-  specs: ["gpu-resource-pool", "specs"] as const,
   tenants: ["gpu-resource-pool", "tenants"] as const,
 };
 
@@ -95,6 +106,7 @@ export async function fetchGpuInventory(): Promise<GpuInventorySnapshot> {
       gpuSpec: item.gpu_spec,
       gpuSharingSpec: item.gpu_sharing_spec,
       gpuSharingPolicy: item.gpu_sharing_policy,
+      shares: item.shares,
     })),
     profile: mapRuntimeProfile(response.dev_profile),
   };
@@ -140,11 +152,13 @@ export async function fetchTenantGpuAllocations(): Promise<TenantGpuAllocation[]
     );
 
   return gpuQuotas.map(({ quota, gpu }) => ({
-    tenantId: quota.tenant_id,
+    tenantId: quota.gpu_reservation.tenant_id || quota.tenant_id,
     tenantName: quota.tenant_name || quota.tenant_id,
     quotaTotal: gpu.total,
-    used: gpu.used,
-    reserved: gpu.reserved,
+    allocatedGpuCount: quota.gpu_reservation.allocated_gpu_count,
+    used: quota.gpu_reservation.used,
+    reserved: quota.gpu_reservation.reserved,
+    available: quota.gpu_reservation.available,
   }));
 }
 
@@ -155,4 +169,15 @@ export function updateTenantGpuQuota(tenantId: string, total: number) {
       items: [{ resource_type: GPU_RESOURCE_TYPE, total }],
     }),
   });
+}
+
+export function updateTenantGpuReservation(tenantId: string, allocatedGpuCount: number) {
+  return apiRequest<GpuReservationResponse>(
+    `/admin/tenants/${encodeURIComponent(tenantId)}/reservations`,
+    {
+      method: "PUT",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
+      body: JSON.stringify({ allocated_gpu_count: allocatedGpuCount }),
+    },
+  );
 }

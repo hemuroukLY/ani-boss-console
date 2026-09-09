@@ -50,7 +50,7 @@ export function PlatformAdministratorsPage() {
       width: 240,
       fixed: "left",
       render: (_, administrator) => (
-        <DataTableNameCell name={administrator.displayName} secondary={administrator.username} />
+        <DataTableNameCell name={administrator.displayName} id={administrator.username} />
       ),
     },
     { title: "邮箱", dataIndex: "email", width: 230 },
