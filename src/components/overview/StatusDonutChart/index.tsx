@@ -26,7 +26,7 @@ const statusOption: EChartsOption = {
       top: "36%",
       style: {
         text: "87.5%\n健康",
-        textAlign: "center",
+        align: "center",
         fill: "#1d2129",
         fontSize: 16,
         fontWeight: 600,

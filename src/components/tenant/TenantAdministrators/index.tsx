@@ -78,7 +78,9 @@ export function TenantAdministrators({ tenant }: TenantAdministratorsProps) {
       title,
       content,
       okButtonProps: danger ? { status: "danger" } : undefined,
-      onOk: () => showActionResult(applyTenantAdminAction(admin.id, action), successMessage),
+      onOk: () => {
+        showActionResult(applyTenantAdminAction(admin.id, action), successMessage);
+      },
     });
   };
 

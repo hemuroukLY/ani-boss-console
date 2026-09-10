@@ -42,7 +42,9 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
     Modal.confirm({
       title,
       content,
-      onOk: () => showResult(applyTenantBillingAction(tenant.id, action)),
+      onOk: () => {
+        showResult(applyTenantBillingAction(tenant.id, action));
+      },
     });
   };
 

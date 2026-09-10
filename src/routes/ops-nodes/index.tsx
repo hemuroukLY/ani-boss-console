@@ -196,9 +196,9 @@ export const Route = createFileRoute("/ops-nodes/")({
         />
 
         <section className="grid grid-cols-3 gap-3.5 max-[900px]:grid-cols-1">
-          <Metric label="全部" value="8" />
-          <Metric label="Ready" value="5" />
-          <Metric label="NotReady" value="3" />
+          <Metric label="全部" value="8" hint="当前节点总数" />
+          <Metric label="Ready" value="5" hint="当前健康节点" />
+          <Metric label="NotReady" value="3" hint="当前异常节点" />
         </section>
 
         <ListPageFrame

@@ -97,7 +97,9 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
       title,
       content,
       okButtonProps: danger ? { status: "danger" } : undefined,
-      onOk: () => showResult(applyTenantAdminAction(admin.id, action), successMessage),
+      onOk: () => {
+        showResult(applyTenantAdminAction(admin.id, action), successMessage);
+      },
     });
   };
 

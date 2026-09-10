@@ -16,7 +16,11 @@ import { CreditAdjustmentModal } from "@/components/tenant/TenantBillingSummary/
 import { formatUsd } from "@/components/tenant/TenantBillingSummary/formatters";
 import type { TenantBillingAction } from "@/components/tenant/TenantManagementProvider";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
-import { tenantBillingStatusMeta, type TenantBilling } from "@/components/tenant/model";
+import {
+  tenantBillingStatusMeta,
+  type TenantBilling,
+  type TenantBillingStatus,
+} from "@/components/tenant/model";
 
 export function TenantBillingList() {
   const { tenantBillings, applyTenantBillingAction } = useTenantManagement();
