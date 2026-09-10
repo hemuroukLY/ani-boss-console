@@ -17,3 +17,6 @@ export type { ListDataTableProps } from "./ListDataTable";
 export { ListRowMore } from "./ListRowMore";
 export { ListPageFrame, ListPageHeader, ListToolbar } from "./ListPageFrame";
 export { PagePlaceholder } from "./PagePlaceholder";
+export { StatusBadge } from "./StatusBadge";
+export type { StatusBadgeTone } from "./StatusBadge";
+export { TableSectionFrame } from "./TableSectionFrame";

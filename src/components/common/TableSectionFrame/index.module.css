@@ -1,0 +1,32 @@
+.frame {
+  --list-primary: #0079d3;
+  --list-primary-hover: #006cbd;
+  --list-primary-active: #0060ac;
+  --list-primary-soft: rgba(0, 121, 211, 0.08);
+  --list-primary-header: #f2f8fd;
+  --list-text: rgba(0, 0, 0, 0.9);
+  --list-text-secondary: rgba(0, 0, 0, 0.6);
+  --list-text-tertiary: rgba(0, 0, 0, 0.4);
+  --list-text-disabled: rgba(0, 0, 0, 0.26);
+  --list-border: #dcdcdc;
+  --list-divider: #e7e7e7;
+  --list-table-divider: #e5e6eb;
+  min-width: 0;
+  color: var(--list-text);
+  font-size: 14px;
+}
+
+.contentPanel {
+  min-width: 0;
+  overflow: hidden;
+  border-color: transparent;
+  border-radius: 6px;
+  background: var(--color-bg-2, #fff);
+}
+
+.contentPanel :global(.arco-card-body) {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+}

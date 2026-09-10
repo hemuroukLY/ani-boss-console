@@ -7,7 +7,7 @@ import {
 } from "@/api/platform";
 import type { MeteringTenantRow } from "../model";
 
-const GPU_SECONDS_PER_HOUR = 3600;
+const SECONDS_PER_HOUR = 3600;
 
 function startOfUtcDay(value: Date) {
   return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
@@ -41,7 +41,7 @@ function getMeteringRanges(reference: Date) {
 }
 
 export function toGpuHours(quantity: number) {
-  return quantity / GPU_SECONDS_PER_HOUR;
+  return quantity / SECONDS_PER_HOUR;
 }
 
 export function formatUsage(value: number) {
@@ -162,5 +162,5 @@ export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceTy
     };
   }, [query.data, ranges.trendStart]);
 
-  return { query, view };
+  return { query, view, ranges };
 }

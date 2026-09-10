@@ -6,10 +6,10 @@ import { useMemo, useState } from "react";
 import {
   ListDataTable,
   DataTableNameCell,
-  ListPageFrame,
   ListPageHeader,
   DataTableRowActionButton,
   DataTableRowActions,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -317,7 +317,7 @@ export const Route = createFileRoute("/ops-pool/")({
           <Metric label="GPU 空闲" value={String(summary.gpuFree)} hint="全部区域汇总" />
         </section>
 
-        <ListPageFrame
+        <TableSectionFrame
           header={
             <div className="flex items-center justify-between px-5 pt-5">
               <div>
@@ -337,7 +337,7 @@ export const Route = createFileRoute("/ops-pool/")({
             pagination={false}
             emptyText="还没有区域容量数据"
           />
-        </ListPageFrame>
+        </TableSectionFrame>
       </div>
     );
   },

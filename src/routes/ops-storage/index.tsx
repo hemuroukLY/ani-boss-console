@@ -5,9 +5,9 @@ import { useMemo, useState } from "react";
 import {
   ListDataTable,
   DataTableNameCell,
-  ListPageFrame,
   ListPageHeader,
   ListToolbar,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -226,7 +226,7 @@ export const Route = createFileRoute("/ops-storage/")({
           />
         </section>
 
-        <ListPageFrame
+        <TableSectionFrame
           header={
             <div className="flex items-center justify-between px-5 pt-5">
               <div>
@@ -296,7 +296,7 @@ export const Route = createFileRoute("/ops-storage/")({
             scroll={{ x: 1650 }}
             emptyText="没有符合筛选条件的存储后端"
           />
-        </ListPageFrame>
+        </TableSectionFrame>
 
         <StorageClassOperations />
         <RecentStorageEvents />

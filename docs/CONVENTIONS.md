@@ -24,6 +24,8 @@
 ## 路由组织
 
 - 所有 URL 入口位于 `src/routes/`，业务页面使用 `<page-name>/index.tsx`。
+- route component 是路由适配层：在入口内通过当前 `Route` 的 `useParams`、`useSearch` 或 loader 数据读取并整理路由输入，再以普通 props 传给 `src/components/<scope>/` 下的页面组件；领域页面不应仅为读取 path/search 而依赖 route 对象或 `getRouteApi`。
+- 路由适配层可以使用具名函数或等价的内联函数，不强制箭头语法；没有路由输入时也只组合页面组件，不把查询、业务状态和完整页面 JSX 留在 route 文件中。
 - 不存在真实父子关系的模块直接放在路由根层级，并使用连字符连接语义，例如 `tenants-billing/index.tsx`。
 - 只有模块自身的 index、详情或其他真实子路由放入对应模块目录；动态参数使用 `$param.tsx`。
 - 有子路由的父 route 使用 `Outlet`，不得以薄 route 文件转发独立 pages 组件。
@@ -56,6 +58,8 @@
 ## 验证与记录
 
 默认由项目负责人手动完成构建、启动和页面交互验证。除非用户明确要求，Agent 不运行 `pnpm build`、`pnpm verify` 或启动开发服务。
+
+pnpm 命令执行门禁：所有 Agent 执行任何 `pnpm` 命令时，都必须在 Codex 沙箱外的系统环境运行，由系统 Corepack 根据 `package.json` 的 `packageManager` 选择 pnpm 版本；不得使用沙箱内的 fallback pnpm，也不得绕过项目声明手动选择其他版本。
 
 完成代码或工程配置修改后，在最终回复前必须运行 `pnpm lint` 和 `pnpm fmt:check`；检查失败时应先修复，无法在当前范围处理的既有问题必须如实记录。文档修改至少检查 Markdown 链接、内容一致性和 `git diff --check`；代码修改还必须遵循 `AGENTS.md` 中的 GitNexus 影响分析与变更检测要求。
 

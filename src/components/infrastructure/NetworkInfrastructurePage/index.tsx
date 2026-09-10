@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import {
   DataTableNameCell,
   ListDataTable,
-  ListPageFrame,
   ListPageHeader,
   ListToolbar,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -286,7 +286,7 @@ export function NetworkInfrastructurePage() {
         />
       </section>
 
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
@@ -344,9 +344,9 @@ export function NetworkInfrastructurePage() {
           scroll={{ x: 1395 }}
           emptyText="没有符合筛选条件的网络组件"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
 
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="px-5 pt-5">
             <div className="text-base font-semibold text-gray-900">IP 地址池</div>
@@ -363,7 +363,7 @@ export function NetworkInfrastructurePage() {
           pagination={false}
           emptyText="暂无 IP 地址池"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
     </div>
   );
 }

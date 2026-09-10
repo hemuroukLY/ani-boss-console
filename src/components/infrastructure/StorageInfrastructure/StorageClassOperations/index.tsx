@@ -2,7 +2,7 @@ import clsx from "clsx";
 import {
   ListDataTable,
   DataTableNameCell,
-  ListPageFrame,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 
@@ -113,7 +113,7 @@ const columns: ListColumn<StorageClassItem>[] = [
 
 export function StorageClassOperations() {
   return (
-    <ListPageFrame
+    <TableSectionFrame
       header={
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
@@ -134,6 +134,6 @@ export function StorageClassOperations() {
         scroll={{ x: 1090 }}
         emptyText="还没有 StorageClass 数据"
       />
-    </ListPageFrame>
+    </TableSectionFrame>
   );
 }

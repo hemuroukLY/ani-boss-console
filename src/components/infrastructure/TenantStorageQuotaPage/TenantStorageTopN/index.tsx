@@ -2,7 +2,7 @@ import { Progress } from "@arco-design/web-react";
 import {
   DataTableNameCell,
   ListDataTable,
-  ListPageFrame,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 
@@ -97,7 +97,7 @@ const columns: ListColumn<TenantHotItem>[] = [
 
 export function TenantStorageTopN() {
   return (
-    <ListPageFrame
+    <TableSectionFrame
       header={
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
@@ -118,6 +118,6 @@ export function TenantStorageTopN() {
         scroll={{ x: 1020 }}
         emptyText="暂无租户热度数据"
       />
-    </ListPageFrame>
+    </TableSectionFrame>
   );
 }

@@ -16,6 +16,7 @@
 - 路由、路由布局、源码目录、文件名、组件名及其他代码标识不得使用 `boss`、`Boss` 等冗余域名前缀；原型明确规定的用户可见产品名称、品牌和菜单文案除外。
 - UI 实现顺序、组件复用、样式边界和交互底线以 `docs/UI-CONVENTIONS.md` 为准；目录职责、路由与组件组织、数据边界和验证方式以 `docs/CONVENTIONS.md` 为准。
 - BOSS 应用骨架与 `ani-console` 保持一致：`l1` 对应顶部一级菜单，`l2` 对应左侧可点击菜单，`subgroups` 对应左侧三级分组标题；侧边栏不得重复展示当前一级菜单名称。
+- route component 作为路由适配层，负责从当前 `Route` 读取 path/search/loader 输入并转换为普通 props 传给领域页面组件；不强制箭头函数语法，没有路由输入时也只组合页面组件，不在 route 文件内保留查询、业务状态或完整页面实现。
 - 新增或修改页面前，必须通过 GitNexus 查询 `产品原型-9.08 v2` 中对应的菜单、路由和页面规格；不得根据现有前端页面反推产品要求。
 - 用户界面中的空值占位统一使用半角连字符 `-`，不得使用长破折号 `—`。
 - 接入接口或判断后端行为前，必须通过 GitNexus 查询 `ANI`；不得将前端演示数据作为接口契约。
@@ -53,6 +54,7 @@
 
 ## 开发记录
 
+- pnpm 命令执行门禁：所有 Agent 执行任何 `pnpm` 命令时，都必须在 Codex 沙箱外的系统环境运行，由系统 Corepack 根据 `package.json` 的 `packageManager` 选择 pnpm 版本；不得使用沙箱内的 fallback pnpm，也不得绕过项目声明手动选择其他版本。
 - 完成代码或工程配置修改后，在最终回复前必须运行 `pnpm lint` 和 `pnpm fmt:check`；检查失败时应先修复，无法在当前范围处理的既有问题必须如实记录。
 - 完成并验证实现、修复或文档调整后，在最终回复前更新 `docs/PROJECT-STATUS.md`。
 - 记录应简短、事实准确，覆盖变更区域、用户可见行为、重要集成说明和已执行验证；不粘贴冗长命令输出。
@@ -73,7 +75,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **ani-boss-console** (1450 symbols, 3042 relationships, 114 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ani-boss-console** (1465 symbols, 3093 relationships, 116 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ListDataTable, ListPageFrame, type ListColumn } from "@/components/common";
+import { ListDataTable, TableSectionFrame, type ListColumn } from "@/components/common";
 
 interface StoragePlatformEvent {
   id: string;
@@ -63,7 +63,7 @@ const columns: ListColumn<StoragePlatformEvent>[] = [
 
 export function RecentStorageEvents() {
   return (
-    <ListPageFrame
+    <TableSectionFrame
       header={
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
@@ -83,6 +83,6 @@ export function RecentStorageEvents() {
         pagination={false}
         emptyText="暂无平台事件"
       />
-    </ListPageFrame>
+    </TableSectionFrame>
   );
 }

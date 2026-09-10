@@ -1,46 +1,51 @@
-import { Alert, Button } from "@arco-design/web-react";
+import { Alert, Button, Tooltip } from "@arco-design/web-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import clsx from "clsx";
-import {
-  fetchPlatformServiceHealth,
-  platformQueryKeys,
-  type PlatformServiceHealthComponent,
-  type PlatformServiceScrapeStatus,
-} from "@/api/platform";
+import { fetchPlatformComponents, platformQueryKeys, type PlatformComponent } from "@/api/platform";
 import {
   DataTableNameCell,
   DataTableRowActions,
   ListDataTable,
-  ListPageFrame,
   ListPageHeader,
+  StatusBadge,
+  TableSectionFrame,
   type ListColumn,
+  type StatusBadgeTone,
 } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { Metric } from "@/components/overview/Metric";
+import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 
-const healthMeta: Record<PlatformServiceScrapeStatus, { label: string; className: string }> = {
-  reachable: { label: "正常", className: "bg-green-50 text-green-700" },
-  unknown: { label: "未知", className: "bg-orange-50 text-orange-700" },
-  unreachable: { label: "异常", className: "bg-red-50 text-red-700" },
+const groupNames: Record<string, string> = {
+  service: "核心服务",
+  dependency: "基础依赖",
+  platform: "平台组件",
 };
 
-const serviceNames: Record<string, string> = {
-  "ani-gateway": "API 网关",
-  "auth-service": "认证服务",
-  "model-service": "模型服务",
-  "task-service": "任务服务",
-  "inference-service": "推理服务",
-  "tenant-service": "租户服务",
-  "metering-service": "计量服务",
-};
+function componentStatusTone(status: string): StatusBadgeTone {
+  if (status === "running") return "info";
+  if (status === "degraded") return "warning";
+  return "default";
+}
 
-function HealthBadge({ status }: { status: PlatformServiceScrapeStatus }) {
-  const meta = healthMeta[status];
-  return (
-    <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${meta.className}`}>
-      {meta.label}
-    </span>
+function ScrapeBadge({ component }: { component: PlatformComponent }) {
+  const { reason, scrapeStatus } = component;
+  const tone: StatusBadgeTone =
+    scrapeStatus === "reachable"
+      ? "success"
+      : scrapeStatus === "unknown"
+        ? "warning"
+        : scrapeStatus === "unreachable"
+          ? "danger"
+          : "default";
+  const badge = <StatusBadge value={scrapeStatus} tone={tone} />;
+
+  return reason ? (
+    <Tooltip content={reason}>
+      <span>{badge}</span>
+    </Tooltip>
+  ) : (
+    badge
   );
 }
 
@@ -51,83 +56,93 @@ function formatObservedAt(value?: string) {
   return date.toLocaleString("zh-CN", { hour12: false });
 }
 
-function formatLastCollected(value?: number) {
-  if (value === undefined) return "-";
-  if (value < 10) return "刚刚";
-  if (value < 60) return `${Math.round(value)} 秒前`;
-  if (value < 3600) return `${Math.round(value / 60)} 分钟前`;
-  return `${Math.round(value / 3600)} 小时前`;
-}
-
 export function PlatformHealthPage() {
-  const healthQuery = useQuery({
-    queryKey: platformQueryKeys.serviceHealth,
-    queryFn: fetchPlatformServiceHealth,
+  const componentsQuery = useQuery({
+    queryKey: platformQueryKeys.components,
+    queryFn: fetchPlatformComponents,
   });
   useListErrorNotification({
-    id: "platform-service-health",
-    title: "平台健康加载失败",
-    error: healthQuery.error,
+    id: "platform-components",
+    title: "平台组件状态加载失败",
+    error: componentsQuery.error,
   });
-  const components = healthQuery.data?.components || [];
-  const reachableCount = components.filter((item) => item.scrapeStatus === "reachable").length;
-  const unknownCount = components.filter((item) => item.scrapeStatus === "unknown").length;
-  const unreachableCount = components.filter((item) => item.scrapeStatus === "unreachable").length;
-  const total = components.length;
-  const overall = healthQuery.isPending
-    ? "加载中"
-    : healthQuery.isError
-      ? "-"
-      : unreachableCount > 0
-        ? "异常"
-        : unknownCount > 0
-          ? "部分未知"
-          : "正常";
-  const overallTone = unreachableCount > 0 ? "danger" : unknownCount > 0 ? "warning" : undefined;
 
-  const columns: ListColumn<PlatformServiceHealthComponent>[] = [
-    { title: "范围", width: 100, render: () => "核心服务" },
+  const groups = componentsQuery.data?.groups || [];
+  const components = groups.flatMap((group) => group.components);
+  const runningCount = components.filter((item) => item.status === "running").length;
+  const degradedCount = components.filter((item) => item.status === "degraded").length;
+  const stoppedCount = components.filter((item) => item.status === "stopped").length;
+  const otherCount = components.length - runningCount - degradedCount - stoppedCount;
+  const total = components.length;
+  const overall = componentsQuery.isPending
+    ? "加载中"
+    : componentsQuery.isError
+      ? "-"
+      : total === 0
+        ? "-"
+        : stoppedCount > 0
+          ? "存在停止"
+          : degradedCount > 0 || otherCount > 0
+            ? "部分降级"
+            : "正常";
+  const overallTone =
+    stoppedCount > 0 ? "danger" : degradedCount > 0 || otherCount > 0 ? "warning" : undefined;
+
+  const columns: ListColumn<PlatformComponent>[] = [
+    {
+      title: "分组",
+      width: 110,
+      render: (_, component) => groupNames[component.group] || component.group || "-",
+    },
     {
       title: "组件",
-      width: 220,
+      width: 240,
       fixed: "left",
       render: (_, component) => (
-        <DataTableNameCell
-          name={serviceNames[component.serviceName] || component.serviceName}
-          id={component.serviceName}
-        />
+        <DataTableNameCell name={component.name} id={component.namespace || "-"} />
       ),
     },
     {
       title: "状态",
       width: 90,
-      render: (_, component) => <HealthBadge status={component.scrapeStatus} />,
+      render: (_, component) => (
+        <StatusBadge value={component.status} tone={componentStatusTone(component.status)} />
+      ),
     },
     {
       title: "版本",
-      width: 200,
-      render: (_, component) => component.versions.join(", ") || "-",
+      width: 160,
+      render: (_, component) => component.version || "-",
     },
     {
-      title: "可达 / 观测副本",
-      width: 150,
-      render: (_, component) => `${component.reachableReplicas} / ${component.observedReplicas}`,
-    },
-    {
-      title: "最近采集",
+      title: "就绪副本",
       width: 110,
-      render: (_, component) => formatLastCollected(component.sampleAgeSeconds),
+      render: (_, component) => `${component.readyReplicas} / ${component.desiredReplicas}`,
+    },
+    {
+      title: "资源类型",
+      width: 130,
+      render: (_, component) => component.kind || "-",
+    },
+    {
+      title: "观测状态",
+      width: 110,
+      render: (_, component) => <ScrapeBadge component={component} />,
     },
     {
       title: "操作",
       width: 240,
       fixed: "right",
-      render: () => (
+      render: (_, component) => (
         <DataTableRowActions>
           <Link to="/health-metrics" className="text-blue-600 no-underline">
             查看指标
           </Link>
-          <Link to="/health-logs" className="text-blue-600 no-underline">
+          <Link
+            to="/health-logs"
+            search={{ component: component.name }}
+            className="text-blue-600 no-underline"
+          >
             查看日志
           </Link>
           <Link to="/health-traces" className="text-blue-600 no-underline">
@@ -139,65 +154,72 @@ export function PlatformHealthPage() {
   ];
 
   const distribution = [
-    ["正常", reachableCount, "bg-green-500"],
-    ["未知", unknownCount, "bg-orange-500"],
-    ["异常", unreachableCount, "bg-red-500"],
+    ["运行中", runningCount, "bg-green-500"],
+    ["降级", degradedCount, "bg-orange-500"],
+    ["已停止", stoppedCount, "bg-gray-500"],
   ] as const;
 
   return (
     <div className="space-y-4">
       <ListPageHeader
         title="平台健康"
-        subtitle="ANI 核心服务的 Prometheus 抓取状态与可达副本。"
+        subtitle="查看 ANI 服务、基础依赖和平台组件的实时运行状态。"
         extra={
-          <Button loading={healthQuery.isFetching} onClick={() => void healthQuery.refetch()}>
+          <Button
+            loading={componentsQuery.isFetching}
+            onClick={() => void componentsQuery.refetch()}
+          >
             刷新
           </Button>
         }
       />
 
+      {!componentsQuery.data?.profile.realProvider && componentsQuery.data ? (
+        <Alert
+          type="warning"
+          content={`组件状态数据源已降级：${componentsQuery.data.profile.reason || "当前未连接真实运行时 Provider"}`}
+        />
+      ) : null}
       <Alert
         type="info"
-        content="当前接口固定覆盖 ANI 网关、认证、模型、任务、推理、租户和计量七个核心服务，只提供抓取可达性、观测副本、版本与最近采集时间；P99、错误率和依赖检查尚无平台接口。"
+        content="组件运行状态来自运行时副本；“观测异常”只表示可观测链路未返回有效结果，不计为组件故障。当前接口不提供 P99、错误率或依赖检查结果。"
       />
 
       <section className="grid grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
-        <Metric label="整体状态" value={overall} hint="七个核心服务" tone={overallTone} />
+        <Metric label="整体状态" value={overall} hint={`${total} 个组件`} tone={overallTone} />
         <Metric
-          label="正常"
-          value={healthQuery.isPending || healthQuery.isError ? "-" : String(reachableCount)}
-          hint="scrape_status = reachable"
+          label="运行中"
+          value={componentsQuery.isPending || componentsQuery.isError ? "-" : String(runningCount)}
+          hint="副本已全部就绪"
         />
         <Metric
-          label="未知"
-          value={healthQuery.isPending || healthQuery.isError ? "-" : String(unknownCount)}
-          hint="未观测到目标"
+          label="降级"
+          value={componentsQuery.isPending || componentsQuery.isError ? "-" : String(degradedCount)}
+          hint="部分副本未就绪"
           tone="warning"
         />
         <Metric
-          label="异常"
-          value={healthQuery.isPending || healthQuery.isError ? "-" : String(unreachableCount)}
-          hint="已观测但不可达"
+          label="已停止"
+          value={componentsQuery.isPending || componentsQuery.isError ? "-" : String(stoppedCount)}
+          hint="期望副本为 0"
           tone="danger"
         />
       </section>
 
       <section className="grid grid-cols-2 gap-3.5 max-[980px]:grid-cols-1">
         <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <div className="text-base font-semibold text-gray-900">服务状态分布</div>
+          <div className="text-base font-semibold text-gray-900">组件状态分布</div>
           <div className="mt-5 space-y-4">
             {distribution.map(([label, count, color]) => (
               <div
                 key={label}
-                className="grid grid-cols-[48px_1fr_32px] items-center gap-3 text-sm"
+                className="grid grid-cols-[56px_1fr_32px] items-center gap-3 text-sm"
               >
                 <span>{label}</span>
                 <div className="h-2 rounded bg-gray-100">
                   <div
                     className={clsx("h-2 rounded", color)}
-                    style={{
-                      width: `${total === 0 ? 0 : (count / total) * 100}%`,
-                    }}
+                    style={{ width: `${total === 0 ? 0 : (count / total) * 100}%` }}
                   />
                 </div>
                 <span className="text-right text-gray-500">{count}</span>
@@ -207,39 +229,29 @@ export function PlatformHealthPage() {
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-5">
-          <div className="text-base font-semibold text-gray-900">采集范围</div>
+          <div className="text-base font-semibold text-gray-900">组件范围</div>
           <dl className="mt-4 grid grid-cols-[96px_1fr] gap-x-4 gap-y-3 text-sm">
-            <dt className="text-gray-500">覆盖范围</dt>
-            <dd className="m-0 text-gray-900">
-              {healthQuery.data?.coverage === "partial"
-                ? "部分覆盖"
-                : healthQuery.data?.coverage || "-"}
-            </dd>
-            <dt className="text-gray-500">信号来源</dt>
-            <dd className="m-0 text-gray-900">
-              {healthQuery.data?.signal === "prometheus_scrape"
-                ? "Prometheus 抓取"
-                : healthQuery.data?.signal || "-"}
-            </dd>
-            <dt className="text-gray-500">数据源状态</dt>
-            <dd className="m-0 text-gray-900">
-              {healthQuery.data?.sourceStatus === "ok"
-                ? "正常"
-                : healthQuery.data?.sourceStatus || "-"}
-            </dd>
+            {groups.map((group) => (
+              <div key={group.name} className="contents">
+                <dt className="text-gray-500">{groupNames[group.name] || group.name}</dt>
+                <dd className="m-0 text-gray-900">{group.components.length} 个</dd>
+              </div>
+            ))}
             <dt className="text-gray-500">观测时间</dt>
-            <dd className="m-0 text-gray-900">{formatObservedAt(healthQuery.data?.observedAt)}</dd>
+            <dd className="m-0 text-gray-900">
+              {formatObservedAt(componentsQuery.data?.observedAt)}
+            </dd>
           </dl>
         </div>
       </section>
 
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
-              <div className="text-base font-semibold text-gray-900">服务分组健康</div>
+              <div className="text-base font-semibold text-gray-900">组件健康明细</div>
               <div className="mt-1 text-xs text-gray-500">
-                本页只读巡检，不提供服务重启或扩缩容操作。
+                故障和降级组件优先展示；本页只读，不提供重启或扩缩容操作。
               </div>
             </div>
             <span className="text-xs text-gray-500">共 {total} 个组件</span>
@@ -247,22 +259,18 @@ export function PlatformHealthPage() {
         }
       >
         <ListDataTable
-          rowKey="serviceName"
+          rowKey={(component) => `${component.group}:${component.namespace}:${component.name}`}
           columns={columns}
           data={[...components].sort((left, right) => {
-            const rank: Record<PlatformServiceScrapeStatus, number> = {
-              unreachable: 0,
-              unknown: 1,
-              reachable: 2,
-            };
-            return rank[left.scrapeStatus] - rank[right.scrapeStatus];
+            const rank: Record<string, number> = { stopped: 0, degraded: 1, running: 3 };
+            return (rank[left.status] ?? 2) - (rank[right.status] ?? 2);
           })}
-          loading={healthQuery.isPending}
+          loading={componentsQuery.isPending}
           pagination={false}
-          scroll={{ x: 1050 }}
-          emptyText="暂无组件健康数据"
+          scroll={{ x: 1190 }}
+          emptyText="暂无组件状态数据"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
     </div>
   );
 }

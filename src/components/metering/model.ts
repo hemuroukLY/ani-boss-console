@@ -31,14 +31,14 @@ export const meteringDimensions: MeteringDimensionOption[] = [
     label: "CPU-Hours",
     unit: "CPU-Hours",
     description: "云主机与容器 CPU 核数乘以运行时长。",
-    unavailableReason: "待完成计量单位与页面口径核对后接入。",
+    resourceType: "instance_cpu_seconds",
   },
   {
     key: "memory",
     label: "Memory",
     unit: "GiB-Hours",
     description: "各类实例内存规格乘以运行时长。",
-    unavailableReason: "待完成计量单位与页面口径核对后接入。",
+    resourceType: "instance_memory_gib_seconds",
   },
   {
     key: "storage",

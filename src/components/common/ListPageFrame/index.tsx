@@ -1,5 +1,5 @@
 import { Card, Typography } from "@arco-design/web-react";
-import { isValidElement, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import styles from "./index.module.css";
 
 interface ListPageHeaderProps {
@@ -50,13 +50,10 @@ interface ListPageFrameProps {
 }
 
 export function ListPageFrame({ header, tabs, toolbar, children }: ListPageFrameProps) {
-  const hasPageHeader = isValidElement(header) && header.type === ListPageHeader;
-
   return (
     <div className={styles.page}>
-      {hasPageHeader ? header : null}
+      {header}
       <Card className={styles.contentPanel}>
-        {!hasPageHeader ? header : null}
         {tabs}
         {toolbar}
         {children}

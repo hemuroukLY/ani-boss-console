@@ -36,15 +36,6 @@ export interface MonitoringProfile {
   notices: Array<{ title: string; detail: string; tone: "warning" | "danger" }>;
 }
 
-export interface PlatformLog {
-  id: string;
-  time: string;
-  level: "error" | "warn" | "info";
-  service: string;
-  requestId: string;
-  message: string;
-}
-
 export interface TraceSpan {
   service: string;
   operation: string;
@@ -336,89 +327,6 @@ export const monitoringProfiles: Record<"gpu" | "inference" | "kb", MonitoringPr
     notices: [{ title: "产品知识库", detail: "向量索引积压 9 篇文档", tone: "warning" }],
   },
 };
-
-export const platformLogs: PlatformLog[] = [
-  {
-    id: "log-1",
-    time: "15:28:41.102",
-    level: "error",
-    service: "vector-store",
-    requestId: "req-vs-9f21a",
-    message: "etcd leader election timeout; refusing writes",
-  },
-  {
-    id: "log-2",
-    time: "15:28:41.088",
-    level: "error",
-    service: "vector-store",
-    requestId: "req-vs-9f21a",
-    message: "dependency check failed: etcd status=fail",
-  },
-  {
-    id: "log-3",
-    time: "15:28:40.910",
-    level: "warn",
-    service: "model-service",
-    requestId: "req-mdl-77c2",
-    message: "vector-store dial timeout; falling back to degraded mode",
-  },
-  {
-    id: "log-4",
-    time: "15:28:40.855",
-    level: "error",
-    service: "model-service",
-    requestId: "req-mdl-77c2",
-    message: "embedding batch aborted: upstream unavailable",
-  },
-  {
-    id: "log-5",
-    time: "15:28:39.412",
-    level: "info",
-    service: "gateway",
-    requestId: "req-gw-12ab",
-    message: "POST /api/v1/svc/inference completed 200 in 45ms",
-  },
-  {
-    id: "log-6",
-    time: "15:28:39.201",
-    level: "info",
-    service: "auth",
-    requestId: "req-gw-12ab",
-    message: "token validated scope=observability:read",
-  },
-  {
-    id: "log-7",
-    time: "15:28:38.044",
-    level: "info",
-    service: "kb-service",
-    requestId: "req-kb-33de",
-    message: "rag retrieve hits=4 latency_ms=96",
-  },
-  {
-    id: "log-8",
-    time: "15:28:37.880",
-    level: "warn",
-    service: "kb-service",
-    requestId: "req-kb-33de",
-    message: "vector-store latency elevated p99=180ms",
-  },
-  {
-    id: "log-9",
-    time: "15:28:36.500",
-    level: "info",
-    service: "gateway",
-    requestId: "req-gw-09ff",
-    message: "GET /api/v1/healthz 200",
-  },
-  {
-    id: "log-10",
-    time: "15:28:35.120",
-    level: "error",
-    service: "vector-store",
-    requestId: "req-vs-aa01",
-    message: "ready replicas 0/2; probe failed",
-  },
-];
 
 export const traceSamples: TraceSample[] = [
   {

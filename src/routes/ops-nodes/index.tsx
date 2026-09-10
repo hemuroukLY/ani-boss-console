@@ -6,9 +6,9 @@ import { useMemo, useState } from "react";
 import {
   ListDataTable,
   DataTableNameCell,
-  ListPageFrame,
   ListPageHeader,
   ListToolbar,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -201,7 +201,7 @@ export const Route = createFileRoute("/ops-nodes/")({
           <Metric label="NotReady" value="3" hint="当前异常节点" />
         </section>
 
-        <ListPageFrame
+        <TableSectionFrame
           header={
             <div className="flex items-center justify-between px-5 pt-5">
               <div>
@@ -267,7 +267,7 @@ export const Route = createFileRoute("/ops-nodes/")({
             scroll={{ x: 1640 }}
             emptyText="没有符合筛选条件的节点"
           />
-        </ListPageFrame>
+        </TableSectionFrame>
       </div>
     );
   },

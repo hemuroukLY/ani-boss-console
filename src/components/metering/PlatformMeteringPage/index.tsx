@@ -7,16 +7,18 @@ import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { MeteringTrend } from "../MeteringTrend";
 import { meteringDimensions, type MeteringDimension } from "../model";
 import { MeteringTenantTable } from "./MeteringTenantTable";
+import { TenantMeteringDrawer } from "./TenantMeteringDrawer";
 import { formatUsage, getChangeRate, usePlatformGpuMetering } from "./usePlatformGpuMetering";
 
 export function PlatformMeteringPage() {
   const [dimension, setDimension] = useState<MeteringDimension>("gpu");
+  const [detailTenantId, setDetailTenantId] = useState<string>();
   const current =
     meteringDimensions.find((item) => item.key === dimension) ?? meteringDimensions[0];
-  const { query, view } = usePlatformGpuMetering(current.resourceType);
+  const { query, view, ranges } = usePlatformGpuMetering(current.resourceType);
   useListErrorNotification({
-    id: "platform-gpu-metering",
-    title: "GPU 计量数据加载失败",
+    id: `platform-${dimension}-metering`,
+    title: `${current.label} 计量数据加载失败`,
     error: query.error,
   });
   const totalChangeRate = view ? getChangeRate(view.currentTotal, view.previousTotal) : undefined;
@@ -46,7 +48,10 @@ export function PlatformMeteringPage() {
 
       <Tabs
         activeTab={dimension}
-        onChange={(key) => setDimension(key as MeteringDimension)}
+        onChange={(key) => {
+          setDetailTenantId(undefined);
+          setDimension(key as MeteringDimension);
+        }}
         className="rounded-lg border border-gray-200 bg-white px-5 pt-1"
       >
         {meteringDimensions.map((item) => (
@@ -123,8 +128,22 @@ export function PlatformMeteringPage() {
 
           <MeteringTenantTable
             rows={view?.tenantRows || []}
+            metricLabel={current.label}
             unit={current.unit}
             loading={query.isPending}
+            onViewDetail={setDetailTenantId}
+          />
+
+          <TenantMeteringDrawer
+            key={`${current.key}-${detailTenantId || "closed"}`}
+            visible={Boolean(detailTenantId)}
+            tenantId={detailTenantId}
+            resourceType={current.resourceType}
+            metricLabel={current.label}
+            unit={current.unit}
+            startTime={ranges.currentStart}
+            endTime={ranges.currentEnd}
+            onCancel={() => setDetailTenantId(undefined)}
           />
         </>
       )}

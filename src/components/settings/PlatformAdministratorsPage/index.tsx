@@ -6,9 +6,9 @@ import {
   DataTableRowActionButton,
   DataTableRowActions,
   ListDataTable,
-  ListPageFrame,
   ListPageHeader,
   ListToolbar,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -108,7 +108,7 @@ export function PlatformAdministratorsPage() {
         <Metric label="活跃超级管理员" value={String(superCount)} hint="至少保留 1 名" />
         <Metric label="已启用 MFA" value={String(mfaCount)} hint="账号安全" />
       </section>
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
@@ -165,7 +165,7 @@ export function PlatformAdministratorsPage() {
           scroll={{ x: 1350 }}
           emptyText="暂无符合条件的平台运营账号"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
       <Drawer
         width={520}
         title="平台运营账号详情"

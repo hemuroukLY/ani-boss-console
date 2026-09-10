@@ -3,9 +3,9 @@ import { useMemo, useState } from "react";
 import {
   DataTableNameCell,
   ListDataTable,
-  ListPageFrame,
   ListPageHeader,
   ListToolbar,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -137,7 +137,7 @@ export function RegistryQuotaPage() {
         <Metric label="待审批" value={String(pendingCount)} hint="扩容申请" />
       </section>
 
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="flex items-center justify-between px-5 pt-5">
             <div>
@@ -187,7 +187,7 @@ export function RegistryQuotaPage() {
           scroll={{ x: 1200 }}
           emptyText="没有符合筛选条件的租户镜像配额"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
     </div>
   );
 }

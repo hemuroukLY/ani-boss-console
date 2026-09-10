@@ -13,8 +13,10 @@
   --list-table-divider: #e5e6eb;
   display: flex;
   flex-direction: column;
+  height: calc(100dvh - 120px);
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
   gap: 16px;
   color: var(--list-text);
   font-size: 14px;
@@ -74,6 +76,9 @@
 }
 
 .contentPanel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -84,6 +89,7 @@
 
 .contentPanel :global(.arco-card-body) {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
   min-height: 0;

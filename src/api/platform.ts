@@ -1,10 +1,10 @@
-import { apiRequest } from "@/api/client";
+import { apiFetch, apiRequest } from "@/api/client";
 
 interface DevProfileResponse {
   mode: string;
   provider: string;
   real_provider: boolean;
-  reason: string;
+  reason: string | null;
 }
 
 interface PlatformCapacityRegionResponse {
@@ -38,22 +38,6 @@ interface PlatformCapacityResponse {
   dev_profile: DevProfileResponse;
 }
 
-interface PlatformServiceHealthResponse {
-  scope: string;
-  coverage: string;
-  signal: string;
-  observed_at: string;
-  source_status: string;
-  components: Array<{
-    service_name: string;
-    scrape_status: PlatformServiceScrapeStatus;
-    observed_replicas: number;
-    reachable_replicas: number;
-    versions: string[];
-    sample_age_seconds: number | null;
-  }>;
-}
-
 interface PlatformMeteringUsageResponse {
   items: Array<{
     tenant_id?: string;
@@ -66,11 +50,40 @@ interface PlatformMeteringUsageResponse {
   dev_profile: DevProfileResponse;
 }
 
+interface PlatformComponentsResponse {
+  observed_at: string;
+  groups: Array<{
+    name: string;
+    components: Array<{
+      name: string;
+      kind: string;
+      namespace: string;
+      group: string;
+      status: string;
+      desired_replicas: number;
+      ready_replicas: number;
+      version: string;
+      scrape_status: PlatformServiceScrapeStatus | null;
+      reason: string | null;
+    }>;
+  }>;
+  dev_profile: DevProfileResponse;
+}
+
+interface PlatformComponentLogResponse {
+  container: string;
+  level: string;
+  message: string;
+  pod: string;
+  stream: string;
+  timestamp: string;
+}
+
 export interface PlatformRuntimeProfile {
   mode: string;
   provider: string;
   realProvider: boolean;
-  reason: string;
+  reason: string | null;
 }
 
 export interface PlatformCapacityRegion {
@@ -106,25 +119,10 @@ export interface PlatformCapacity {
 
 export type PlatformServiceScrapeStatus = "reachable" | "unreachable" | "unknown";
 
-export interface PlatformServiceHealthComponent {
-  serviceName: string;
-  scrapeStatus: PlatformServiceScrapeStatus;
-  observedReplicas: number;
-  reachableReplicas: number;
-  versions: string[];
-  sampleAgeSeconds?: number;
-}
-
-export interface PlatformServiceHealth {
-  scope: string;
-  coverage: string;
-  signal: string;
-  observedAt: string;
-  sourceStatus: string;
-  components: PlatformServiceHealthComponent[];
-}
-
-export type PlatformMeteringResourceType = "instance_gpu_seconds";
+export type PlatformMeteringResourceType =
+  | "instance_gpu_seconds"
+  | "instance_cpu_seconds"
+  | "instance_memory_gib_seconds";
 export type PlatformMeteringGroupBy = "tenant_id" | "day" | "hour";
 
 export interface PlatformMeteringUsageParams {
@@ -149,12 +147,112 @@ export interface PlatformMeteringUsage {
   profile: PlatformRuntimeProfile;
 }
 
+export interface PlatformComponent {
+  name: string;
+  kind: string;
+  namespace: string;
+  group: string;
+  status: string;
+  desiredReplicas: number;
+  readyReplicas: number;
+  version: string;
+  scrapeStatus: PlatformServiceScrapeStatus | null;
+  reason: string | null;
+}
+
+export interface PlatformComponentGroup {
+  name: string;
+  components: PlatformComponent[];
+}
+
+export interface PlatformComponents {
+  observedAt: string;
+  groups: PlatformComponentGroup[];
+  profile: PlatformRuntimeProfile;
+}
+
+export interface PlatformComponentLog {
+  container: string;
+  level: string;
+  message: string;
+  pod: string;
+  stream: string;
+  timestamp: string;
+}
+
+export interface StreamPlatformComponentLogsOptions {
+  component: string;
+  limit: number;
+  intervalSeconds: number;
+  signal?: AbortSignal;
+  onConnected?: () => void;
+  onLog: (log: PlatformComponentLog) => void;
+}
+
 export const platformQueryKeys = {
   capacity: ["platform", "capacity"] as const,
-  serviceHealth: ["platform", "service-health"] as const,
+  components: ["platform", "components"] as const,
   meteringUsage: (params: PlatformMeteringUsageParams) =>
     ["platform", "metering-usage", params] as const,
 };
+
+function mapPlatformComponent(
+  component: PlatformComponentsResponse["groups"][number]["components"][number],
+): PlatformComponent {
+  return {
+    name: component.name,
+    kind: component.kind,
+    namespace: component.namespace,
+    group: component.group,
+    status: component.status,
+    desiredReplicas: component.desired_replicas,
+    readyReplicas: component.ready_replicas,
+    version: component.version,
+    scrapeStatus: component.scrape_status,
+    reason: component.reason,
+  };
+}
+
+function mapPlatformComponentLog(log: PlatformComponentLogResponse): PlatformComponentLog {
+  return {
+    container: log.container,
+    level: log.level,
+    message: log.message,
+    pod: log.pod,
+    stream: log.stream,
+    timestamp: log.timestamp,
+  };
+}
+
+function parseSseBlock(
+  block: string,
+  onConnected: (() => void) | undefined,
+  onLog: (log: PlatformComponentLog) => void,
+) {
+  if (block.startsWith(":")) {
+    if (block.slice(1).trim() === "connected") onConnected?.();
+    return false;
+  }
+
+  const lines = block.split(/\r?\n/);
+  const event =
+    lines
+      .find((line) => line.startsWith("event:"))
+      ?.slice(6)
+      .trim() || "message";
+  const data = lines
+    .filter((line) => line.startsWith("data:"))
+    .map((line) => line.slice(5).trimStart())
+    .join("\n");
+
+  if (event === "log" && data) {
+    onLog(mapPlatformComponentLog(JSON.parse(data) as PlatformComponentLogResponse));
+  }
+  if (event === "error") {
+    throw new Error(data || "日志流异常断开");
+  }
+  return event === "done";
+}
 
 function mapRuntimeProfile(profile: DevProfileResponse): PlatformRuntimeProfile {
   return {
@@ -198,24 +296,57 @@ export async function fetchPlatformCapacity(): Promise<PlatformCapacity> {
   };
 }
 
-export async function fetchPlatformServiceHealth(): Promise<PlatformServiceHealth> {
-  const response = await apiRequest<PlatformServiceHealthResponse>("/platform/services/health");
+export async function fetchPlatformComponents(): Promise<PlatformComponents> {
+  const response = await apiRequest<PlatformComponentsResponse>("/platform/components");
 
   return {
-    scope: response.scope,
-    coverage: response.coverage,
-    signal: response.signal,
     observedAt: response.observed_at,
-    sourceStatus: response.source_status,
-    components: (response.components || []).map((component) => ({
-      serviceName: component.service_name,
-      scrapeStatus: component.scrape_status,
-      observedReplicas: component.observed_replicas,
-      reachableReplicas: component.reachable_replicas,
-      versions: component.versions || [],
-      sampleAgeSeconds: component.sample_age_seconds ?? undefined,
+    groups: (response.groups || []).map((group) => ({
+      name: group.name,
+      components: (group.components || []).map(mapPlatformComponent),
     })),
+    profile: mapRuntimeProfile(response.dev_profile),
   };
+}
+
+export async function streamPlatformComponentLogs({
+  component,
+  limit,
+  intervalSeconds,
+  signal,
+  onConnected,
+  onLog,
+}: StreamPlatformComponentLogsOptions): Promise<void> {
+  const search = new URLSearchParams({
+    limit: String(limit),
+    interval_seconds: String(intervalSeconds),
+  });
+  const response = await apiFetch(
+    `/platform/components/${encodeURIComponent(component)}/logs/stream?${search.toString()}`,
+    {
+      headers: { Accept: "text/event-stream" },
+      signal,
+    },
+  );
+  if (!response.body) throw new Error("浏览器未提供日志流响应体");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    const blocks = buffer.split(/\r?\n\r?\n/);
+    buffer = blocks.pop() || "";
+    for (const block of blocks) {
+      if (parseSseBlock(block, onConnected, onLog)) return;
+    }
+    if (done) {
+      if (buffer.trim()) parseSseBlock(buffer, onConnected, onLog);
+      return;
+    }
+  }
 }
 
 export async function fetchPlatformMeteringUsage(

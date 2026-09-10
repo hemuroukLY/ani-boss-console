@@ -2,8 +2,8 @@ import { Button } from "@arco-design/web-react";
 import {
   DataTableNameCell,
   ListDataTable,
-  ListPageFrame,
   ListPageHeader,
+  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
@@ -85,7 +85,7 @@ export function RegistryGarbageCollectionPage() {
         />
       </section>
 
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="px-5 pt-5">
             <div className="text-base font-semibold text-gray-900">待回收层</div>
@@ -102,9 +102,9 @@ export function RegistryGarbageCollectionPage() {
           pagination={false}
           emptyText="暂无可回收镜像层"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
 
-      <ListPageFrame
+      <TableSectionFrame
         header={
           <div className="px-5 pt-5">
             <div className="text-base font-semibold text-gray-900">GC 历史</div>
@@ -121,7 +121,7 @@ export function RegistryGarbageCollectionPage() {
           pagination={false}
           emptyText="暂无 GC 任务历史"
         />
-      </ListPageFrame>
+      </TableSectionFrame>
     </div>
   );
 }

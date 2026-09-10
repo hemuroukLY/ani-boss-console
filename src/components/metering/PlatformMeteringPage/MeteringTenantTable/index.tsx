@@ -1,17 +1,32 @@
 import { Input } from "@arco-design/web-react";
 import { IconSearch } from "@arco-design/web-react/icon";
 import { useMemo, useState } from "react";
-import { ListDataTable, ListPageFrame, ListToolbar, type ListColumn } from "@/components/common";
+import {
+  DataTableRowActionButton,
+  DataTableRowActions,
+  ListDataTable,
+  ListToolbar,
+  TableSectionFrame,
+  type ListColumn,
+} from "@/components/common";
 import type { MeteringTenantRow } from "../../model";
 import { formatUsage, getChangeRate } from "../usePlatformGpuMetering";
 
 interface MeteringTenantTableProps {
   rows: MeteringTenantRow[];
+  metricLabel: string;
   unit: string;
   loading: boolean;
+  onViewDetail: (tenantId: string) => void;
 }
 
-export function MeteringTenantTable({ rows, unit, loading }: MeteringTenantTableProps) {
+export function MeteringTenantTable({
+  rows,
+  metricLabel,
+  unit,
+  loading,
+  onViewDetail,
+}: MeteringTenantTableProps) {
   const [keyword, setKeyword] = useState("");
   const filteredRows = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
@@ -60,10 +75,22 @@ export function MeteringTenantTable({ rows, unit, loading }: MeteringTenantTable
         );
       },
     },
+    {
+      title: "操作",
+      width: 120,
+      fixed: "right",
+      render: (_, tenant) => (
+        <DataTableRowActions>
+          <DataTableRowActionButton onClick={() => onViewDetail(tenant.id)}>
+            查看明细
+          </DataTableRowActionButton>
+        </DataTableRowActions>
+      ),
+    },
   ];
 
   return (
-    <ListPageFrame
+    <TableSectionFrame
       header={
         <div className="flex items-center justify-between px-5 pt-5">
           <div>
@@ -96,9 +123,9 @@ export function MeteringTenantTable({ rows, unit, loading }: MeteringTenantTable
         data={filteredRows}
         loading={loading}
         pagination={false}
-        scroll={{ x: 850 }}
-        emptyText="当前时间范围内暂无 GPU 计量数据"
+        scroll={{ x: 970 }}
+        emptyText={`当前时间范围内暂无 ${metricLabel} 计量数据`}
       />
-    </ListPageFrame>
+    </TableSectionFrame>
   );
 }

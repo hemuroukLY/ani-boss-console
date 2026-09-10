@@ -113,7 +113,7 @@ export function expireAuthSession() {
 
 function createRequestHeaders(init: RequestInit, accessToken?: string) {
   const headers = new Headers(init.headers);
-  headers.set("Accept", "application/json");
+  if (!headers.has("Accept")) headers.set("Accept", "application/json");
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
@@ -121,7 +121,7 @@ function createRequestHeaders(init: RequestInit, accessToken?: string) {
   return headers;
 }
 
-export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const isPublicRequest = isPublicAuthPath(path);
   const send = (accessToken?: string) =>
     fetch(`${API_BASE}${path}`, {
@@ -148,12 +148,17 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
     }
   }
 
-  const body = await readResponseBody(response);
-
   if (!response.ok) {
+    const body = await readResponseBody(response);
     throw apiErrorFromBody(response.status, body);
   }
 
+  return response;
+}
+
+export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const response = await apiFetch(path, init);
+  const body = await readResponseBody(response);
   return body as T;
 }
 

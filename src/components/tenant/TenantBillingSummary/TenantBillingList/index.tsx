@@ -211,39 +211,39 @@ export function TenantBillingList() {
 
   return (
     <>
-      <div className="space-y-4">
-        <ListPageHeader
-          title="租户计费与用量"
-          subtitle="面向企业云租户的计量结算视图；平台级资源计量请前往平台计量与结算。"
-          extra={
-            <Button
-              icon={<IconDownload />}
-              onClick={() => Message.success(`已导出 ${tenantBillings.length} 条计费记录`)}
-            >
-              导出计费记录
-            </Button>
-          }
-        />
-
-        <ListPageFrame header={null}>
-          <ListDataTable
-            rowKey="id"
-            columns={columns}
-            data={tenantBillings}
-            pagination={{
-              page,
-              pageSize,
-              total: tenantBillings.length,
-              onPageChange: setPage,
-              onPageSizeChange: (nextPageSize) => {
-                setPage(1);
-                setPageSize(nextPageSize);
-              },
-            }}
-            emptyText="还没有计费记录"
+      <ListPageFrame
+        header={
+          <ListPageHeader
+            title="租户计费与用量"
+            subtitle="面向企业云租户的计量结算视图；平台级资源计量请前往平台计量与结算。"
+            extra={
+              <Button
+                icon={<IconDownload />}
+                onClick={() => Message.success(`已导出 ${tenantBillings.length} 条计费记录`)}
+              >
+                导出计费记录
+              </Button>
+            }
           />
-        </ListPageFrame>
-      </div>
+        }
+      >
+        <ListDataTable
+          rowKey="id"
+          columns={columns}
+          data={tenantBillings}
+          pagination={{
+            page,
+            pageSize,
+            total: tenantBillings.length,
+            onPageChange: setPage,
+            onPageSizeChange: (nextPageSize) => {
+              setPage(1);
+              setPageSize(nextPageSize);
+            },
+          }}
+          emptyText="还没有计费记录"
+        />
+      </ListPageFrame>
 
       <CreditAdjustmentModal
         visible={Boolean(adjustingBilling)}
