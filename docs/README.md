@@ -1,10 +1,11 @@
 # ANI BOSS Console 文档
 
-本目录集中维护项目的工程说明、UI 开发约定和当前状态。强制执行规则以仓库根目录的 [AGENTS.md](../AGENTS.md) 为准；本文档不替代 GitNexus 管理的内容，也不作为接口契约或产品原型的副本。
+本目录集中维护项目的工程说明、API 对接流程、UI 开发约定和当前状态。强制执行规则以仓库根目录的 [AGENTS.md](../AGENTS.md) 为准；本文档不替代 GitNexus 管理的内容，也不作为接口契约或产品原型的副本。
 
 ## 文档入口
 
 - [工程约定](./CONVENTIONS.md)：目录职责、路由与组件组织、数据边界和验证方式。
+- [API 对接流程](./API-INTEGRATION.md)：契约核对、领域 API、公共请求层、幂等、SSE、上传和页面接入边界。
 - [UI 开发约定](./UI-CONVENTIONS.md)：组件选型、样式边界、页面模式和交互底线。
 - [当前状态与开发记录](./PROJECT-STATUS.md)：当前产品基线、已覆盖模块、数据状态、主要缺口和近期记录。
 - [未接入接口现状](./API-INTEGRATION-GAPS.md)：以 GPU 端到端业务流程为 P0，按排期、接口覆盖、权限、后端缺口和运行依赖分类记录未接入原因与后续顺序。
@@ -17,6 +18,5 @@
 | 后端接口、字段和执行行为 | GitNexus 索引 `ANI` |
 | Agent 工作方式与强制项目规则 | [AGENTS.md](../AGENTS.md) |
 | 前端当前实现 | 本仓库源码与 GitNexus 索引 `ani-boss-console` |
-| Console 共用骨架与成熟实现参考 | GitNexus 索引及仓库 `ani-console` |
 
 当文档与权威来源不一致时，应先核实来源并更新文档，不得根据旧文档猜测产品或接口行为。

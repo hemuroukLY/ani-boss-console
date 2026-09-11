@@ -11,9 +11,6 @@ import {
 } from "@arco-design/web-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { getApiErrorMessage } from "@/api/client";
-import { ListPageHeader } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import {
   fetchGpuInventory,
   fetchGpuOccupancy,
@@ -21,12 +18,15 @@ import {
   gpuResourcePoolQueryKeys,
   updateTenantGpuQuota,
   updateTenantGpuReservation,
-} from "../api";
+  type TenantGpuAllocation,
+} from "@/api/gpu-inventory";
+import { ListPageHeader } from "@/components/common";
+import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { getApiErrorMessage } from "@/lib/api-error";
 import { GpuClusterPartitionFlow } from "../GpuClusterPartitionFlow";
 import { GpuInventoryTable } from "../GpuInventoryTable";
 import { GpuSummary } from "../GpuSummary";
 import { TenantGpuAllocationTable } from "../TenantGpuAllocationTable";
-import type { TenantGpuAllocation } from "../types";
 import styles from "./index.module.css";
 
 interface QuotaFormValues {
@@ -81,8 +81,7 @@ export function GpuResourcePoolPage() {
     });
 
   const quotaMutation = useMutation({
-    mutationFn: ({ tenantId, total }: { tenantId: string; total: number }) =>
-      updateTenantGpuQuota(tenantId, total),
+    mutationFn: updateTenantGpuQuota,
     onSuccess: async () => {
       await refreshTenantLedger();
       Message.success("GPU 配额上限已更新");
@@ -93,13 +92,7 @@ export function GpuResourcePoolPage() {
   });
 
   const reservationMutation = useMutation({
-    mutationFn: ({
-      tenantId,
-      allocatedGpuCount,
-    }: {
-      tenantId: string;
-      allocatedGpuCount: number;
-    }) => updateTenantGpuReservation(tenantId, allocatedGpuCount),
+    mutationFn: updateTenantGpuReservation,
     onSuccess: async (reservation) => {
       await refreshTenantLedger();
       Message.success(

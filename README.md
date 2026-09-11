@@ -2,7 +2,7 @@
 
 ANI 平台管理端前端，用于平台运营总览、资源池与基础设施管理，以及租户、配额、管理员和计费管理。
 
-当前项目以产品原型 `产品原型-9.08 v2` 为页面与信息架构基线，应用骨架与 `ani-console` 保持一致：一级菜单位于顶部，二级菜单和三级分组位于左侧边栏。
+当前项目以产品原型 `产品原型-9.08 v2` 为页面与信息架构基线：一级菜单位于顶部，二级菜单和三级分组位于左侧边栏。
 
 ## 开发
 
@@ -27,12 +27,13 @@ pnpm verify
 
 ## 技术栈
 
-React 18、TypeScript、Vite、TanStack Router、TanStack Query、Arco Design React、Tailwind CSS、ECharts。
+React 18、TypeScript、Vite、TanStack Router、TanStack Query、Arco Design React、Axios、Tailwind CSS、ECharts。
 
 ## 文档
 
 - [文档索引](./docs/README.md)
 - [工程约定](./docs/CONVENTIONS.md)
+- [API 对接流程](./docs/API-INTEGRATION.md)
 - [UI 开发约定](./docs/UI-CONVENTIONS.md)
 - [当前状态与开发记录](./docs/PROJECT-STATUS.md)
 - [Agent 执行约定](./AGENTS.md)

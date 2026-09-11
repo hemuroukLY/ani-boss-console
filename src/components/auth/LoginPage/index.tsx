@@ -1,9 +1,9 @@
 import { Alert, Button, Card, Divider, Form, Input, Message } from "@arco-design/web-react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { ApiError } from "@/api/client";
 import { loginPlatform } from "@/api/auth";
 import { AuthCenterLayout } from "@/components/shell/AuthCenterLayout";
+import { parseApiError } from "@/lib/api-error";
 import { isAuthenticated, setAuthSession, setDevelopmentAuthBypass } from "../store";
 
 interface PlatformLoginValues {
@@ -18,14 +18,13 @@ function normalizeRedirect(redirect?: string) {
 }
 
 function getLoginErrorMessage(error: unknown) {
-  if (error instanceof ApiError) {
-    if (error.code === "INVALID_CREDENTIALS") return "用户名或密码错误";
-    if (error.code === "AUTH_NOT_CONFIGURED") return "平台登录服务尚未配置";
-  }
+  const apiError = parseApiError(error);
+  if (apiError.code === "INVALID_CREDENTIALS") return "用户名或密码错误";
+  if (apiError.code === "AUTH_NOT_CONFIGURED") return "平台登录服务尚未配置";
   if (typeof navigator !== "undefined" && !navigator.onLine) {
     return "网络异常，请稍后重试";
   }
-  return error instanceof Error ? error.message : "登录失败，请稍后重试";
+  return apiError.message || "登录失败，请稍后重试";
 }
 
 export function LoginPage({ redirect }: { redirect?: string }) {

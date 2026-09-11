@@ -1,9 +1,12 @@
 import { Button } from "@arco-design/web-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import { gpuResourcePoolQueryKeys } from "../api";
+import {
+  gpuResourcePoolQueryKeys,
+  type GpuInventoryDevice,
+  type GpuPartitionTask,
+} from "@/api/gpu-inventory";
 import { GpuClusterPartitionModal } from "../GpuClusterPartitionModal";
-import type { GpuInventoryDevice, GpuPartitionTask } from "../types";
 
 interface GpuClusterPartitionFlowProps {
   devices: GpuInventoryDevice[];

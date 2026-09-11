@@ -10,20 +10,18 @@ import {
 } from "@arco-design/web-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import {
   createGpuPartition,
   fetchGpuPartitionTask,
   fetchLatestGpuPartitionTask,
   getGpuPartitionErrorMessage,
   gpuPartitionQueryKeys,
-} from "../partition-api";
-import type {
-  GpuInventoryDevice,
-  GpuPartitionShares,
-  GpuPartitionSkippedNode,
-  GpuPartitionTask,
-} from "../types";
+  type GpuInventoryDevice,
+  type GpuPartitionShares,
+  type GpuPartitionSkippedNode,
+  type GpuPartitionTask,
+} from "@/api/gpu-inventory";
+import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 
 const POLL_INTERVAL_MS = 2500;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
@@ -83,7 +81,6 @@ export function GpuClusterPartitionModal({
   const [activeTaskId, setActiveTaskId] = useState<string>();
   const [acceptedTask, setAcceptedTask] = useState<GpuPartitionTask>();
   const [ignoredRecoveredTaskId, setIgnoredRecoveredTaskId] = useState<string>();
-  const idempotencyKeyRef = useRef(crypto.randomUUID());
   const completedTaskRef = useRef<string>();
 
   const eligibleDevices = useMemo(() => devices.filter(eligibleForPartition), [devices]);
@@ -140,11 +137,10 @@ export function GpuClusterPartitionModal({
   }, [onTaskCompleted, task]);
 
   const submit = () => {
-    partitionMutation.mutate({ shares, idempotencyKey: idempotencyKeyRef.current });
+    partitionMutation.mutate({ shares });
   };
 
   const resetFailedTask = () => {
-    idempotencyKeyRef.current = crypto.randomUUID();
     setIgnoredRecoveredTaskId(task?.id);
     setAcceptedTask(undefined);
     setActiveTaskId(undefined);

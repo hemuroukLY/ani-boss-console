@@ -2,7 +2,7 @@ import { Card } from "@arco-design/web-react";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { ListDataTable, type ListColumn } from "@/components/common";
-import type { GpuInventoryDevice, GpuInventoryStatus } from "../types";
+import type { GpuInventoryDevice, GpuInventoryStatus } from "@/api/gpu-inventory";
 
 const statusMeta: Record<GpuInventoryStatus, { label: string; className: string }> = {
   available: {

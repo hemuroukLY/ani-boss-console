@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getApiErrorMessage } from "@/api/client";
+import { getApiErrorMessage } from "@/lib/api-error";
 import { showErrorNotification } from "@/lib/notifications";
 
 interface UseListErrorNotificationOptions {

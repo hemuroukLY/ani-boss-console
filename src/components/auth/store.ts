@@ -1,11 +1,5 @@
 import { useSyncExternalStore } from "react";
-
-export interface AuthTokens {
-  access_token: string;
-  refresh_token: string;
-  expires_in?: number;
-  issued_at?: string;
-}
+import type { AuthTokens } from "@/api/auth/types";
 
 interface AuthState {
   tokens: AuthTokens | null;

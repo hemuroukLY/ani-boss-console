@@ -6,7 +6,7 @@ import {
   ListDataTable,
   type ListColumn,
 } from "@/components/common";
-import type { TenantGpuAllocation } from "../types";
+import type { TenantGpuAllocation } from "@/api/gpu-inventory";
 
 interface TenantGpuAllocationTableProps {
   data: TenantGpuAllocation[];

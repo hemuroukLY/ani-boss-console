@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { ApiError } from "@/api/client";
 import { streamPlatformComponentLogs, type PlatformComponentLog } from "@/api/platform";
+import { parseApiError } from "@/lib/api-error";
 
 export type LogConnectionState = "idle" | "connecting" | "connected" | "reconnecting" | "failed";
 
@@ -58,7 +58,7 @@ export function usePlatformComponentLogs(component: string) {
       } catch (streamError) {
         if (cancelled || controller.signal.aborted) return;
         setErrorState({ component, error: streamError });
-        if (streamError instanceof ApiError && streamError.status === 404) {
+        if (parseApiError(streamError).status === 404) {
           setConnection({ component, state: "failed" });
           return;
         }

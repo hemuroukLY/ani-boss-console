@@ -1,5 +1,5 @@
 import { Metric } from "@/components/overview/Metric";
-import type { GpuOccupancy } from "../types";
+import type { GpuOccupancy } from "@/api/gpu-inventory";
 
 interface GpuSummaryProps {
   occupancy?: GpuOccupancy;

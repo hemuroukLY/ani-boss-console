@@ -7,12 +7,12 @@
 - 仓库根目录已经代表 BOSS 应用范围，源码目录、路由和代码标识按业务语义命名，不重复添加 `boss` 或 `Boss` 前缀。
 - 用户可见的产品名、品牌和菜单文案按产品原型保留，不受代码命名规则限制。
 - 页面规格以 GitNexus 索引 `产品原型-9.08 v2` 为准；后端契约与行为以 GitNexus 索引 `ANI` 为准。
-- `ani-console` 仅用于对齐应用骨架、公共交互和成熟工程模式，不能替代 BOSS 产品原型或后端契约。
 
 ## 目录职责
 
 - `src/routes/`：TanStack Router 文件路由。路由文件负责路由参数、路由上下文、页面级状态与数据编排，以及领域组件组合。
-- `src/components/<scope>/`：按页面作用域组织的业务组件、领域模型、Provider、状态管理、数据访问和业务逻辑。
+- `src/components/<scope>/`：按页面作用域组织的业务组件、领域模型、Provider、状态管理和业务逻辑。
+- `src/api/`：按业务资源组织的 API 请求函数、静态类型与 Axios 公共请求基础设施。
 - `src/components/common/`：跨页面或跨领域复用的公共组件；目录外统一从 `@/components/common` 导入。
 - `src/components/shell/`：应用壳层、顶部导航、侧边栏和页面出口。
 - `src/styles/`：全局样式。组件私有样式应与组件同目录，不放入全局样式目录。
@@ -41,11 +41,14 @@
 
 ## 数据与接口
 
-- 统一数据访问入口位于 `src/api/`；请求通过同源 `/api/v1` 访问 ANI，并由公共请求层负责平台 Bearer 令牌、401 刷新和结构化错误。
+- 新增或调整接口的完整步骤遵循 [API 对接流程](./API-INTEGRATION.md)；本节只保留长期有效的结构边界。
+- API 层按业务资源组织在 `src/api/<domain>/`；Core 与 Services 请求分别由 `src/api/request.ts` 的 Axios 实例统一处理认证、刷新、响应解包与错误归一化，页面只调用领域 API 函数。
+- 接口类型随业务资源保存在各模块 `types.ts`；契约核对独立 ANI 仓库的 Core/Services OpenAPI、实现与 GitNexus 接口补充索引，不在前端保留整份生成式 schema 快照。
+- 要求幂等的写请求由业务 API 模块内部管理 key 生命周期；页面仅提交无 key DTO，是否使用 body 或 Header 载体以接口契约为准。
+- SSE 使用 Axios fetch adapter 的流式响应；预签名直传使用不带平台 JWT 的隔离 Axios 实例。
 - 平台登录态位于 `src/components/auth/`，只使用 ANI 平台身份接口，不复用 Console 的租户登录字段。
 - 接入真实接口前，必须通过 GitNexus 查询 `ANI` 中的接口、字段和行为，不得根据页面演示数据反推后端契约。
 - 服务端数据接入后统一使用 TanStack Query 管理；页面私有交互状态保留在组件内部，跨页面领域状态放入对应 `src/components/<scope>/`。
-- API 前缀和请求封装应在首次真实接口接入时统一设计，禁止各页面自行创建互不兼容的请求方式。
 
 ## 导入、样式与可视化
 

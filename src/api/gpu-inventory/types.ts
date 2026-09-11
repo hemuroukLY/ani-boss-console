@@ -83,7 +83,6 @@ export interface GpuPartitionTask {
 
 export interface CreateGpuPartitionInput {
   shares: GpuPartitionShares;
-  idempotencyKey: string;
 }
 
 export interface TenantGpuAllocation {
@@ -94,4 +93,14 @@ export interface TenantGpuAllocation {
   used: number;
   reserved: number;
   available: number;
+}
+
+export interface UpdateTenantGpuQuotaInput {
+  tenantId: string;
+  total: number;
+}
+
+export interface UpdateTenantGpuReservationInput {
+  tenantId: string;
+  allocatedGpuCount: number;
 }
