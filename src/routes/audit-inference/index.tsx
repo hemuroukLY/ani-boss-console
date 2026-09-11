@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PagePlaceholder } from "@/components/common";
+import { AuditPlannedPage } from "@/components/audit/AuditPlannedPage";
 
 export const Route = createFileRoute("/audit-inference/")({
   component: function InferenceAuditPage() {
-    return <PagePlaceholder title="推理调用审计" priority="P0" />;
+    return (
+      <AuditPlannedPage
+        title="推理调用审计"
+        description="当前后端尚未提供平台范围的推理调用审计查询。"
+      />
+    );
   },
 });

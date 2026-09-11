@@ -9,6 +9,7 @@ import {
   isValid,
   parse,
   parseISO,
+  subHours,
 } from "date-fns";
 
 export type DateValue = Date | number | string | null | undefined;
@@ -182,4 +183,19 @@ export function listUtcDateKeys(start: DateValue, count: number) {
   return Array.from({ length: count }, (_, index) =>
     formatUtcDate(addUtcDays(date, index), ""),
   ).filter(Boolean);
+}
+
+const DATE_TIME_PICKER_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
+export function getRecentDateTimeRange(hours = 24): [string, string] {
+  const end = new Date();
+  return [
+    format(subHours(end, Math.max(1, hours)), DATE_TIME_PICKER_PATTERN),
+    format(end, DATE_TIME_PICKER_PATTERN),
+  ];
+}
+
+export function toRfc3339DateTime(value: string) {
+  const parsed = parse(value, DATE_TIME_PICKER_PATTERN, new Date());
+  return isValid(parsed) ? parsed.toISOString() : undefined;
 }

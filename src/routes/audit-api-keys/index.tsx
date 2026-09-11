@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PagePlaceholder } from "@/components/common";
+import { AuditPlannedPage } from "@/components/audit/AuditPlannedPage";
 
 export const Route = createFileRoute("/audit-api-keys/")({
   component: function ApiKeyAuditPage() {
-    return <PagePlaceholder title="API Key 审计" priority="P0" />;
+    return (
+      <AuditPlannedPage
+        title="API Key 审计"
+        description="当前后端尚未提供平台范围的 API Key 审计查询。"
+      />
+    );
   },
 });

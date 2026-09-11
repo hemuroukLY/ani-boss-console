@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PagePlaceholder } from "@/components/common";
+import { PlatformAuditPage as PlatformAuditPageContent } from "@/components/audit/PlatformAuditPage";
 
 export const Route = createFileRoute("/audit/")({
   component: function PlatformAuditPage() {
-    return <PagePlaceholder title="平台审计日志" priority="P0" />;
+    return <PlatformAuditPageContent />;
   },
 });

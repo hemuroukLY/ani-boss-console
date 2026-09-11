@@ -15,6 +15,8 @@ export type ListPagination = {
   pageSize: number;
   total: number;
   pageSizeOptions?: number[];
+  showJumper?: boolean;
+  showTotal?: (total: number) => ReactNode;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 };
@@ -55,8 +57,8 @@ export function DataTable<T>({
           sizeOptions: pagination.pageSizeOptions ?? [10, 20, 50],
           pageSizeChangeResetCurrent: true,
           hideOnSinglePage: false,
-          showTotal: () => `共 ${pagination.total} 条记录`,
-          showJumper: true,
+          showTotal: pagination.showTotal ?? (() => `共 ${pagination.total} 条记录`),
+          showJumper: pagination.showJumper ?? true,
         };
 
   return (
