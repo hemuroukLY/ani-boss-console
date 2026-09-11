@@ -21,6 +21,7 @@ import {
   type TenantBilling,
   type TenantBillingStatus,
 } from "@/components/tenant/model";
+import { formatDate, formatDateTimeMinute, formatMonth } from "@/lib/date";
 
 export function TenantBillingList() {
   const { tenantBillings, applyTenantBillingAction } = useTenantManagement();
@@ -136,7 +137,12 @@ export function TenantBillingList() {
         </Tag>
       ),
     },
-    { title: "账期", dataIndex: "period", width: 100 },
+    {
+      title: "账期",
+      dataIndex: "period",
+      width: 100,
+      render: (value: string) => formatMonth(value),
+    },
     {
       title: "本期用量费用",
       dataIndex: "usageCostUsd",
@@ -166,8 +172,18 @@ export function TenantBillingList() {
       width: 145,
       render: (value?: string) => value ?? "-",
     },
-    { title: "到期日", dataIndex: "dueDate", width: 120 },
-    { title: "更新时间", dataIndex: "updatedAt", width: 160 },
+    {
+      title: "到期日",
+      dataIndex: "dueDate",
+      width: 120,
+      render: (value: string) => formatDate(value),
+    },
+    {
+      title: "更新时间",
+      dataIndex: "updatedAt",
+      width: 160,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     {
       title: "操作",
       width: 190,

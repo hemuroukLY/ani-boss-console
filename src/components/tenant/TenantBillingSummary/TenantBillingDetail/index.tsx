@@ -22,6 +22,7 @@ import {
   type TenantInvoice,
   type TenantUsageCost,
 } from "@/components/tenant/model";
+import { formatDate, formatDateTimeMinute, formatMonth } from "@/lib/date";
 
 interface TenantBillingDetailProps {
   tenantId: string;
@@ -119,7 +120,12 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
   ];
 
   const adjustmentColumns: ListColumn<TenantBillingAdjustment>[] = [
-    { title: "时间", dataIndex: "at", width: 180 },
+    {
+      title: "时间",
+      dataIndex: "at",
+      width: 180,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     {
       title: "金额（USD）",
       width: 160,
@@ -141,7 +147,12 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
 
   const invoiceColumns: ListColumn<TenantInvoice>[] = [
     { title: "账单号", dataIndex: "no", width: 220 },
-    { title: "账期", dataIndex: "period", width: 130 },
+    {
+      title: "账期",
+      dataIndex: "period",
+      width: 130,
+      render: (value: string) => formatMonth(value),
+    },
     {
       title: "金额（USD）",
       width: 160,
@@ -152,7 +163,12 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
       width: 110,
       render: () => <Tag color="blue">已出账</Tag>,
     },
-    { title: "出账日期", dataIndex: "issuedAt", width: 150 },
+    {
+      title: "出账日期",
+      dataIndex: "issuedAt",
+      width: 150,
+      render: (value: string) => formatDate(value),
+    },
     {
       title: "操作",
       width: 190,
@@ -188,7 +204,12 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
     { title: "操作", dataIndex: "operation", width: 160 },
     { title: "说明", dataIndex: "message" },
     { title: "操作人", dataIndex: "by", width: 150 },
-    { title: "时间", dataIndex: "createdAt", width: 180 },
+    {
+      title: "时间",
+      dataIndex: "createdAt",
+      width: 180,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
   ];
 
   const infoCards: DetailInfoCard[] = [
@@ -205,7 +226,7 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
               label: "状态",
               value: <Tag color={status.color}>{status.label}</Tag>,
             },
-            { label: "账期", value: billing.period },
+            { label: "账期", value: formatMonth(billing.period) },
             { label: "本期用量费用", value: formatUsd(billing.usageCostUsd) },
             {
               label: "账户余额",
@@ -216,9 +237,9 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
               ),
             },
             { label: "授信额度", value: formatUsd(billing.creditUsd) },
-            { label: "到期日", value: billing.dueDate },
+            { label: "到期日", value: formatDate(billing.dueDate) },
             { label: "账单号", value: billing.invoiceNo ?? "-" },
-            { label: "最近更新", value: billing.updatedAt },
+            { label: "最近更新", value: formatDateTimeMinute(billing.updatedAt) },
           ]}
         />
       ),
@@ -308,10 +329,10 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
         subtitle={tenant.name}
         status={<Tag color={status.color}>{status.label}</Tag>}
         headerItems={[
-          { label: "账期", value: billing.period },
+          { label: "账期", value: formatMonth(billing.period) },
           { label: "本期用量费用", value: formatUsd(billing.usageCostUsd) },
           { label: "账户余额", value: formatUsd(billing.balanceUsd) },
-          { label: "到期日", value: billing.dueDate },
+          { label: "到期日", value: formatDate(billing.dueDate) },
         ]}
         cards={infoCards}
         tabs={detailTabs}
@@ -323,7 +344,7 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
                   confirmAction(
                     "refresh_usage",
                     "刷新用量",
-                    `确认刷新 ${billing.period} 账期的用量与费用？`,
+                    `确认刷新 ${formatMonth(billing.period)} 账期的用量与费用？`,
                     "用量与费用已刷新",
                   )
                 }

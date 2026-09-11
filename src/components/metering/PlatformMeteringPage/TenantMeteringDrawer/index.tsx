@@ -10,6 +10,7 @@ import {
 } from "@/api/platform";
 import { DataTable, type ListColumn } from "@/components/common";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { formatDate, formatDateHour, formatUtcDate } from "@/lib/date";
 import { MeteringTrend } from "../../MeteringTrend";
 import { formatUsage, toGpuHours } from "../usePlatformGpuMetering";
 
@@ -33,8 +34,7 @@ interface TenantMeteringDetailRow {
 }
 
 function formatPeriod(period: string, groupBy: DetailGroupBy) {
-  if (groupBy === "hour") return `${period.replace("T", " ")}:00`;
-  return period;
+  return groupBy === "hour" ? formatDateHour(period) : formatDate(period);
 }
 
 export function TenantMeteringDrawer({
@@ -109,7 +109,7 @@ export function TenantMeteringDrawer({
           <div className="text-xs text-gray-500">租户 ID</div>
           <div className="mt-1 break-all font-mono text-sm text-gray-900">{tenantId || "-"}</div>
           <div className="mt-2 text-xs text-gray-500">
-            查询范围：{startTime.slice(0, 10)} 至 {endTime.slice(0, 10)}（UTC）
+            查询范围：{formatUtcDate(startTime)} 至 {formatUtcDate(endTime)}（UTC）
           </div>
         </div>
 

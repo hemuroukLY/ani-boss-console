@@ -1,3 +1,5 @@
+import { compareDateValuesDesc } from "@/lib/date";
+
 export type TenantStatus = "active" | "suspended" | "disabled";
 export type TenantSsoStatus = "disconnected" | "configured" | "connected";
 export type TenantQuotaRequestStatus = "pending" | "approved" | "rejected";
@@ -775,7 +777,7 @@ export const initialTenantBillings: TenantBilling[] = initialTenants.map((tenant
         createdAt: tenant.createdAt,
         by: "system",
       },
-    ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    ].sort((a, b) => compareDateValuesDesc(a.createdAt, b.createdAt)),
     updatedAt: "2026-07-31 23:59",
   };
 });

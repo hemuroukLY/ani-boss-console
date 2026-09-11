@@ -15,6 +15,7 @@ import {
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { formatDateTime } from "@/lib/date";
 
 const groupNames: Record<string, string> = {
   service: "核心服务",
@@ -50,10 +51,7 @@ function ScrapeBadge({ component }: { component: PlatformComponent }) {
 }
 
 function formatObservedAt(value?: string) {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString("zh-CN", { hour12: false });
+  return formatDateTime(value, value || "-");
 }
 
 export function PlatformHealthPage() {

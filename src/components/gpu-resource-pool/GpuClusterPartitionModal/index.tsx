@@ -22,6 +22,7 @@ import {
   type GpuPartitionTask,
 } from "@/api/gpu-inventory";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { hasElapsed } from "@/lib/date";
 
 const POLL_INTERVAL_MS = 2500;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
@@ -40,7 +41,7 @@ function isTerminalTask(task?: GpuPartitionTask) {
 
 function isPollingTimedOut(task?: GpuPartitionTask) {
   if (!task?.createdAt || isTerminalTask(task)) return false;
-  return Date.now() - new Date(task.createdAt).getTime() >= POLL_TIMEOUT_MS;
+  return hasElapsed(task.createdAt, POLL_TIMEOUT_MS);
 }
 
 function formatMemory(memoryMb?: number) {

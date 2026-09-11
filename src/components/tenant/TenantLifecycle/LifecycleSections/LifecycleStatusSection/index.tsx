@@ -1,5 +1,6 @@
 import { Button, Descriptions, Space, Tag, Typography } from "@arco-design/web-react";
 import { tenantStatusMeta, type Tenant } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 interface LifecycleStatusSectionProps {
   tenant: Tenant;
@@ -44,10 +45,10 @@ export function LifecycleStatusSection({
             label: "商业属性",
             value: tenant.isTrial ? "试用租户" : "正式租户",
           },
-          { label: "开通时间", value: tenant.createdAt },
-          { label: "冻结时间", value: tenant.suspendedAt || "-" },
+          { label: "开通时间", value: formatDateTimeMinute(tenant.createdAt) },
+          { label: "冻结时间", value: formatDateTimeMinute(tenant.suspendedAt) },
           { label: "冻结原因", value: tenant.suspendReason || "-" },
-          { label: "禁用时间", value: tenant.disabledAt || "-" },
+          { label: "禁用时间", value: formatDateTimeMinute(tenant.disabledAt) },
         ]}
       />
     </section>

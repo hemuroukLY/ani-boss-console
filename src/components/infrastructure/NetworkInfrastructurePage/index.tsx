@@ -10,6 +10,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
+import { formatDateTimeMinute } from "@/lib/date";
 
 type ComponentStatus = "healthy" | "degraded";
 
@@ -186,7 +187,12 @@ export function NetworkInfrastructurePage() {
       width: 230,
       render: (value) => <span className="text-gray-600">{String(value)}</span>,
     },
-    { title: "最后心跳", dataIndex: "heartbeat", width: 165 },
+    {
+      title: "最后心跳",
+      dataIndex: "heartbeat",
+      width: 165,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     {
       title: "最近事件",
       width: 280,
@@ -202,7 +208,7 @@ export function NetworkInfrastructurePage() {
             >
               {event.message}
             </div>
-            <div className="text-gray-400">{event.at}</div>
+            <div className="text-gray-400">{formatDateTimeMinute(event.at)}</div>
           </div>
         ) : (
           <span className="text-gray-400">-</span>

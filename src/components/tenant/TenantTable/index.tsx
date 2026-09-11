@@ -9,6 +9,7 @@ import {
   ListRowMore,
 } from "@/components/common";
 import { tenantStatusMeta, type Tenant } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 interface TenantTableProps {
   data: Tenant[];
@@ -85,7 +86,12 @@ export function TenantTable({
       ),
     },
     { title: "区域", dataIndex: "regionName", width: 120 },
-    { title: "开通时间", dataIndex: "createdAt", width: 170 },
+    {
+      title: "开通时间",
+      dataIndex: "createdAt",
+      width: 170,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     {
       title: "操作",
       width: 150,

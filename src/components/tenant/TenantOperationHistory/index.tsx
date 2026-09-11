@@ -1,6 +1,7 @@
 import { Tag, Typography } from "@arco-design/web-react";
 import { DataTable } from "@/components/common";
 import type { Tenant, TenantOperationStatus } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 interface TenantOperationHistoryProps {
   tenant: Tenant;
@@ -66,6 +67,7 @@ export function TenantOperationHistory({ tenant }: TenantOperationHistoryProps) 
           title: "时间",
           dataIndex: "createdAt",
           width: 180,
+          render: (value: string) => formatDateTimeMinute(value),
         },
       ]}
     />

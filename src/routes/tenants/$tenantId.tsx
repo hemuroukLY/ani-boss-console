@@ -17,6 +17,7 @@ import { TenantOperationHistory } from "@/components/tenant/TenantOperationHisto
 import { TenantQuotaUsage } from "@/components/tenant/TenantQuotaUsage";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import { tenantStatusMeta } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 export const Route = createFileRoute("/tenants/$tenantId")({
   component: function TenantDetailRoute() {
@@ -100,8 +101,8 @@ export const Route = createFileRoute("/tenants/$tenantId")({
                 value: tenant.ssoEnabled ? "已开启" : "未开启",
               },
               { label: "强制 MFA", value: tenant.forceMfa ? "开" : "关" },
-              { label: "试用到期", value: tenant.trialEndsAt || "-" },
-              { label: "创建时间", value: tenant.createdAt },
+              { label: "试用到期", value: formatDateTimeMinute(tenant.trialEndsAt) },
+              { label: "创建时间", value: formatDateTimeMinute(tenant.createdAt) },
             ]}
           />
         ),
@@ -160,7 +161,7 @@ export const Route = createFileRoute("/tenants/$tenantId")({
           { label: "区域", value: tenant.regionName },
           { label: "配额套餐", value: tenant.quotaPackage },
           { label: "管理员", value: `${tenant.adminCount} 人` },
-          { label: "开通时间", value: tenant.createdAt },
+          { label: "开通时间", value: formatDateTimeMinute(tenant.createdAt) },
         ]}
         actions={
           tenant.status !== "disabled" ? (

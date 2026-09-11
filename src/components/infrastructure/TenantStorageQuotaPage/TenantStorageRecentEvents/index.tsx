@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { ListDataTable, TableSectionFrame, type ListColumn } from "@/components/common";
+import { formatDateTimeMinute } from "@/lib/date";
 
 interface TenantStorageEvent {
   id: string;
@@ -47,7 +48,12 @@ const typeMeta = {
 } as const;
 
 const columns: ListColumn<TenantStorageEvent>[] = [
-  { title: "时间", dataIndex: "at", width: 170 },
+  {
+    title: "时间",
+    dataIndex: "at",
+    width: 170,
+    render: (value: string) => formatDateTimeMinute(value),
+  },
   {
     title: "类型",
     dataIndex: "type",

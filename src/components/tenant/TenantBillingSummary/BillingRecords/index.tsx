@@ -7,6 +7,7 @@ import type {
   TenantInvoice,
   TenantUsageCost,
 } from "@/components/tenant/model";
+import { formatDate, formatDateTimeMinute, formatMonth } from "@/lib/date";
 import { formatAmount, formatUsd } from "../formatters";
 
 export function BillingRecords({ billing }: { billing: TenantBilling }) {
@@ -48,7 +49,12 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
           data={billing.adjustments}
           noDataElement="暂无调账记录"
           columns={[
-            { title: "时间", dataIndex: "at", width: 180 },
+            {
+              title: "时间",
+              dataIndex: "at",
+              width: 180,
+              render: (value: string) => formatDateTimeMinute(value),
+            },
             {
               title: "金额（USD）",
               width: 150,
@@ -81,7 +87,12 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
           noDataElement="暂无发票记录"
           columns={[
             { title: "发票号", dataIndex: "no" },
-            { title: "账期", dataIndex: "period", width: 120 },
+            {
+              title: "账期",
+              dataIndex: "period",
+              width: 120,
+              render: (value: string) => formatMonth(value),
+            },
             {
               title: "金额（USD）",
               width: 150,
@@ -92,7 +103,12 @@ export function BillingRecords({ billing }: { billing: TenantBilling }) {
               width: 100,
               render: () => <Tag color="blue">已开具</Tag>,
             },
-            { title: "开具日期", dataIndex: "issuedAt", width: 140 },
+            {
+              title: "开具日期",
+              dataIndex: "issuedAt",
+              width: 140,
+              render: (value: string) => formatDate(value),
+            },
           ]}
         />
       </section>

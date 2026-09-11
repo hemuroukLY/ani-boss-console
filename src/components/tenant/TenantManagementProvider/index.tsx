@@ -1,5 +1,15 @@
 import { useMemo, useState, type ReactNode } from "react";
 import {
+  addDaysToFutureDateTime,
+  formatCurrentDate,
+  formatCurrentDateTime,
+  formatCurrentMonth,
+  formatDate,
+  formatMonth,
+  formatShortYearMonth,
+  getCurrentTimestamp,
+} from "@/lib/date";
+import {
   getTenantUsageBreakdown,
   initialTenantAdmins,
   initialTenantBillings,
@@ -25,20 +35,14 @@ export type {
   TenantLifecycleActionResult,
 } from "./context";
 
-function formatCreatedAt() {
-  const date = new Date();
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
 function createBillingOperation(
   operation: string,
   message: string,
   by = "platform-admin",
 ): TenantBillingOperation {
-  const createdAt = formatCreatedAt();
+  const createdAt = formatCurrentDateTime();
   return {
-    id: `billing-operation-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: `billing-operation-${getCurrentTimestamp()}-${Math.random().toString(36).slice(2, 7)}`,
     operation,
     message,
     createdAt,
@@ -52,8 +56,8 @@ function createLifecycleEvent(
   by = "platform-admin",
 ): TenantLifecycleEvent {
   return {
-    id: `lifecycle-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    at: formatCreatedAt(),
+    id: `lifecycle-${getCurrentTimestamp()}-${Math.random().toString(36).slice(2, 6)}`,
+    at: formatCurrentDateTime(),
     event,
     by,
     message,
@@ -67,11 +71,11 @@ function appendTenantOperation(
   by = "platform-admin",
 ): Tenant {
   const operationRecord: TenantOperation = {
-    id: `operation-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    id: `operation-${getCurrentTimestamp()}-${Math.random().toString(36).slice(2, 6)}`,
     operation,
     status: "success",
     message,
-    createdAt: formatCreatedAt(),
+    createdAt: formatCurrentDateTime(),
     by,
   };
 
@@ -79,11 +83,6 @@ function appendTenantOperation(
     ...tenant,
     operations: [operationRecord, ...tenant.operations].slice(0, 40),
   };
-}
-
-function formatLifecycleDate(date: Date) {
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 export function TenantManagementProvider({ children }: { children: ReactNode }) {
@@ -116,7 +115,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
         setQuotaPackages((current) =>
           current.map((item) =>
             item.planCode === planCode
-              ? { ...item, status: "enabled", updatedAt: formatCreatedAt() }
+              ? { ...item, status: "enabled", updatedAt: formatCurrentDateTime() }
               : item,
           ),
         );
@@ -139,7 +138,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           quotaPackages.find(
             (item) => item.status === "enabled" && item.name === draft.quotaPackage,
           ) ?? quotaPackages[0];
-        const tenantId = `tn-${Date.now()}`;
+        const tenantId = `tn-${getCurrentTimestamp()}`;
         const tenant: Tenant = {
           id: tenantId,
           name: draft.name.trim(),
@@ -155,7 +154,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           region: draft.region,
           regionName: region?.label ?? draft.region,
           isTrial: draft.isTrial || quotaPackage.isTrial,
-          createdAt: formatCreatedAt(),
+          createdAt: formatCurrentDateTime(),
           contact: draft.contact.trim(),
           industry: draft.industry.trim() || "通用",
           ssoEnabled: false,
@@ -170,7 +169,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           lifecycle: [
             {
               id: `lifecycle-${tenantId}-created`,
-              at: formatCreatedAt(),
+              at: formatCurrentDateTime(),
               event: "created",
               by: "system",
               message: "租户开通",
@@ -182,7 +181,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
               operation: "create",
               status: "success",
               message: "租户开通完成",
-              createdAt: formatCreatedAt(),
+              createdAt: formatCurrentDateTime(),
               by: "platform-admin",
             },
           ],
@@ -205,7 +204,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
             tenantId,
             tenantName: tenant.name,
             status: "current",
-            period: formatCreatedAt().slice(0, 7),
+            period: formatCurrentMonth(),
             usageCostUsd: 0,
             creditUsd: 0,
             balanceUsd: 0,
@@ -216,14 +215,14 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
             operations: [
               createBillingOperation("开通计费账户", `创建 ${tenant.name} 计费账户`, "system"),
             ],
-            updatedAt: formatCreatedAt(),
+            updatedAt: formatCurrentDateTime(),
           },
           ...current,
         ]);
         if (draft.adminEmail.trim()) {
           setTenantAdmins((current) => [
             {
-              id: `tadm-${Date.now()}`,
+              id: `tadm-${getCurrentTimestamp()}`,
               tenantId,
               tenantName: tenant.name,
               name: draft.adminName.trim() || draft.adminEmail.split("@")[0],
@@ -234,7 +233,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
               source: "本地",
               lastLogin: "-",
               mfa: false,
-              invitedAt: formatCreatedAt().slice(0, 10),
+              invitedAt: formatCurrentDate(),
             },
             ...current,
           ]);
@@ -255,7 +254,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                   {
                     ...tenant,
                     status: nextStatus,
-                    suspendedAt: nextStatus === "suspended" ? formatCreatedAt() : undefined,
+                    suspendedAt: nextStatus === "suspended" ? formatCurrentDateTime() : undefined,
                     suspendReason: nextStatus === "suspended" ? "运营冻结" : undefined,
                     lifecycle: [
                       createLifecycleEvent(
@@ -283,7 +282,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                     ...tenant,
                     status: "disabled",
                     adminCount: 0,
-                    disabledAt: formatCreatedAt(),
+                    disabledAt: formatCurrentDateTime(),
                     resourceSummary: {
                       vms: 0,
                       inferences: 0,
@@ -350,9 +349,9 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                     ...tenant,
                     quotaRequests: [
                       {
-                        id: `qr-${Date.now()}`,
+                        id: `qr-${getCurrentTimestamp()}`,
                         status: "pending",
-                        requestedAt: formatCreatedAt(),
+                        requestedAt: formatCurrentDateTime(),
                         by: draft.by,
                         reason: draft.reason,
                         currentGpuHours: tenant.quotaLimits.gpuHours,
@@ -397,7 +396,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                     ? {
                         ...item,
                         status: requestStatus,
-                        resolvedAt: formatCreatedAt(),
+                        resolvedAt: formatCurrentDateTime(),
                         rejectReason: requestStatus === "rejected" ? rejectReason : undefined,
                       }
                     : item,
@@ -454,7 +453,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
         }
         setTenantAdmins((current) => [
           {
-            id: `tadm-${Date.now()}`,
+            id: `tadm-${getCurrentTimestamp()}`,
             tenantId,
             tenantName: tenant.name,
             name: draft.name.trim() || email.split("@")[0],
@@ -465,7 +464,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
             source: "本地",
             lastLogin: "-",
             mfa: false,
-            invitedAt: formatCreatedAt().slice(0, 10),
+            invitedAt: formatCurrentDate(),
           },
           ...current,
         ]);
@@ -500,7 +499,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           }
           setTenantAdmins((current) =>
             current.map((item) =>
-              item.id === adminId ? { ...item, invitedAt: formatCreatedAt().slice(0, 10) } : item,
+              item.id === adminId ? { ...item, invitedAt: formatCurrentDate() } : item,
             ),
           );
           return { ok: true };
@@ -516,7 +515,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                 ? {
                     ...item,
                     status: "active",
-                    lastLogin: formatCreatedAt(),
+                    lastLogin: formatCurrentDateTime(),
                     mfa: tenant.forceMfa,
                   }
                 : item,
@@ -545,7 +544,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           }
           setTenantAdmins((current) =>
             current.map((item) =>
-              item.id === adminId ? { ...item, lastResetAt: formatCreatedAt() } : item,
+              item.id === adminId ? { ...item, lastResetAt: formatCurrentDateTime() } : item,
             ),
           );
           return { ok: true };
@@ -647,7 +646,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                       ),
                       ...item.operations,
                     ],
-                    updatedAt: formatCreatedAt(),
+                    updatedAt: formatCurrentDateTime(),
                   }
                 : item,
             ),
@@ -675,8 +674,8 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                     creditUsd: nextCredit,
                     adjustments: [
                       {
-                        id: `adjustment-${Date.now()}`,
-                        at: formatCreatedAt(),
+                        id: `adjustment-${getCurrentTimestamp()}`,
+                        at: formatCurrentDateTime(),
                         amountUsd,
                         reason,
                         by: "finance",
@@ -691,7 +690,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                       ),
                       ...item.operations,
                     ],
-                    updatedAt: formatCreatedAt(),
+                    updatedAt: formatCurrentDateTime(),
                   }
                 : item,
             ),
@@ -711,8 +710,8 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
         }
 
         if (action === "generate_invoice") {
-          const issuedAt = formatCreatedAt();
-          const invoiceNo = `INV-${issuedAt.slice(2, 7).replace("-", "")}-${String(Math.floor(Math.random() * 90) + 10)}`;
+          const issuedAt = formatCurrentDateTime();
+          const invoiceNo = `INV-${formatShortYearMonth(issuedAt)}-${String(Math.floor(Math.random() * 90) + 10)}`;
           setTenantBillings((current) =>
             current.map((item) =>
               item.tenantId === tenantId
@@ -722,12 +721,12 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                     invoiceNo,
                     invoices: [
                       {
-                        id: `invoice-${Date.now()}`,
+                        id: `invoice-${getCurrentTimestamp()}`,
                         no: invoiceNo,
                         period: item.period,
                         amountUsd: item.usageCostUsd,
                         status: "issued",
-                        issuedAt: issuedAt.slice(0, 10),
+                        issuedAt: formatDate(issuedAt),
                       },
                       ...item.invoices,
                     ],
@@ -739,7 +738,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                       ),
                       ...item.operations,
                     ],
-                    updatedAt: formatCreatedAt(),
+                    updatedAt: formatCurrentDateTime(),
                   }
                 : item,
             ),
@@ -765,7 +764,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                       ),
                       ...item.operations,
                     ],
-                    updatedAt: formatCreatedAt(),
+                    updatedAt: formatCurrentDateTime(),
                   }
                 : item,
             ),
@@ -802,14 +801,14 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                       createBillingOperation("导出对账单", `${item.period} 账期对账单`, "finance"),
                       ...item.operations,
                     ],
-                    updatedAt: formatCreatedAt(),
+                    updatedAt: formatCurrentDateTime(),
                   }
                 : item,
             ),
           );
           return {
             ok: true,
-            message: `已导出 ${tenant.name} ${billing.period} 对账单`,
+            message: `已导出 ${tenant.name} ${formatMonth(billing.period)} 对账单`,
           };
         }
 
@@ -824,7 +823,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
             return { ok: false, reason: "仅活跃租户可以冻结" };
           }
           const reason = options.reason?.trim() || "运营冻结";
-          const suspendedAt = formatCreatedAt();
+          const suspendedAt = formatCurrentDateTime();
           setTenants((current) =>
             current.map((item) =>
               item.id === tenantId
@@ -882,7 +881,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           if (options.confirmName?.trim() !== tenant.name) {
             return { ok: false, reason: "请输入正确的租户标识" };
           }
-          const disabledAt = formatCreatedAt();
+          const disabledAt = formatCurrentDateTime();
           const reason = options.reason?.trim() || "租户禁用并清理名下资源";
           setTenants((current) =>
             current.map((item) =>
@@ -914,14 +913,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           if (!tenant.isTrial) {
             return { ok: false, reason: "仅试用租户可以延期" };
           }
-          const currentEnd = tenant.trialEndsAt
-            ? new Date(tenant.trialEndsAt.replace(" ", "T"))
-            : new Date();
-          const start =
-            Number.isNaN(currentEnd.getTime()) || currentEnd < new Date() ? new Date() : currentEnd;
-          const nextEnd = new Date(start);
-          nextEnd.setDate(nextEnd.getDate() + 14);
-          const trialEndsAt = formatLifecycleDate(nextEnd);
+          const trialEndsAt = addDaysToFutureDateTime(tenant.trialEndsAt, 14);
           setTenants((current) =>
             current.map((item) =>
               item.id === tenantId
@@ -993,7 +985,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
           if (tenant.status === "disabled") {
             return { ok: false, reason: "禁用租户不能模拟到期" };
           }
-          const suspendedAt = formatCreatedAt();
+          const suspendedAt = formatCurrentDateTime();
           setTenants((current) =>
             current.map((item) =>
               item.id === tenantId
@@ -1066,7 +1058,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                     ...item,
                     status: "overdue",
                     balanceUsd: nextBalance,
-                    updatedAt: formatCreatedAt(),
+                    updatedAt: formatCurrentDateTime(),
                   }
                 : item,
             ),
@@ -1079,7 +1071,7 @@ export function TenantManagementProvider({ children }: { children: ReactNode }) 
                       ...item,
                       balanceUsd: nextBalance,
                       status: autoSuspend ? "suspended" : item.status,
-                      suspendedAt: autoSuspend ? formatCreatedAt() : item.suspendedAt,
+                      suspendedAt: autoSuspend ? formatCurrentDateTime() : item.suspendedAt,
                       suspendReason: autoSuspend ? "欠费自动冻结" : item.suspendReason,
                       lifecycle: [
                         createLifecycleEvent(

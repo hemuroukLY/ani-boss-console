@@ -123,7 +123,7 @@ export function RegistryQuotaPage() {
     <div className="space-y-4">
       <ListPageHeader
         title="镜像配额"
-        subtitle="按租户查看镜像仓库存储配额、使用水位与待审批扩容申请。"
+        subtitle="按租户查看镜像仓库存储配额、使用水位与待审批扩容申请；镜像 Gi 与算力、租户存储配额相互独立。"
       />
 
       <section className="grid grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
@@ -138,19 +138,6 @@ export function RegistryQuotaPage() {
       </section>
 
       <TableSectionFrame
-        header={
-          <div className="flex items-center justify-between px-5 pt-5">
-            <div>
-              <div className="text-base font-semibold text-gray-900">租户镜像配额</div>
-              <div className="mt-1 text-xs text-gray-500">
-                镜像 Gi 与算力配额、租户存储配额相互独立；调整能力待接口接入后开放。
-              </div>
-            </div>
-            <span className="text-xs text-gray-500">
-              显示 {filteredQuotas.length} / {registryTenantQuotas.length} 个租户
-            </span>
-          </div>
-        }
         toolbar={
           <ListToolbar
             filters={
@@ -175,6 +162,11 @@ export function RegistryQuotaPage() {
                   style={{ width: 260 }}
                 />
               </div>
+            }
+            tools={
+              <span className="text-xs text-gray-500">
+                显示 {filteredQuotas.length} / {registryTenantQuotas.length} 个租户 · 调整接口待接入
+              </span>
             }
           />
         }

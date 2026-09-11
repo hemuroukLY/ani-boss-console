@@ -15,6 +15,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { formatDateTime } from "@/lib/date";
 import { usePlatformComponentLogs, type LogConnectionState } from "./usePlatformComponentLogs";
 
 interface PlatformLogsPageProps {
@@ -78,9 +79,7 @@ function parseLog(log: PlatformComponentLog): DisplayLog {
 }
 
 function formatTimestamp(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value || "-";
-  return date.toLocaleString("zh-CN", { hour12: false });
+  return formatDateTime(value, value || "-");
 }
 
 export function PlatformLogsPage({ initialComponent }: PlatformLogsPageProps) {

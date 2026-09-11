@@ -1,6 +1,7 @@
 import { Button, Message, Modal, Space, Tag, Typography } from "@arco-design/web-react";
 import { useState } from "react";
 import { tenantRegions, type Tenant, type TenantSsoStatus } from "@/components/tenant/model";
+import { formatCurrentDateTime, formatDateTimeMinute } from "@/lib/date";
 import { RegionChangeModal } from "./RegionChangeModal";
 import { SsoConfigurationModal } from "./SsoConfigurationModal";
 
@@ -17,12 +18,6 @@ interface TenantIdentityUpdate {
 interface TenantIdentitySecurityProps {
   tenant: Tenant;
   onUpdate: (patch: TenantIdentityUpdate) => void;
-}
-
-function formatCurrentTime() {
-  const date = new Date();
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecurityProps) {
@@ -65,7 +60,7 @@ export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecur
       return;
     }
     setSsoStatus("connected");
-    setSsoLastTestAt(formatCurrentTime());
+    setSsoLastTestAt(formatCurrentDateTime());
     Message.success(`${ssoProvider} 连接测试成功，请保存配置后生效`);
   };
 
@@ -128,7 +123,7 @@ export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecur
           </div>
 
           <Typography.Text type="secondary" className="mt-4 block text-xs">
-            状态 {tenant.ssoStatus} · 最近测试 {tenant.ssoLastTestAt || "-"}
+            状态 {tenant.ssoStatus} · 最近测试 {formatDateTimeMinute(tenant.ssoLastTestAt)}
           </Typography.Text>
 
           <Space wrap className="mt-4">

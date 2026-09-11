@@ -7,6 +7,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
+import { formatDateTimeMinute } from "@/lib/date";
 import {
   registryGcCandidates,
   registryGcRuns,
@@ -37,7 +38,12 @@ export function RegistryGarbageCollectionPage() {
       render: (value) => `${String(value)} Gi`,
     },
     { title: "判定原因", dataIndex: "reason", width: 220 },
-    { title: "最后引用时间", dataIndex: "lastReferencedAt", width: 165 },
+    {
+      title: "最后引用时间",
+      dataIndex: "lastReferencedAt",
+      width: 165,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
   ];
 
   const runColumns: ListColumn<RegistryGcRun>[] = [
@@ -55,7 +61,12 @@ export function RegistryGarbageCollectionPage() {
       render: (value) => `${String(value)} Gi`,
     },
     { title: "删除层数", dataIndex: "deletedLayers", width: 110 },
-    { title: "开始时间", dataIndex: "startedAt", width: 165 },
+    {
+      title: "开始时间",
+      dataIndex: "startedAt",
+      width: 165,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     { title: "耗时", dataIndex: "duration", width: 120 },
   ];
 
@@ -77,7 +88,11 @@ export function RegistryGarbageCollectionPage() {
           value={`${reclaimableGi.toFixed(1)} Gi`}
           hint={`${registryGcCandidates.length} 个候选层`}
         />
-        <Metric label="上次回收" value={`${lastRun.reclaimedGi} Gi`} hint={lastRun.startedAt} />
+        <Metric
+          label="上次回收"
+          value={`${lastRun.reclaimedGi} Gi`}
+          hint={formatDateTimeMinute(lastRun.startedAt)}
+        />
         <Metric
           label="当前镜像用量"
           value={`${currentUsedGi.toFixed(1)} / ${currentQuotaGi} Gi`}

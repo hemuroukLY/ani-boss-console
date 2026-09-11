@@ -1,6 +1,7 @@
 import { Button, Tag, Typography } from "@arco-design/web-react";
 import { DataTable, DataTableRowActionButton, DataTableRowActions } from "@/components/common";
 import type { TenantQuotaRequest } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 import { formatNumber } from "../formatters";
 
 const requestStatusMeta = {
@@ -38,7 +39,12 @@ export function QuotaRequestTable({
         data={requests}
         noDataElement="暂无配额申请"
         columns={[
-          { title: "申请时间", dataIndex: "requestedAt", width: 170 },
+          {
+            title: "申请时间",
+            dataIndex: "requestedAt",
+            width: 170,
+            render: (value: string) => formatDateTimeMinute(value),
+          },
           { title: "申请人", dataIndex: "by", width: 160 },
           {
             title: "GPU-Hours",

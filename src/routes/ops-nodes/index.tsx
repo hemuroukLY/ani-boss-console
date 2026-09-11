@@ -12,6 +12,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
+import { formatCurrentDateTime, formatDateTimeMinute } from "@/lib/date";
 
 type NodeStatus = "Ready" | "NotReady";
 
@@ -94,12 +95,6 @@ const initialNodes: InfrastructureNode[] = [
   },
 ];
 
-function formatNow() {
-  const date = new Date();
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
 export const Route = createFileRoute("/ops-nodes/")({
   component: function NodeStatusRoute() {
     const [nodes, setNodes] = useState(initialNodes);
@@ -125,7 +120,7 @@ export const Route = createFileRoute("/ops-nodes/")({
     }, [keyword, nodes, pool, region, status]);
 
     const refreshNodes = () => {
-      const heartbeat = formatNow();
+      const heartbeat = formatCurrentDateTime();
       setNodes((current) =>
         current.map((node) => (node.status === "Ready" ? { ...node, heartbeat } : node)),
       );
@@ -180,7 +175,12 @@ export const Route = createFileRoute("/ops-nodes/")({
         width: 260,
         ellipsis: true,
       },
-      { title: "最后心跳", dataIndex: "heartbeat", width: 160 },
+      {
+        title: "最后心跳",
+        dataIndex: "heartbeat",
+        width: 160,
+        render: (value: string) => formatDateTimeMinute(value),
+      },
     ];
 
     return (

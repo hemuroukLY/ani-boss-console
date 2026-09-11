@@ -1,5 +1,6 @@
 import { Button, Form, Modal, Radio, Select, Space, Typography } from "@arco-design/web-react";
 import type { TenantSsoStatus } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 const idpProviders = ["Azure AD", "Okta", "钉钉", "企业微信", "自定义 SAML"] as const;
 
@@ -64,7 +65,7 @@ export function SsoConfigurationModal({
           />
         </Form.Item>
         <Typography.Text type="secondary" className="block text-xs">
-          状态 {status} · 最近测试 {lastTestAt || "-"}
+          状态 {status} · 最近测试 {formatDateTimeMinute(lastTestAt)}
         </Typography.Text>
       </Form>
     </Modal>

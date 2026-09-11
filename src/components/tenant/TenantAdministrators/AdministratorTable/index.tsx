@@ -7,6 +7,7 @@ import {
 } from "@/components/common";
 import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
 import { tenantAdminStatusMeta, type TenantAdmin } from "@/components/tenant/model";
+import { formatDate, formatDateTimeMinute } from "@/lib/date";
 
 interface AdministratorTableProps {
   admins: TenantAdmin[];
@@ -123,8 +124,18 @@ export function AdministratorTable({
           render: (_, admin: TenantAdmin) =>
             admin.mfa ? <Tag color="green">已开启</Tag> : <Tag>未开启</Tag>,
         },
-        { title: "最近登录", dataIndex: "lastLogin", width: 170 },
-        { title: "邀请时间", dataIndex: "invitedAt", width: 120 },
+        {
+          title: "最近登录",
+          dataIndex: "lastLogin",
+          width: 170,
+          render: (value: string) => formatDateTimeMinute(value),
+        },
+        {
+          title: "邀请时间",
+          dataIndex: "invitedAt",
+          width: 120,
+          render: (value: string) => formatDate(value),
+        },
         {
           title: "操作",
           width: 150,

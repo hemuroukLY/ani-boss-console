@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Message, Modal, Result } from "@arco-design/web-react";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant } from "@/components/tenant/model";
+import { formatMonth } from "@/lib/date";
 import { BillingAccountOverview } from "./BillingAccountOverview";
 import { BillingRecords } from "./BillingRecords";
 import { CreditAdjustmentModal } from "./CreditAdjustmentModal";
@@ -75,7 +76,7 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
           confirmAction(
             "refresh_usage",
             "刷新用量",
-            `确认刷新 ${billing.period} 账期的用量与费用？`,
+            `确认刷新 ${formatMonth(billing.period)} 账期的用量与费用？`,
           )
         }
         onAdjust={() => {

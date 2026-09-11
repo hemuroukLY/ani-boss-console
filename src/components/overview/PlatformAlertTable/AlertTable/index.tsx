@@ -1,6 +1,7 @@
 import { Tag, Typography } from "@arco-design/web-react";
 import { DataTable, DataTableRowActionButton, DataTableRowActions } from "@/components/common";
 import type { AlertItem } from "@/components/overview/model";
+import { formatMonthDayTime } from "@/lib/date";
 import { LevelTag } from "../../LevelTag";
 
 interface AlertTableProps {
@@ -49,7 +50,12 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
           ),
         },
         { title: "区域", dataIndex: "region", width: 120 },
-        { title: "时间", dataIndex: "time", width: 120 },
+        {
+          title: "时间",
+          dataIndex: "time",
+          width: 120,
+          render: (value: string) => formatMonthDayTime(value),
+        },
         {
           title: "状态",
           dataIndex: "status",

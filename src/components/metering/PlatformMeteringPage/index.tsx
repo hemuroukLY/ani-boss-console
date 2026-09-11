@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ListPageHeader } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
 import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { formatMonthDay } from "@/lib/date";
 import { MeteringTrend } from "../MeteringTrend";
 import { meteringDimensions, type MeteringDimension } from "../model";
 import { MeteringTenantTable } from "./MeteringTenantTable";
@@ -92,7 +93,7 @@ export function PlatformMeteringPage() {
             />
             <Metric
               label="峰值日"
-              value={metricValue(view?.peakDate?.slice(5))}
+              value={metricValue(view?.peakDate ? formatMonthDay(view.peakDate) : undefined)}
               hint={
                 view?.peakUsage === undefined
                   ? "本月暂无日汇总"

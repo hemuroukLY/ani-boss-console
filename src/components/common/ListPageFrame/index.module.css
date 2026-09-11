@@ -1,4 +1,5 @@
-.page {
+.page,
+.pageHeader {
   --list-primary: #0079d3;
   --list-primary-hover: #006cbd;
   --list-primary-active: #0060ac;
@@ -11,6 +12,9 @@
   --list-border: #dcdcdc;
   --list-divider: #e7e7e7;
   --list-table-divider: #e5e6eb;
+}
+
+.page {
   display: flex;
   flex-direction: column;
   height: calc(100dvh - 120px);

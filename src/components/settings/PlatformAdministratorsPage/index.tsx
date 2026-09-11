@@ -1,60 +1,204 @@
-import { Button, Descriptions, Drawer, Input, Select } from "@arco-design/web-react";
-import { IconPlus, IconSearch } from "@arco-design/web-react/icon";
-import { useMemo, useState } from "react";
+import { Alert, Button, Input, Menu, Message, Modal, Select } from "@arco-design/web-react";
+import { IconPlus, IconRefresh } from "@arco-design/web-react/icon";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDeferredValue, useMemo, useState } from "react";
+import {
+  createPlatformAdministrator,
+  deletePlatformAdministrator,
+  disablePlatformAdministrator,
+  enablePlatformAdministrator,
+  fetchPlatformAdministratorRoles,
+  fetchPlatformAdministrators,
+  getPlatformAdministratorErrorMessage,
+  platformAdministratorQueryKeys,
+  resetPlatformAdministratorPassword,
+  updatePlatformAdministratorRole,
+  type CreatePlatformAdministratorInput,
+  type PlatformAdministratorListFilters,
+  type PlatformAdministratorListItem,
+  type PlatformAdministratorRole,
+  type PlatformAdministratorStatus,
+} from "@/api/platform-admins";
 import {
   DataTableNameCell,
   DataTableRowActionButton,
   DataTableRowActions,
   ListDataTable,
+  ListPageFrame,
   ListPageHeader,
+  ListRowMore,
   ListToolbar,
-  TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
+import { getAccessTokenRoles, useAuthState } from "@/components/auth/store";
 import { Metric } from "@/components/overview/Metric";
+import { useListErrorNotification } from "@/hooks/useListErrorNotification";
+import { formatDateTime } from "@/lib/date";
 import { PlatformAdministratorStatusBadge } from "../PlatformAdministratorStatusBadge";
+import { platformAdministratorRoleLabels, platformAdministratorSourceLabels } from "../model";
+import { PlatformAdministratorDetailDrawer } from "./PlatformAdministratorDetailDrawer";
 import {
-  platformAdministrators,
-  type PlatformAdministrator,
-  type PlatformAdministratorRole,
-  type PlatformAdministratorStatus,
-} from "../model";
+  PlatformAdministratorCreateModal,
+  PlatformAdministratorPasswordModal,
+  PlatformAdministratorRoleModal,
+} from "./PlatformAdministratorModals";
+
+interface StatusOperationInput {
+  userId: string;
+  status: PlatformAdministratorStatus;
+}
 
 export function PlatformAdministratorsPage() {
+  const queryClient = useQueryClient();
+  const authState = useAuthState();
   const [keyword, setKeyword] = useState("");
   const [role, setRole] = useState<"all" | PlatformAdministratorRole>("all");
   const [status, setStatus] = useState<"all" | PlatformAdministratorStatus>("all");
-  const [selected, setSelected] = useState<PlatformAdministrator>();
-  const filteredAdministrators = useMemo(() => {
-    const normalized = keyword.trim().toLowerCase();
-    return platformAdministrators.filter(
-      (administrator) =>
-        (role === "all" || administrator.role === role) &&
-        (status === "all" || administrator.status === status) &&
-        (!normalized ||
-          [administrator.username, administrator.displayName, administrator.email].some((value) =>
-            value.toLowerCase().includes(normalized),
-          )),
-    );
-  }, [keyword, role, status]);
-  const activeCount = platformAdministrators.filter(
-    (administrator) => administrator.status === "active",
-  ).length;
-  const superCount = platformAdministrators.filter(
-    (administrator) => administrator.status === "active" && administrator.role === "平台超级管理员",
-  ).length;
-  const mfaCount = platformAdministrators.filter((administrator) => administrator.mfa).length;
-  const columns: ListColumn<PlatformAdministrator>[] = [
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [createVisible, setCreateVisible] = useState(false);
+  const [detailUserId, setDetailUserId] = useState<string | null>(null);
+  const [roleTarget, setRoleTarget] = useState<PlatformAdministratorListItem | null>(null);
+  const [passwordTarget, setPasswordTarget] = useState<PlatformAdministratorListItem | null>(null);
+  const deferredKeyword = useDeferredValue(keyword.trim());
+  const canManage =
+    authState.developmentBypass ||
+    getAccessTokenRoles(authState.tokens?.access_token).includes("platform-admin");
+
+  const filters = useMemo<PlatformAdministratorListFilters>(() => {
+    const result: PlatformAdministratorListFilters = {};
+    if (role !== "all") result.role = role;
+    if (status !== "all") result.status = status;
+    if (deferredKeyword) result.search = deferredKeyword;
+    return result;
+  }, [deferredKeyword, role, status]);
+
+  const overviewQuery = useQuery({
+    queryKey: platformAdministratorQueryKeys.list(),
+    queryFn: () => fetchPlatformAdministrators(),
+  });
+  const listQuery = useQuery({
+    queryKey: platformAdministratorQueryKeys.list(filters),
+    queryFn: () => fetchPlatformAdministrators(filters),
+  });
+  const rolesQuery = useQuery({
+    queryKey: platformAdministratorQueryKeys.roles,
+    queryFn: fetchPlatformAdministratorRoles,
+  });
+
+  useListErrorNotification({
+    id: "platform-administrators-overview",
+    title: "平台运营账号汇总加载失败",
+    error: overviewQuery.error,
+  });
+  useListErrorNotification({
+    id: "platform-administrators-list",
+    title: "平台运营账号列表加载失败",
+    error: listQuery.error,
+  });
+  useListErrorNotification({
+    id: "platform-administrator-roles",
+    title: "平台角色加载失败",
+    error: rolesQuery.error,
+  });
+
+  const invalidateAll = () =>
+    queryClient.invalidateQueries({ queryKey: platformAdministratorQueryKeys.all });
+  const mutationError = (error: unknown) =>
+    Message.error(getPlatformAdministratorErrorMessage(error));
+
+  const createMutation = useMutation({
+    mutationFn: createPlatformAdministrator,
+    onSuccess: async () => {
+      await invalidateAll();
+      setCreateVisible(false);
+      Message.success("平台运营账号已创建");
+    },
+    onError: mutationError,
+  });
+  const roleMutation = useMutation({
+    mutationFn: updatePlatformAdministratorRole,
+    onSuccess: async () => {
+      await invalidateAll();
+      setRoleTarget(null);
+      Message.success("账号角色已更新");
+    },
+    onError: mutationError,
+  });
+  const passwordMutation = useMutation({
+    mutationFn: resetPlatformAdministratorPassword,
+    onSuccess: async () => {
+      await invalidateAll();
+      setPasswordTarget(null);
+      Message.success("账号密码已重置");
+    },
+    onError: mutationError,
+  });
+  const statusMutation = useMutation({
+    mutationFn: ({ userId, status: currentStatus }: StatusOperationInput) =>
+      currentStatus === "active"
+        ? disablePlatformAdministrator(userId)
+        : enablePlatformAdministrator(userId),
+    onSuccess: async (_result, variables) => {
+      await invalidateAll();
+      Message.success(variables.status === "active" ? "账号已禁用" : "账号已启用");
+    },
+    onError: mutationError,
+  });
+  const deleteMutation = useMutation({
+    mutationFn: deletePlatformAdministrator,
+    onSuccess: async (_result, userId) => {
+      await invalidateAll();
+      if (detailUserId === userId) setDetailUserId(null);
+      Message.success("账号已删除");
+    },
+    onError: mutationError,
+  });
+
+  const operationPending =
+    roleMutation.isPending ||
+    passwordMutation.isPending ||
+    statusMutation.isPending ||
+    deleteMutation.isPending;
+
+  const confirmStatusChange = (administrator: PlatformAdministratorListItem) => {
+    const action = administrator.status === "active" ? "禁用" : "启用";
+    Modal.confirm({
+      title: `${action}账号 ${administrator.displayName}？`,
+      content:
+        administrator.status === "active"
+          ? "禁用后该账号将无法登录管理端。"
+          : "启用后该账号可恢复登录管理端。",
+      okButtonProps: administrator.status === "active" ? { status: "danger" } : undefined,
+      onOk: () =>
+        statusMutation.mutateAsync({ userId: administrator.id, status: administrator.status }),
+    });
+  };
+
+  const confirmDelete = (administrator: PlatformAdministratorListItem) => {
+    Modal.confirm({
+      title: `删除账号 ${administrator.displayName}？`,
+      content: "该操作会软删除账号；至少需要保留一名活跃的平台超级管理员。",
+      okButtonProps: { status: "danger" },
+      onOk: () => deleteMutation.mutateAsync(administrator.id),
+    });
+  };
+
+  const columns: ListColumn<PlatformAdministratorListItem>[] = [
     {
+      key: "name",
       title: "账号",
       width: 240,
-      fixed: "left",
       render: (_, administrator) => (
         <DataTableNameCell name={administrator.displayName} id={administrator.username} />
       ),
     },
-    { title: "邮箱", dataIndex: "email", width: 230 },
-    { title: "角色", dataIndex: "role", width: 170 },
+    { title: "邮箱", width: 190, render: () => "-" },
+    {
+      title: "角色",
+      width: 170,
+      render: (_, administrator) => platformAdministratorRoleLabels[administrator.role],
+    },
     {
       title: "状态",
       width: 100,
@@ -62,97 +206,163 @@ export function PlatformAdministratorsPage() {
         <PlatformAdministratorStatusBadge status={administrator.status} />
       ),
     },
-    { title: "来源", dataIndex: "source", width: 110 },
     {
-      title: "MFA",
-      width: 90,
-      render: (_, administrator) => (administrator.mfa ? "已启用" : "未启用"),
+      title: "来源",
+      width: 120,
+      render: (_, administrator) => platformAdministratorSourceLabels[administrator.source],
     },
-    { title: "最近登录", dataIndex: "lastLogin", width: 170 },
+    { title: "MFA", width: 90, render: () => "-" },
     {
+      title: "最近登录",
+      width: 180,
+      render: (_, administrator) => formatDateTime(administrator.lastLoginAt),
+    },
+    {
+      key: "__actions",
       title: "操作",
-      width: 240,
+      width: 210,
       fixed: "right",
-      render: (_, administrator) => (
-        <DataTableRowActions>
-          <DataTableRowActionButton onClick={() => setSelected(administrator)}>
-            详情
-          </DataTableRowActionButton>
-          <DataTableRowActionButton disabled>修改角色</DataTableRowActionButton>
-          <DataTableRowActionButton disabled>
-            {administrator.status === "disabled" ? "启用" : "禁用"}
-          </DataTableRowActionButton>
-        </DataTableRowActions>
-      ),
+      render: (_, administrator) => {
+        const menu = (
+          <Menu
+            onClickMenuItem={(key) => {
+              if (key === "password") setPasswordTarget(administrator);
+              if (key === "status") confirmStatusChange(administrator);
+              if (key === "delete") confirmDelete(administrator);
+            }}
+          >
+            <Menu.Item key="password" disabled={administrator.source !== "local"}>
+              重置密码
+            </Menu.Item>
+            <Menu.Item key="status">
+              {administrator.status === "active" ? "禁用账号" : "启用账号"}
+            </Menu.Item>
+            <Menu.Item key="delete">删除账号</Menu.Item>
+          </Menu>
+        );
+        return (
+          <DataTableRowActions>
+            <DataTableRowActionButton onClick={() => setDetailUserId(administrator.id)}>
+              详情
+            </DataTableRowActionButton>
+            <DataTableRowActionButton
+              disabled={!canManage || operationPending}
+              onClick={() => setRoleTarget(administrator)}
+            >
+              修改角色
+            </DataTableRowActionButton>
+            <ListRowMore droplist={menu} disabled={!canManage || operationPending} />
+          </DataTableRowActions>
+        );
+      },
     },
   ];
 
+  const overview = overviewQuery.data || [];
+  const overviewUnavailable = overviewQuery.isPending || overviewQuery.isError;
+  const activeCount = overview.filter((item) => item.status === "active").length;
+  const superCount = overview.filter(
+    (item) => item.status === "active" && item.role === "platform-admin",
+  ).length;
+  const metricValue = (value: number) => (overviewUnavailable ? "-" : String(value));
+  const refreshing = overviewQuery.isFetching || listQuery.isFetching || rolesQuery.isFetching;
+
   return (
-    <div className="space-y-4">
-      <ListPageHeader
-        title="平台运营账号"
-        subtitle="管理平台本地登录账号；这些账号不属于租户，也不会同步为租户成员。"
-        extra={
-          <Button type="primary" icon={<IconPlus />} disabled>
-            新建或邀请账号
-          </Button>
-        }
-      />
-      <section className="grid grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
-        <Metric
-          label="全部账号"
-          value={String(platformAdministrators.length)}
-          hint="本地登录身份"
-        />
-        <Metric label="活跃" value={String(activeCount)} hint="可登录管理端" />
-        <Metric label="活跃超级管理员" value={String(superCount)} hint="至少保留 1 名" />
-        <Metric label="已启用 MFA" value={String(mfaCount)} hint="账号安全" />
-      </section>
-      <TableSectionFrame
+    <>
+      <ListPageFrame
         header={
-          <div className="flex items-center justify-between px-5 pt-5">
-            <div>
-              <div className="text-base font-semibold">账号列表</div>
-              <div className="mt-1 text-xs text-gray-500">
-                密码重置、角色修改和启停操作将在身份接口接入后开放。
-              </div>
-            </div>
-            <span className="text-xs text-gray-500">共 {filteredAdministrators.length} 个账号</span>
-          </div>
+          <>
+            <ListPageHeader
+              title="平台运营账号"
+              subtitle="管理平台本地登录账号；这些账号不属于租户，也不会同步为租户成员。"
+              extra={
+                <div className="flex gap-2">
+                  <Button
+                    icon={<IconRefresh />}
+                    loading={refreshing}
+                    onClick={() =>
+                      void Promise.all([
+                        overviewQuery.refetch(),
+                        listQuery.refetch(),
+                        rolesQuery.refetch(),
+                      ])
+                    }
+                  >
+                    刷新
+                  </Button>
+                  <Button
+                    type="primary"
+                    icon={<IconPlus />}
+                    disabled={!canManage}
+                    title={canManage ? undefined : "仅平台超级管理员可创建账号"}
+                    onClick={() => setCreateVisible(true)}
+                  >
+                    新建账号
+                  </Button>
+                </div>
+              }
+            />
+
+            <Alert
+              type="warning"
+              content="联调提示：前端已按 Services OpenAPI 接入 /platform-admins*；ANI 当前网关尚未注册对应处理器，请后端补齐后联调。"
+            />
+
+            <section className="grid flex-none grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
+              <Metric label="全部账号" value={metricValue(overview.length)} hint="平台登录身份" />
+              <Metric label="活跃" value={metricValue(activeCount)} hint="可登录管理端" />
+              <Metric label="活跃超级管理员" value={metricValue(superCount)} hint="至少保留 1 名" />
+              <Metric label="已启用 MFA" value="-" hint="接口未返回 MFA 状态" />
+            </section>
+          </>
         }
         toolbar={
           <ListToolbar
             filters={
-              <div className="flex flex-wrap gap-3">
-                <Input
+              <div className="flex flex-wrap items-center gap-3">
+                <Input.Search
                   value={keyword}
-                  onChange={setKeyword}
+                  onChange={(value) => {
+                    setKeyword(value);
+                    setPage(1);
+                  }}
                   allowClear
-                  prefix={<IconSearch />}
-                  placeholder="搜索用户名、姓名或邮箱"
-                  className="w-64"
+                  placeholder="搜索用户名或邮箱"
+                  style={{ width: 320 }}
                 />
                 <Select
                   value={role}
-                  onChange={(value) => setRole(value as "all" | PlatformAdministratorRole)}
-                  className="w-44"
+                  onChange={(value) => {
+                    setRole(value as "all" | PlatformAdministratorRole);
+                    setPage(1);
+                  }}
+                  style={{ width: 180 }}
                 >
                   <Select.Option value="all">全部角色</Select.Option>
-                  <Select.Option value="平台超级管理员">平台超级管理员</Select.Option>
-                  <Select.Option value="平台运维">平台运维</Select.Option>
-                  <Select.Option value="平台只读">平台只读</Select.Option>
+                  {Object.entries(platformAdministratorRoleLabels).map(([value, label]) => (
+                    <Select.Option key={value} value={value}>
+                      {label}
+                    </Select.Option>
+                  ))}
                 </Select>
                 <Select
                   value={status}
-                  onChange={(value) => setStatus(value as "all" | PlatformAdministratorStatus)}
-                  className="w-32"
+                  onChange={(value) => {
+                    setStatus(value as "all" | PlatformAdministratorStatus);
+                    setPage(1);
+                  }}
+                  style={{ width: 140 }}
                 >
                   <Select.Option value="all">全部状态</Select.Option>
                   <Select.Option value="active">活跃</Select.Option>
-                  <Select.Option value="invited">邀请中</Select.Option>
                   <Select.Option value="disabled">已禁用</Select.Option>
                 </Select>
               </div>
+            }
+            tools={
+              <span className="text-xs text-gray-500">
+                共 {listQuery.data?.length ?? 0} 个账号 · 列表邮箱和 MFA 待后端补充
+              </span>
             }
           />
         }
@@ -160,50 +370,54 @@ export function PlatformAdministratorsPage() {
         <ListDataTable
           rowKey="id"
           columns={columns}
-          data={filteredAdministrators}
-          pagination={false}
-          scroll={{ x: 1350 }}
+          data={listQuery.data || []}
+          loading={listQuery.isPending}
+          pagination={{
+            page,
+            pageSize,
+            total: listQuery.data?.length ?? 0,
+            onPageChange: setPage,
+            onPageSizeChange: (nextPageSize) => {
+              setPage(1);
+              setPageSize(nextPageSize);
+            },
+          }}
+          scroll={{ x: 1300, y: true }}
           emptyText="暂无符合条件的平台运营账号"
         />
-      </TableSectionFrame>
-      <Drawer
-        width={520}
-        title="平台运营账号详情"
-        visible={Boolean(selected)}
-        onCancel={() => setSelected(undefined)}
-        footer={null}
-      >
-        {selected ? (
-          <Descriptions
-            column={1}
-            border
-            data={[
-              { label: "用户名", value: selected.username },
-              { label: "显示名称", value: selected.displayName },
-              { label: "邮箱", value: selected.email },
-              { label: "角色", value: selected.role },
-              {
-                label: "状态",
-                value:
-                  selected.status === "active"
-                    ? "活跃"
-                    : selected.status === "invited"
-                      ? "邀请中"
-                      : "已禁用",
-              },
-              { label: "账号来源", value: selected.source },
-              { label: "MFA", value: selected.mfa ? "已启用" : "未启用" },
-              { label: "最近登录", value: selected.lastLogin },
-              { label: "邀请时间", value: selected.invitedAt },
-              { label: "最近重置密码", value: selected.lastPasswordReset },
-              {
-                label: "安装账号",
-                value: selected.bootstrap ? "是" : "否",
-              },
-            ]}
-          />
-        ) : null}
-      </Drawer>
-    </div>
+      </ListPageFrame>
+
+      <PlatformAdministratorCreateModal
+        visible={createVisible}
+        loading={createMutation.isPending}
+        roles={rolesQuery.data || []}
+        onCancel={() => setCreateVisible(false)}
+        onSubmit={(input: CreatePlatformAdministratorInput) => createMutation.mutate(input)}
+      />
+      <PlatformAdministratorRoleModal
+        target={roleTarget}
+        loading={roleMutation.isPending}
+        roles={rolesQuery.data || []}
+        onCancel={() => setRoleTarget(null)}
+        onSubmit={(nextRole) => {
+          if (roleTarget) roleMutation.mutate({ userId: roleTarget.id, role: nextRole });
+        }}
+      />
+      <PlatformAdministratorPasswordModal
+        target={passwordTarget}
+        loading={passwordMutation.isPending}
+        onCancel={() => setPasswordTarget(null)}
+        onSubmit={(newPassword) => {
+          if (passwordTarget) {
+            passwordMutation.mutate({ userId: passwordTarget.id, newPassword });
+          }
+        }}
+      />
+      <PlatformAdministratorDetailDrawer
+        userId={detailUserId}
+        roles={rolesQuery.data || []}
+        onClose={() => setDetailUserId(null)}
+      />
+    </>
   );
 }

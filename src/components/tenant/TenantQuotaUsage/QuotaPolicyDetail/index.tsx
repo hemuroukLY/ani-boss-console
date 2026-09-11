@@ -23,6 +23,7 @@ import {
 } from "@/components/common";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant, TenantQuotaLimits } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 const quotaLimitLabels: Array<[keyof TenantQuotaLimits, string]> = [
   ["gpuHours", "GPU-Hours"],
@@ -165,7 +166,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
               value: quotaPackage.limits.storageGi.toLocaleString(),
             },
             { label: "绑定租户", value: "${boundTenants.length} 个" },
-            { label: "更新时间", value: quotaPackage.updatedAt ?? "-" },
+            { label: "更新时间", value: formatDateTimeMinute(quotaPackage.updatedAt) },
             { label: "说明", value: description },
           ]}
         />
@@ -237,7 +238,12 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
               { title: "操作", dataIndex: "operation" },
               { title: "说明", dataIndex: "message" },
               { title: "操作者", dataIndex: "by", width: 150 },
-              { title: "时间", dataIndex: "createdAt", width: 170 },
+              {
+                title: "时间",
+                dataIndex: "createdAt",
+                width: 170,
+                render: (value: string) => formatDateTimeMinute(value),
+              },
             ]}
             data={[
               ...tenants.flatMap((tenant) =>
@@ -277,7 +283,7 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
           { label: "GPU-Hours", value: quotaPackage.limits.gpuHours.toLocaleString() },
           { label: "存储 Gi", value: quotaPackage.limits.storageGi.toLocaleString() },
           { label: "绑定租户", value: "${boundTenants.length} 个" },
-          { label: "更新时间", value: quotaPackage.updatedAt ?? "-" },
+          { label: "更新时间", value: formatDateTimeMinute(quotaPackage.updatedAt) },
         ]}
         actions={
           <Space wrap>

@@ -23,6 +23,7 @@ import { AdministratorRoleModal } from "@/components/tenant/TenantAdministrators
 import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import { tenantAdminStatusMeta, type TenantAdminRole } from "@/components/tenant/model";
+import { formatDate, formatDateTimeMinute } from "@/lib/date";
 
 interface PermissionRow {
   resource: string;
@@ -239,9 +240,9 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
             },
             { label: "来源", value: admin.source },
             { label: "MFA", value: admin.mfa ? "已开启" : "未开启" },
-            { label: "邀请时间", value: admin.invitedAt || "-" },
-            { label: "最近登录", value: admin.lastLogin || "-" },
-            { label: "最近重置密码", value: admin.lastResetAt || "-" },
+            { label: "邀请时间", value: formatDate(admin.invitedAt) },
+            { label: "最近登录", value: formatDateTimeMinute(admin.lastLogin) },
+            { label: "最近重置密码", value: formatDateTimeMinute(admin.lastResetAt) },
           ]}
         />
       ),
@@ -256,7 +257,7 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
             action: "重置密码",
             result: "成功",
             operator: "platform-ops",
-            time: admin.lastResetAt,
+            time: formatDateTimeMinute(admin.lastResetAt),
           },
         ]
       : []),
@@ -267,7 +268,7 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
             action: "管理员登录",
             result: "成功",
             operator: admin.email,
-            time: admin.lastLogin,
+            time: formatDateTimeMinute(admin.lastLogin),
           },
         ]
       : []),
@@ -276,7 +277,7 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
       action: "发送邀请",
       result: "成功",
       operator: "platform-admin",
-      time: admin.invitedAt || "-",
+      time: formatDate(admin.invitedAt),
     },
   ];
 
@@ -344,7 +345,7 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
           { label: "所属租户", value: admin.tenantName },
           { label: "角色", value: admin.role },
           { label: "MFA", value: admin.mfa ? "已开启" : "未开启" },
-          { label: "最近登录", value: admin.lastLogin || "-" },
+          { label: "最近登录", value: formatDateTimeMinute(admin.lastLogin) },
         ]}
         actions={
           <Space wrap>

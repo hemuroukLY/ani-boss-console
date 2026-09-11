@@ -28,6 +28,7 @@ import {
 } from "@/components/common";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { TenantQuotaLimits } from "@/components/tenant/model";
+import { formatCurrentDateTime, formatDateTimeMinute, getCurrentTimestamp } from "@/lib/date";
 
 type QuotaPackageStatus = "enabled" | "draft" | "disabled";
 
@@ -70,12 +71,6 @@ const statusMeta = {
   draft: { label: "草稿", color: "orange" },
   disabled: { label: "已停用", color: "gray" },
 } as const;
-
-function formatNow() {
-  const date = new Date();
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
 
 export function QuotaPolicyList() {
   const {
@@ -149,14 +144,14 @@ export function QuotaPolicyList() {
       return;
     }
     const item: QuotaPackageRow = {
-      id: `qp-${Date.now()}`,
+      id: `qp-${getCurrentTimestamp()}`,
       name: draft.name.trim(),
       planCode: draft.planCode.trim(),
       description: draft.description.trim(),
       status: "enabled",
       isTrial: false,
       limits: { ...draft.limits },
-      updatedAt: formatNow(),
+      updatedAt: formatCurrentDateTime(),
     };
     if (
       !registerQuotaPackage({
@@ -230,7 +225,12 @@ export function QuotaPolicyList() {
       width: 105,
       render: (_, item) => boundCount(item.planCode),
     },
-    { title: "更新时间", dataIndex: "updatedAt", width: 160 },
+    {
+      title: "更新时间",
+      dataIndex: "updatedAt",
+      width: 160,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     {
       title: "操作",
       width: 190,

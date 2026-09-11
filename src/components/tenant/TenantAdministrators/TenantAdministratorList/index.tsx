@@ -34,6 +34,7 @@ import {
   type TenantAdmin,
   type TenantAdminRole,
 } from "@/components/tenant/model";
+import { formatDateTimeMinute } from "@/lib/date";
 
 export function TenantAdministratorList() {
   const { tenants, tenantAdmins, inviteTenantAdmin, applyTenantAdminAction } =
@@ -228,7 +229,12 @@ export function TenantAdministratorList() {
       render: (_, admin) => (admin.mfa ? <Tag color="green">已开启</Tag> : <Tag>未开启</Tag>),
     },
     { title: "来源", dataIndex: "source", width: 90 },
-    { title: "最近登录", dataIndex: "lastLogin", width: 170 },
+    {
+      title: "最近登录",
+      dataIndex: "lastLogin",
+      width: 170,
+      render: (value: string) => formatDateTimeMinute(value),
+    },
     {
       title: "操作",
       width: 120,

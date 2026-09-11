@@ -5,40 +5,10 @@ import {
   type PlatformMeteringResourceType,
   type PlatformMeteringUsageItem,
 } from "@/api/platform";
+import { formatMonthDay, getUtcMonthToDateRanges, listUtcDateKeys } from "@/lib/date";
 import type { MeteringTenantRow } from "../model";
 
 const SECONDS_PER_HOUR = 3600;
-
-function startOfUtcDay(value: Date) {
-  return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
-}
-
-function addUtcDays(value: Date, days: number) {
-  const result = new Date(value);
-  result.setUTCDate(result.getUTCDate() + days);
-  return result;
-}
-
-function getMeteringRanges(reference: Date) {
-  const currentStart = new Date(Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1));
-  const previousStart = new Date(
-    Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth() - 1, 1),
-  );
-  const previousEnd = new Date(
-    Math.min(
-      previousStart.getTime() + reference.getTime() - currentStart.getTime(),
-      currentStart.getTime(),
-    ),
-  );
-
-  return {
-    currentStart: currentStart.toISOString(),
-    currentEnd: reference.toISOString(),
-    previousStart: previousStart.toISOString(),
-    previousEnd: previousEnd.toISOString(),
-    trendStart: addUtcDays(startOfUtcDay(reference), -6).toISOString(),
-  };
-}
 
 export function toGpuHours(quantity: number) {
   return quantity / SECONDS_PER_HOUR;
@@ -95,7 +65,7 @@ function buildTenantRows(
 }
 
 export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceType) {
-  const ranges = useMemo(() => getMeteringRanges(new Date()), []);
+  const ranges = useMemo(() => getUtcMonthToDateRanges(), []);
   const query = useQuery({
     queryKey: ["platform", "metering-dashboard", resourceType, ranges],
     enabled: Boolean(resourceType),
@@ -143,10 +113,7 @@ export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceTy
     const dailyUsage = sumByPeriod(currentDays.items);
     const peak = Array.from(dailyUsage.entries()).sort((left, right) => right[1] - left[1])[0];
     const trendUsage = sumByPeriod(trendDays.items);
-    const trendStart = new Date(ranges.trendStart);
-    const trendDates = Array.from({ length: 7 }, (_, index) =>
-      addUtcDays(trendStart, index).toISOString().slice(0, 10),
-    );
+    const trendDates = listUtcDateKeys(ranges.trendStart, 7);
 
     return {
       tenantRows,
@@ -154,7 +121,7 @@ export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceTy
       previousTotal,
       peakDate: peak?.[0],
       peakUsage: peak ? toGpuHours(peak[1]) : undefined,
-      trendLabels: trendDates.map((date) => date.slice(5)),
+      trendLabels: trendDates.map((date) => formatMonthDay(date)),
       trendValues: trendDates.map((date) =>
         Number(toGpuHours(trendUsage.get(date) || 0).toFixed(2)),
       ),

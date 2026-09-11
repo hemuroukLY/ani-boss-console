@@ -13,6 +13,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
+import { formatCurrentDateTime, formatDateTimeMinute } from "@/lib/date";
 
 type RegionStatus = "enabled" | "disabled" | "planning";
 
@@ -100,12 +101,6 @@ const statusMeta: Record<RegionStatus, { label: string; className: string }> = {
   planning: { label: "规划中", className: "bg-orange-50 text-orange-700" },
 };
 
-function formatNow() {
-  const date = new Date();
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
 export const Route = createFileRoute("/ops-pool/")({
   component: function PlatformResourcePoolOverviewRoute() {
     const [regions, setRegions] = useState(initialRegions);
@@ -132,7 +127,7 @@ export const Route = createFileRoute("/ops-pool/")({
     const refreshRegion = (region: PlatformRegion) => {
       updateRegion(region.id, (current) => ({
         ...current,
-        updatedAt: formatNow(),
+        updatedAt: formatCurrentDateTime(),
       }));
       Message.success(`${region.name}容量已刷新`);
     };
@@ -153,7 +148,7 @@ export const Route = createFileRoute("/ops-pool/")({
           updateRegion(region.id, (current) => ({
             ...current,
             openForTenant: open,
-            updatedAt: formatNow(),
+            updatedAt: formatCurrentDateTime(),
           }));
           Message.success(open ? "已开放租户开通" : "已关闭租户开通");
         },
@@ -177,7 +172,7 @@ export const Route = createFileRoute("/ops-pool/")({
             ...current,
             status: enable ? "enabled" : "disabled",
             openForTenant: enable ? current.openForTenant : false,
-            updatedAt: formatNow(),
+            updatedAt: formatCurrentDateTime(),
           }));
           Message.success(enable ? "区域已启用" : "区域已停用");
         },
@@ -185,7 +180,7 @@ export const Route = createFileRoute("/ops-pool/")({
     };
 
     const refreshAll = () => {
-      const updatedAt = formatNow();
+      const updatedAt = formatCurrentDateTime();
       setRegions((current) => current.map((region) => ({ ...region, updatedAt })));
       Message.success("全部区域容量已刷新");
     };
@@ -272,6 +267,7 @@ export const Route = createFileRoute("/ops-pool/")({
         title: "更新时间",
         dataIndex: "updatedAt",
         width: 160,
+        render: (value: string) => formatDateTimeMinute(value),
       },
       {
         title: "操作",
