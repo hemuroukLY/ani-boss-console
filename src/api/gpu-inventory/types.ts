@@ -1,4 +1,4 @@
-export type GpuInventoryStatus = "available" | "in_use" | "fault" | "maintenance";
+export type GpuInventoryStatus = "available" | "in_use" | "fault" | "maintenance" | "unavailable";
 export type GpuShareCount = 1 | 2 | 4 | 8;
 
 export interface ApiRuntimeProfile {
@@ -23,6 +23,7 @@ export interface GpuInventoryDevice {
   gpuSharingSpec?: string;
   gpuSharingPolicy?: string;
   shares?: GpuShareCount;
+  reason?: string;
 }
 
 export interface GpuInventorySnapshot {
@@ -35,6 +36,29 @@ export interface GpuOccupancy {
   inUse: number;
   available: number;
   fault: number;
+  physicalCardCount: number;
+  logicalCardCount: number;
+  maintenanceCount: number;
+  unavailableCount: number;
+  tenantCount: number;
+}
+
+export type GpuInventoryEventType = "status_changed" | "partition_applied";
+
+export interface GpuInventoryEvent {
+  id: string;
+  deviceId?: string;
+  nodeName?: string;
+  gpuType?: string;
+  eventType: GpuInventoryEventType;
+  reason?: string;
+  actor?: string;
+  createdAt: string;
+}
+
+export interface GpuInventoryEventSnapshot {
+  items: GpuInventoryEvent[];
+  profile: ApiRuntimeProfile;
 }
 
 export type GpuPartitionShares = Exclude<GpuShareCount, 1>;

@@ -30,13 +30,13 @@ export interface CreatePlatformAdministratorInput {
   email: string;
   username: string;
   displayName: string;
-  role: PlatformAdministratorRole;
+  roleId: string;
   password: string;
 }
 
 export interface UpdatePlatformAdministratorRoleInput {
   userId: string;
-  role: PlatformAdministratorRole;
+  roleId: string;
 }
 
 export interface ResetPlatformAdministratorPasswordInput {
@@ -46,18 +46,9 @@ export interface ResetPlatformAdministratorPasswordInput {
 
 export type PlatformPermissionAccess = "read" | "write" | "none";
 
-export interface PlatformRolePermissions {
-  tenantOps: PlatformPermissionAccess;
-  resourcePool: PlatformPermissionAccess;
-  platformUser: PlatformPermissionAccess;
-  auditExport: PlatformPermissionAccess;
-}
-
 export interface PlatformAdministratorRoleDefinition {
+  id: string;
   name: PlatformAdministratorRole;
-  label: string;
-  description: string;
-  permissions: PlatformRolePermissions;
 }
 
 export interface PlatformAdministratorAuditLog {

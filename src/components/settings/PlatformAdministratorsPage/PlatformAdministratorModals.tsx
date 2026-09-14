@@ -18,7 +18,7 @@ interface PasswordFormValues {
 }
 
 interface RoleFormValues {
-  role: PlatformAdministratorRole;
+  roleId: string;
 }
 
 const fallbackRoles = Object.entries(platformAdministratorRoleLabels).map(([value, label]) => ({
@@ -41,9 +41,12 @@ function passwordStrengthValidator(
 }
 
 function roleOptions(roles: PlatformAdministratorRoleDefinition[]) {
-  return roles.length
-    ? roles.map((role) => ({ value: role.name, label: role.label }))
-    : fallbackRoles;
+  const rolesByName = new Map(roles.map((role) => [role.name, role]));
+
+  return fallbackRoles.flatMap((fallbackRole) => {
+    const roleId = rolesByName.get(fallbackRole.value)?.id?.trim();
+    return roleId ? [{ value: roleId, label: fallbackRole.label }] : [];
+  });
 }
 
 export function PlatformAdministratorCreateModal({
@@ -60,6 +63,13 @@ export function PlatformAdministratorCreateModal({
   onSubmit: (input: CreatePlatformAdministratorInput) => void;
 }) {
   const [form] = Form.useForm<CreateFormValues>();
+  const options = roleOptions(roles);
+
+  useEffect(() => {
+    if (!visible || form.getFieldValue("roleId")) return;
+    const defaultRole = roles.find((role) => role.name === "platform-ops") || roles[0];
+    if (defaultRole?.id) form.setFieldsValue({ roleId: defaultRole.id });
+  }, [form, roles, visible]);
 
   const submit = () => {
     form.validate().then(({ confirmPassword: _confirmPassword, ...values }) => onSubmit(values));
@@ -80,7 +90,7 @@ export function PlatformAdministratorCreateModal({
         className="mb-4"
         content="当前接口仅支持直接创建本地账号并设置初始密码，邀请流程需后端补充后再开放。"
       />
-      <Form form={form} layout="vertical" initialValues={{ role: "platform-ops" }}>
+      <Form form={form} layout="vertical">
         <Form.Item
           label="邮箱"
           field="email"
@@ -109,8 +119,8 @@ export function PlatformAdministratorCreateModal({
         >
           <Input placeholder="例如 张三" />
         </Form.Item>
-        <Form.Item label="角色" field="role" rules={[{ required: true, message: "请选择角色" }]}>
-          <Select options={roleOptions(roles)} />
+        <Form.Item label="角色" field="roleId" rules={[{ required: true, message: "请选择角色" }]}>
+          <Select options={options} placeholder={options.length ? "请选择角色" : "暂无可用角色"} />
         </Form.Item>
         <Form.Item
           label="初始密码"
@@ -152,13 +162,16 @@ export function PlatformAdministratorRoleModal({
   loading: boolean;
   roles: PlatformAdministratorRoleDefinition[];
   onCancel: () => void;
-  onSubmit: (role: PlatformAdministratorRole) => void;
+  onSubmit: (roleId: string) => void;
 }) {
   const [form] = Form.useForm<RoleFormValues>();
+  const options = roleOptions(roles);
 
   useEffect(() => {
-    if (target) form.setFieldsValue({ role: target.role });
-  }, [form, target]);
+    if (!target) return;
+    const currentRoleId = roles.find((role) => role.name === target.role)?.id;
+    form.setFieldsValue({ roleId: currentRoleId });
+  }, [form, roles, target]);
 
   return (
     <Modal
@@ -168,15 +181,15 @@ export function PlatformAdministratorRoleModal({
       mountOnEnter={false}
       afterClose={() => form.resetFields()}
       onCancel={onCancel}
-      onOk={() => form.validate().then(({ role }) => onSubmit(role))}
+      onOk={() => form.validate().then(({ roleId }) => onSubmit(roleId))}
     >
       <Form form={form} layout="vertical">
         <Form.Item
           label="平台角色"
-          field="role"
+          field="roleId"
           rules={[{ required: true, message: "请选择角色" }]}
         >
-          <Select options={roleOptions(roles)} />
+          <Select options={options} placeholder={options.length ? "请选择角色" : "暂无可用角色"} />
         </Form.Item>
       </Form>
     </Modal>

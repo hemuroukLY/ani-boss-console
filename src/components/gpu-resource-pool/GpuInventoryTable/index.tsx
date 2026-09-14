@@ -12,6 +12,7 @@ const statusMeta: Record<GpuInventoryStatus, { label: string; className: string 
   in_use: { label: "租户已占用", className: "bg-gray-100 text-gray-700" },
   fault: { label: "不可用", className: "bg-red-50 text-red-700" },
   maintenance: { label: "维护中", className: "bg-orange-50 text-orange-700" },
+  unavailable: { label: "不可用", className: "bg-gray-200 text-gray-700" },
 };
 
 function formatMemory(memoryTotalMb?: number) {

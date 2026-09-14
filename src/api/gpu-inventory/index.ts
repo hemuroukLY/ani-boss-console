@@ -7,6 +7,8 @@ import type {
   CreateGpuPartitionInput,
   GpuInventorySnapshot,
   GpuInventoryStatus,
+  GpuInventoryEventSnapshot,
+  GpuInventoryEventType,
   GpuOccupancy,
   GpuPartitionFailedNode,
   GpuPartitionShares,
@@ -41,6 +43,7 @@ interface GpuInventoryItemResponse {
   gpu_sharing_spec?: string;
   gpu_sharing_policy?: string;
   shares?: GpuShareCount;
+  reason?: string | null;
 }
 
 interface GpuInventoryListResponse {
@@ -53,6 +56,11 @@ interface GpuOccupancyResponse {
   in_use: number;
   available: number;
   fault: number;
+  physical_card_count?: number;
+  logical_card_count?: number;
+  maintenance_count?: number;
+  unavailable_count?: number;
+  tenant_count?: number;
 }
 
 interface QuotaItemResponse {
@@ -75,12 +83,28 @@ interface TenantQuotaResponse {
   tenant_id: string;
   tenant_name?: string;
   items: QuotaItemResponse[];
-  gpu_reservation: GpuReservationResponse;
+  gpu_reservation?: GpuReservationResponse | null;
 }
 
 interface QuotaListResponse {
   items: TenantQuotaResponse[];
   next_cursor?: string | null;
+}
+
+interface GpuInventoryEventResponse {
+  id: string;
+  device_id?: string | null;
+  node_name?: string | null;
+  gpu_type?: string | null;
+  event_type: GpuInventoryEventType;
+  reason?: string | null;
+  actor?: string | null;
+  created_at: string;
+}
+
+interface GpuInventoryEventListResponse {
+  items?: GpuInventoryEventResponse[];
+  dev_profile: ApiRuntimeProfileResponse;
 }
 
 interface GpuPartitionPodResponse {
@@ -139,6 +163,7 @@ export const gpuResourcePoolQueryKeys = {
   inventory: ["gpu-resource-pool", "inventory"] as const,
   occupancy: ["gpu-resource-pool", "occupancy"] as const,
   tenants: ["gpu-resource-pool", "tenants"] as const,
+  events: ["gpu-resource-pool", "events"] as const,
 };
 
 export const gpuPartitionQueryKeys = {
@@ -211,7 +236,9 @@ function mapGpuPartitionTask(response: GpuPartitionTaskResponse): GpuPartitionTa
 }
 
 export async function fetchGpuInventory(): Promise<GpuInventorySnapshot> {
-  const response = await coreRequest<GpuInventoryListResponse>("/gpu-inventory");
+  const response = await coreRequest<GpuInventoryListResponse>("/gpu-inventory", {
+    params: { limit: 200 },
+  });
   return {
     items: (response.items || []).map((item) => ({
       id: item.id,
@@ -228,6 +255,7 @@ export async function fetchGpuInventory(): Promise<GpuInventorySnapshot> {
       gpuSharingSpec: item.gpu_sharing_spec,
       gpuSharingPolicy: item.gpu_sharing_policy,
       shares: item.shares,
+      reason: item.reason || undefined,
     })),
     profile: mapRuntimeProfile(response.dev_profile),
   };
@@ -240,6 +268,30 @@ export async function fetchGpuOccupancy(): Promise<GpuOccupancy> {
     inUse: response.in_use,
     available: response.available,
     fault: response.fault,
+    physicalCardCount: response.physical_card_count ?? response.total,
+    logicalCardCount: response.logical_card_count ?? 0,
+    maintenanceCount: response.maintenance_count ?? 0,
+    unavailableCount: response.unavailable_count ?? 0,
+    tenantCount: response.tenant_count ?? 0,
+  };
+}
+
+export async function fetchGpuInventoryEvents(): Promise<GpuInventoryEventSnapshot> {
+  const response = await coreRequest<GpuInventoryEventListResponse>("/gpu-inventory/events", {
+    params: { limit: 200 },
+  });
+  return {
+    items: (response.items || []).map((item) => ({
+      id: item.id,
+      deviceId: item.device_id || undefined,
+      nodeName: item.node_name || undefined,
+      gpuType: item.gpu_type || undefined,
+      eventType: item.event_type,
+      reason: item.reason || undefined,
+      actor: item.actor || undefined,
+      createdAt: item.created_at,
+    })),
+    profile: mapRuntimeProfile(response.dev_profile),
   };
 }
 
@@ -250,7 +302,7 @@ async function fetchAllTenantQuotas(): Promise<TenantQuotaResponse[]> {
 
   do {
     const response = await coreRequest<QuotaListResponse>("/quotas", {
-      params: { limit: 100, cursor },
+      params: { limit: 200, cursor },
     });
     items.push(...(response.items || []));
     cursor = response.next_cursor || undefined;
@@ -273,13 +325,13 @@ export async function fetchTenantGpuAllocations(): Promise<TenantGpuAllocation[]
     );
 
   return gpuQuotas.map(({ quota, gpu }) => ({
-    tenantId: quota.gpu_reservation.tenant_id || quota.tenant_id,
+    tenantId: quota.gpu_reservation?.tenant_id || quota.tenant_id,
     tenantName: quota.tenant_name || quota.tenant_id,
     quotaTotal: gpu.total,
-    allocatedGpuCount: quota.gpu_reservation.allocated_gpu_count,
-    used: quota.gpu_reservation.used,
-    reserved: quota.gpu_reservation.reserved,
-    available: quota.gpu_reservation.available,
+    allocatedGpuCount: quota.gpu_reservation?.allocated_gpu_count ?? 0,
+    used: quota.gpu_reservation?.used ?? gpu.used,
+    reserved: quota.gpu_reservation?.reserved ?? gpu.reserved,
+    available: quota.gpu_reservation?.available ?? gpu.available,
   }));
 }
 
@@ -359,6 +411,9 @@ export type {
   ApiRuntimeProfile,
   CreateGpuPartitionInput,
   GpuInventoryDevice,
+  GpuInventoryEvent,
+  GpuInventoryEventSnapshot,
+  GpuInventoryEventType,
   GpuInventorySnapshot,
   GpuInventoryStatus,
   GpuOccupancy,

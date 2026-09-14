@@ -56,6 +56,7 @@ import { Route as TenantsTenantIdRouteImport } from './routes/tenants/$tenantId'
 import { Route as TenantsQuotasPlanCodeRouteImport } from './routes/tenants-quotas/$planCode'
 import { Route as TenantsBillingTenantIdRouteImport } from './routes/tenants-billing/$tenantId'
 import { Route as TenantsAdminsAdminIdRouteImport } from './routes/tenants-admins/$adminId'
+import { Route as SettingsPlatformAdminsUserIdRouteImport } from './routes/settings-platform-admins/$userId'
 
 const TenantsRoute = TenantsRouteImport.update({
   id: '/tenants',
@@ -295,10 +296,17 @@ const TenantsAdminsAdminIdRoute = TenantsAdminsAdminIdRouteImport.update({
   path: '/tenants-admins/$adminId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsPlatformAdminsUserIdRoute =
+  SettingsPlatformAdminsUserIdRouteImport.update({
+    id: '/settings-platform-admins/$userId',
+    path: '/settings-platform-admins/$userId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/tenants': typeof TenantsRouteWithChildren
+  '/settings-platform-admins/$userId': typeof SettingsPlatformAdminsUserIdRoute
   '/tenants-admins/$adminId': typeof TenantsAdminsAdminIdRoute
   '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
   '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
@@ -347,6 +355,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/settings-platform-admins/$userId': typeof SettingsPlatformAdminsUserIdRoute
   '/tenants-admins/$adminId': typeof TenantsAdminsAdminIdRoute
   '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
   '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
@@ -397,6 +406,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/tenants': typeof TenantsRouteWithChildren
+  '/settings-platform-admins/$userId': typeof SettingsPlatformAdminsUserIdRoute
   '/tenants-admins/$adminId': typeof TenantsAdminsAdminIdRoute
   '/tenants-billing/$tenantId': typeof TenantsBillingTenantIdRoute
   '/tenants-quotas/$planCode': typeof TenantsQuotasPlanCodeRoute
@@ -448,6 +458,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/tenants'
+    | '/settings-platform-admins/$userId'
     | '/tenants-admins/$adminId'
     | '/tenants-billing/$tenantId'
     | '/tenants-quotas/$planCode'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/settings-platform-admins/$userId'
     | '/tenants-admins/$adminId'
     | '/tenants-billing/$tenantId'
     | '/tenants-quotas/$planCode'
@@ -545,6 +557,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/tenants'
+    | '/settings-platform-admins/$userId'
     | '/tenants-admins/$adminId'
     | '/tenants-billing/$tenantId'
     | '/tenants-quotas/$planCode'
@@ -595,6 +608,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TenantsRoute: typeof TenantsRouteWithChildren
+  SettingsPlatformAdminsUserIdRoute: typeof SettingsPlatformAdminsUserIdRoute
   TenantsAdminsAdminIdRoute: typeof TenantsAdminsAdminIdRoute
   TenantsBillingTenantIdRoute: typeof TenantsBillingTenantIdRoute
   TenantsQuotasPlanCodeRoute: typeof TenantsQuotasPlanCodeRoute
@@ -971,6 +985,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantsAdminsAdminIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings-platform-admins/$userId': {
+      id: '/settings-platform-admins/$userId'
+      path: '/settings-platform-admins/$userId'
+      fullPath: '/settings-platform-admins/$userId'
+      preLoaderRoute: typeof SettingsPlatformAdminsUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -990,6 +1011,7 @@ const TenantsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TenantsRoute: TenantsRouteWithChildren,
+  SettingsPlatformAdminsUserIdRoute: SettingsPlatformAdminsUserIdRoute,
   TenantsAdminsAdminIdRoute: TenantsAdminsAdminIdRoute,
   TenantsBillingTenantIdRoute: TenantsBillingTenantIdRoute,
   TenantsQuotasPlanCodeRoute: TenantsQuotasPlanCodeRoute,

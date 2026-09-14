@@ -1,6 +1,7 @@
 import { Alert, Button, Input, Menu, Message, Modal, Select } from "@arco-design/web-react";
 import { IconPlus, IconRefresh } from "@arco-design/web-react/icon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useDeferredValue, useMemo, useState } from "react";
 import {
   createPlatformAdministrator,
@@ -36,7 +37,6 @@ import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDateTime } from "@/lib/date";
 import { PlatformAdministratorStatusBadge } from "../PlatformAdministratorStatusBadge";
 import { platformAdministratorRoleLabels, platformAdministratorSourceLabels } from "../model";
-import { PlatformAdministratorDetailDrawer } from "./PlatformAdministratorDetailDrawer";
 import {
   PlatformAdministratorCreateModal,
   PlatformAdministratorPasswordModal,
@@ -57,7 +57,6 @@ export function PlatformAdministratorsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [createVisible, setCreateVisible] = useState(false);
-  const [detailUserId, setDetailUserId] = useState<string | null>(null);
   const [roleTarget, setRoleTarget] = useState<PlatformAdministratorListItem | null>(null);
   const [passwordTarget, setPasswordTarget] = useState<PlatformAdministratorListItem | null>(null);
   const deferredKeyword = useDeferredValue(keyword.trim());
@@ -147,9 +146,8 @@ export function PlatformAdministratorsPage() {
   });
   const deleteMutation = useMutation({
     mutationFn: deletePlatformAdministrator,
-    onSuccess: async (_result, userId) => {
+    onSuccess: async () => {
       await invalidateAll();
-      if (detailUserId === userId) setDetailUserId(null);
       Message.success("账号已删除");
     },
     onError: mutationError,
@@ -190,7 +188,14 @@ export function PlatformAdministratorsPage() {
       title: "账号",
       width: 240,
       render: (_, administrator) => (
-        <DataTableNameCell name={administrator.displayName} id={administrator.username} />
+        <DataTableNameCell
+          name={
+            <Link to="/settings-platform-admins/$userId" params={{ userId: administrator.id }}>
+              {administrator.displayName}
+            </Link>
+          }
+          id={administrator.username}
+        />
       ),
     },
     { title: "邮箱", width: 190, render: () => "-" },
@@ -220,7 +225,7 @@ export function PlatformAdministratorsPage() {
     {
       key: "__actions",
       title: "操作",
-      width: 210,
+      width: 150,
       fixed: "right",
       render: (_, administrator) => {
         const menu = (
@@ -242,9 +247,6 @@ export function PlatformAdministratorsPage() {
         );
         return (
           <DataTableRowActions>
-            <DataTableRowActionButton onClick={() => setDetailUserId(administrator.id)}>
-              详情
-            </DataTableRowActionButton>
             <DataTableRowActionButton
               disabled={!canManage || operationPending}
               onClick={() => setRoleTarget(administrator)}
@@ -399,8 +401,8 @@ export function PlatformAdministratorsPage() {
         loading={roleMutation.isPending}
         roles={rolesQuery.data || []}
         onCancel={() => setRoleTarget(null)}
-        onSubmit={(nextRole) => {
-          if (roleTarget) roleMutation.mutate({ userId: roleTarget.id, role: nextRole });
+        onSubmit={(roleId) => {
+          if (roleTarget) roleMutation.mutate({ userId: roleTarget.id, roleId });
         }}
       />
       <PlatformAdministratorPasswordModal
@@ -412,11 +414,6 @@ export function PlatformAdministratorsPage() {
             passwordMutation.mutate({ userId: passwordTarget.id, newPassword });
           }
         }}
-      />
-      <PlatformAdministratorDetailDrawer
-        userId={detailUserId}
-        roles={rolesQuery.data || []}
-        onClose={() => setDetailUserId(null)}
       />
     </>
   );

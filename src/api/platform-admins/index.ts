@@ -35,15 +35,8 @@ interface CursorListResponse<T> {
 }
 
 interface PlatformRoleResponse {
+  id: string;
   name: PlatformAdministratorRoleDefinition["name"];
-  label: string;
-  description: string;
-  permissions: {
-    tenant_ops: PlatformAdministratorRoleDefinition["permissions"]["tenantOps"];
-    resource_pool: PlatformAdministratorRoleDefinition["permissions"]["resourcePool"];
-    platform_user: PlatformAdministratorRoleDefinition["permissions"]["platformUser"];
-    audit_export: PlatformAdministratorRoleDefinition["permissions"]["auditExport"];
-  };
 }
 
 interface PlatformAuditLogResponse {
@@ -135,15 +128,8 @@ export async function fetchPlatformAdministratorRoles(): Promise<
     { method: "GET" },
   );
   return response.items.map((item) => ({
+    id: item.id,
     name: item.name,
-    label: item.label,
-    description: item.description,
-    permissions: {
-      tenantOps: item.permissions.tenant_ops,
-      resourcePool: item.permissions.resource_pool,
-      platformUser: item.permissions.platform_user,
-      auditExport: item.permissions.audit_export,
-    },
   }));
 }
 
@@ -167,22 +153,25 @@ export async function fetchPlatformAdministratorAuditLogs(
 export function createPlatformAdministrator(
   input: CreatePlatformAdministratorInput,
 ): Promise<PlatformAdministratorMutationResult> {
-  const { displayName, ...fields } = input;
-  return runIdempotentRequest(createScope, { ...fields, display_name: displayName }, (body) =>
-    servicesRequest<PlatformAdministratorMutationResult, typeof body>("/platform-admins", {
-      method: "POST",
-      data: body,
-    }),
+  const { displayName, roleId, ...fields } = input;
+  return runIdempotentRequest(
+    createScope,
+    { ...fields, display_name: displayName, role_id: roleId },
+    (body) =>
+      servicesRequest<PlatformAdministratorMutationResult, typeof body>("/platform-admins", {
+        method: "POST",
+        data: body,
+      }),
   );
 }
 
 export function updatePlatformAdministratorRole({
   userId,
-  role,
+  roleId,
 }: UpdatePlatformAdministratorRoleInput): Promise<PlatformAdministratorMutationResult> {
   return runIdempotentRequest(
     updateRoleScope,
-    { role },
+    { role_id: roleId },
     (body) =>
       servicesRequest<PlatformAdministratorMutationResult, typeof body>(
         platformAdministratorPath(userId, "/role"),
