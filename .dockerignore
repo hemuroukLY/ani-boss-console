@@ -1,0 +1,13 @@
+node_modules
+dist
+test-results
+.pnpm-store
+.tanstack
+.git
+.gitnexus
+.agents
+.claude
+.codex
+.env.local
+.env.*.local
+*.md
