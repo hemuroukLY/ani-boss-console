@@ -11,7 +11,7 @@ pnpm install
 pnpm dev
 ```
 
-开发服务默认访问 `http://localhost:5174`。需要联调后端时，将 `.env.example` 复制为 `.env.local`，并设置 `VITE_API_PROXY_TARGET`。
+开发服务默认访问 `http://localhost:5174`。环境变量按 [Vite 的 Env Variables and Modes](https://v6.vite.dev/guide/env-and-mode) 约定配置；本地覆盖可写入不提交的 `.env.local`。
 
 ## 常用命令
 
@@ -35,5 +35,4 @@ React 18、TypeScript、Vite、TanStack Router、TanStack Query、Arco Design Re
 - [工程约定](./docs/CONVENTIONS.md)
 - [API 对接流程](./docs/API-INTEGRATION.md)
 - [UI 开发约定](./docs/UI-CONVENTIONS.md)
-- [当前状态与开发记录](./docs/PROJECT-STATUS.md)
 - [Agent 执行约定](./AGENTS.md)

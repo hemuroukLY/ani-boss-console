@@ -17,7 +17,7 @@
 - `src/components/shell/`：应用壳层、顶部导航、侧边栏和页面出口。
 - `src/styles/`：全局样式。组件私有样式应与组件同目录，不放入全局样式目录。
 - `src/routeTree.gen.ts`：TanStack Router 自动生成文件，不得手工修改。
-- `docs/`：工程说明、UI 约定与项目状态，不保存接口契约或产品原型副本。
+- `docs/`：工程说明、API 对接流程与 UI 约定，不保存接口契约或产品原型副本。
 
 项目不使用 `src/pages/` 或 `src/features/` 承载新代码；已有遗留目录应在相关功能调整时按 `AGENTS.md` 迁移，不新增依赖。
 
@@ -58,12 +58,10 @@
 - 图表优先通过 `echarts-for-react` 使用 ECharts，不重复实现已有图表能力。
 - Arco Design 的使用顺序、表格约束和交互底线见 [UI 开发约定](./UI-CONVENTIONS.md)。
 
-## 验证与记录
+## 验证
 
 默认由项目负责人手动完成构建、启动和页面交互验证。除非用户明确要求，Agent 不运行 `pnpm build`、`pnpm verify` 或启动开发服务。
 
 pnpm 命令执行门禁：所有 Agent 执行任何 `pnpm` 命令时，都必须在 Codex 沙箱外的系统环境运行，由系统 Corepack 根据 `package.json` 的 `packageManager` 选择 pnpm 版本；不得使用沙箱内的 fallback pnpm，也不得绕过项目声明手动选择其他版本。
 
 完成代码或工程配置修改后，在最终回复前必须运行 `pnpm lint` 和 `pnpm fmt:check`；检查失败时应先修复，无法在当前范围处理的既有问题必须如实记录。文档修改至少检查 Markdown 链接、内容一致性和 `git diff --check`；代码修改还必须遵循 `AGENTS.md` 中的 GitNexus 影响分析与变更检测要求。
-
-功能范围、数据接入状态或验证口径发生变化后，应同步更新 [PROJECT-STATUS.md](./PROJECT-STATUS.md)，只保留当前有效状态和简短里程碑。
