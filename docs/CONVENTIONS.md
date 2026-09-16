@@ -14,7 +14,7 @@
 - `src/components/<scope>/`：按页面作用域组织的业务组件、领域模型、Provider、状态管理和业务逻辑。
 - `src/api/`：按业务资源组织的 API 请求函数、静态类型与 Axios 公共请求基础设施。
 - `src/components/common/`：跨页面或跨领域复用的公共组件；目录外统一从 `@/components/common` 导入。
-- `src/components/shell/`：应用壳层、顶部导航、侧边栏和页面出口。
+- `src/components/layouts/`：应用布局、认证中心、顶部导航、侧边栏和页面出口。
 - `src/styles/`：全局样式。组件私有样式应与组件同目录，不放入全局样式目录。
 - `src/routeTree.gen.ts`：TanStack Router 自动生成文件，不得手工修改。
 - `docs/`：工程说明、API 对接流程与 UI 约定，不保存接口契约或产品原型副本。

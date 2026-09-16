@@ -23,7 +23,7 @@ import {
   type NavigationLeaf,
 } from "./navigation";
 
-export function AppShell() {
+export function AppLayout() {
   const queryClient = useQueryClient();
   const authState = useAuthState();
   const [collapsed, setCollapsed] = useState(false);
