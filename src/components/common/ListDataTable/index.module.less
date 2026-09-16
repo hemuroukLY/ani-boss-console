@@ -1,0 +1,120 @@
+.listDataTable {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+
+  > :global(.arco-spin),
+  > :global(.arco-spin) > :global(.arco-spin-children) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  :global(.arco-table-container),
+  :global(.arco-table-content-scroll),
+  :global(.arco-table-content-inner) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  :global(.arco-table-container) {
+    width: 100%;
+  }
+
+  :global(.arco-table-header) {
+    flex: 0 0 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  :global(.arco-table-body) {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  :global(.arco-table-pagination) {
+    flex: 0 0 auto;
+  }
+
+  :global(.arco-table-th) {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0;
+    border-bottom: 1px solid var(--list-table-divider);
+    background: var(--list-primary-header);
+    color: var(--list-text-secondary);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  :global(.arco-table-th-item) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 40px;
+    padding: 0 16px;
+    line-height: 39px;
+    white-space: nowrap;
+  }
+
+  :global(.arco-table-td) {
+    box-sizing: border-box;
+    height: 56px;
+    max-width: 300px;
+    overflow: hidden;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--list-table-divider);
+    color: var(--list-text);
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.arco-table-th.arco-table-checkbox),
+  :global(.arco-table-td.arco-table-checkbox),
+  :global(.arco-table-th.arco-table-checkbox .arco-table-th-item) {
+    padding: 0;
+  }
+
+  :global(.arco-table-tbody .arco-table-tr:last-child .arco-table-td) {
+    border-bottom: 0;
+  }
+
+  :global(.arco-table-tbody .arco-table-tr:hover) {
+    background: rgba(0, 121, 211, 0.04);
+  }
+}
+
+.tableState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-height: 220px;
+  color: var(--list-text-secondary);
+}
+
+.emptyIcon {
+  color: var(--list-text-tertiary);
+  font-size: 48px !important;
+}

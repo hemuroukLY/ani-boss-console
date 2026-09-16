@@ -1,6 +1,6 @@
 import { Badge } from "@arco-design/web-react";
 import clsx from "clsx";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 export type StatusBadgeTone = "default" | "info" | "success" | "warning" | "danger";
 

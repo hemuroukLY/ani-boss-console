@@ -6,7 +6,7 @@ import {
   type TableColumnProps,
   type TableProps,
 } from "@arco-design/web-react";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 export type ListColumn<T> = TableColumnProps<T>;
 

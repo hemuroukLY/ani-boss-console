@@ -25,11 +25,11 @@
   height: 28px;
   padding: 0;
   color: var(--color-text-2);
-}
 
-.backButton:hover {
-  color: rgb(var(--primary-6));
-  background: transparent;
+  &:hover {
+    color: rgb(var(--primary-6));
+    background: transparent;
+  }
 }
 
 .breadcrumbs {
@@ -53,15 +53,15 @@
   border: 0;
   background: transparent;
   cursor: pointer;
-}
 
-.breadcrumbLink:hover {
-  color: rgb(var(--primary-6));
-}
+  &:hover {
+    color: rgb(var(--primary-6));
+  }
 
-.breadcrumbLink:focus-visible {
-  outline: 2px solid rgb(var(--primary-3));
-  outline-offset: 2px;
+  &:focus-visible {
+    outline: 2px solid rgb(var(--primary-3));
+    outline-offset: 2px;
+  }
 }
 
 .breadcrumbCurrent {
@@ -81,6 +81,11 @@
   border-radius: 8px;
   background: var(--detail-surface);
   box-shadow: var(--detail-shadow);
+
+  @media (max-width: 1100px) {
+    gap: 20px;
+    padding: 16px 20px;
+  }
 }
 
 .identity {
@@ -90,6 +95,12 @@
   min-width: 160px;
   max-width: 260px;
   gap: 16px;
+
+  @media (max-width: 1100px) {
+    flex-basis: 210px;
+    max-width: 210px;
+    gap: 12px;
+  }
 }
 
 .identityIcon {
@@ -160,20 +171,20 @@
   min-width: 0;
   max-width: 180px;
   gap: 8px;
-}
 
-.headerItem + .headerItem {
-  padding-left: 17px;
-}
+  & + & {
+    padding-left: 17px;
 
-.headerItem + .headerItem::before {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 0;
-  width: 1px;
-  background: var(--color-border-1);
-  content: "";
+    &::before {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 0;
+      width: 1px;
+      background: var(--color-border-1);
+      content: "";
+    }
+  }
 }
 
 .headerItemLabel {
@@ -209,10 +220,20 @@
 
 .workspaceSplit {
   grid-template-columns: min(400px, 42%) minmax(0, 1fr);
+
+  @media (max-width: 1100px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
 }
 
 .workspaceSingle {
   grid-template-columns: minmax(0, 1fr);
+
+  @media (max-width: 1100px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
 }
 
 .leftPane {
@@ -227,21 +248,21 @@
   border-color: transparent;
   border-radius: 8px;
   box-shadow: var(--detail-shadow);
-}
 
-.infoCard :global(.arco-card-header) {
-  min-height: 40px;
-  padding: 0 16px;
-  border-bottom-color: var(--color-border-1);
-}
+  :global(.arco-card-header) {
+    min-height: 40px;
+    padding: 0 16px;
+    border-bottom-color: var(--color-border-1);
+  }
 
-.infoCard :global(.arco-card-header-title) {
-  font-size: 14px;
-  font-weight: 700;
-}
+  :global(.arco-card-header-title) {
+    font-size: 14px;
+    font-weight: 700;
+  }
 
-.infoCard :global(.arco-card-body) {
-  padding: 16px;
+  :global(.arco-card-body) {
+    padding: 16px;
+  }
 }
 
 .rightPane {
@@ -253,70 +274,51 @@
   border-radius: 8px;
   background: var(--detail-surface);
   box-shadow: var(--detail-shadow);
+
+  @media (max-width: 1100px) {
+    min-height: 600px;
+  }
 }
 
 .tabs {
   height: 100%;
   min-width: 0;
   min-height: 0;
-}
 
-.tabs :global(.arco-tabs-header-nav) {
-  box-sizing: border-box;
-  min-height: 56px;
-  padding: 8px 16px;
-}
-
-.tabs :global(.arco-tabs-header-nav-line .arco-tabs-header-title) {
-  height: 40px;
-  margin: 0 4px;
-  padding: 0 16px;
-  border-radius: 4px;
-  color: var(--color-text-1);
-  font-weight: 700;
-  line-height: 40px;
-}
-
-.tabs :global(.arco-tabs-header-nav-line .arco-tabs-header-title:hover) {
-  color: rgb(var(--primary-6));
-}
-
-.tabs :global(.arco-tabs-header-nav-line .arco-tabs-header-title-active) {
-  color: rgb(var(--primary-6));
-  background: var(--color-primary-light-1);
-}
-
-.tabs :global(.arco-tabs-content) {
-  min-width: 0;
-  min-height: 0;
-  padding: 0;
-}
-
-.tabs :global(.arco-tabs-content-item.arco-tabs-content-item-active) {
-  box-sizing: border-box;
-  min-width: 0;
-  padding: 16px;
-}
-
-@media (max-width: 1100px) {
-  .headerCard {
-    gap: 20px;
-    padding: 16px 20px;
+  :global(.arco-tabs-header-nav) {
+    box-sizing: border-box;
+    min-height: 56px;
+    padding: 8px 16px;
   }
 
-  .identity {
-    flex-basis: 210px;
-    max-width: 210px;
-    gap: 12px;
+  :global(.arco-tabs-header-nav-line .arco-tabs-header-title) {
+    height: 40px;
+    margin: 0 4px;
+    padding: 0 16px;
+    border-radius: 4px;
+    color: var(--color-text-1);
+    font-weight: 700;
+    line-height: 40px;
   }
 
-  .workspaceSplit,
-  .workspaceSingle {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+  :global(.arco-tabs-header-nav-line .arco-tabs-header-title:hover) {
+    color: rgb(var(--primary-6));
   }
 
-  .rightPane {
-    min-height: 600px;
+  :global(.arco-tabs-header-nav-line .arco-tabs-header-title-active) {
+    color: rgb(var(--primary-6));
+    background: var(--color-primary-light-1);
+  }
+
+  :global(.arco-tabs-content) {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  :global(.arco-tabs-content-item.arco-tabs-content-item-active) {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 16px;
   }
 }

@@ -1,10 +1,13 @@
-import { Alert, Button, Card, Divider, Form, Input, Message } from "@arco-design/web-react";
+import { Button, Divider, Form, Input, Message } from "@arco-design/web-react";
+import { IconDriveFile, IconLock } from "@arco-design/web-react/icon";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import backgroundImageUrl from "@/assets/auth/background-01-cqy.png";
+import logoUrl from "@/assets/brand/logo.png";
 import { loginPlatform } from "@/api/auth";
-import { AuthCenterLayout } from "@/components/shell/AuthCenterLayout";
 import { parseApiError } from "@/lib/api-error";
 import { isAuthenticated, setAuthSession, setDevelopmentAuthBypass } from "../store";
+import styles from "./index.module.less";
 
 interface PlatformLoginValues {
   username: string;
@@ -51,50 +54,97 @@ export function LoginPage({ redirect }: { redirect?: string }) {
   };
 
   return (
-    <AuthCenterLayout>
-      <Card className="w-full max-w-[400px]" title="登录 ANI BOSS">
+    <main className={styles.page}>
+      <img className={styles.background} src={backgroundImageUrl} alt="" aria-hidden="true" />
+
+      <header className={styles.header}>
+        <div className={styles.brand}>
+          <img className={styles.brandLogo} src={logoUrl} alt="" />
+          <span>常青云平台</span>
+        </div>
+      </header>
+
+      <section className={styles.loginCard} aria-labelledby="login-page-title">
+        <img className={styles.cardLogo} src={logoUrl} alt="常青云" />
+        <h1 id="login-page-title" className={styles.title}>
+          登录常青云平台
+        </h1>
+
         <Form<PlatformLoginValues>
+          className={styles.form}
           layout="vertical"
+          requiredSymbol={false}
           initialValues={{ username: "root", password: "Correct@123" }}
           disabled={login.isPending}
           onSubmit={(values) => login.mutate(values)}
         >
           <Form.Item
-            label="平台管理员用户名"
+            label="账号"
             field="username"
-            rules={[{ required: true, message: "请输入平台管理员用户名" }]}
+            rules={[{ required: true, message: "请输入账号" }]}
           >
-            <Input placeholder="请输入用户名" maxLength={64} allowClear autoComplete="username" />
+            <Input
+              size="large"
+              placeholder="请输入账号"
+              maxLength={64}
+              allowClear
+              autoComplete="username"
+            />
           </Form.Item>
           <Form.Item
-            label="密码"
+            className={styles.passwordItem}
+            label={
+              <span className={styles.passwordLabel}>
+                <span>密码</span>
+                <span className={styles.forgotPassword} aria-disabled="true">
+                  忘记密码？
+                </span>
+              </span>
+            }
             field="password"
             rules={[{ required: true, message: "请输入密码" }]}
           >
             <Input.Password
+              size="large"
               placeholder="请输入密码"
               maxLength={256}
               autoComplete="current-password"
             />
           </Form.Item>
-          <Button type="primary" htmlType="submit" long loading={login.isPending}>
-            登录
+          <Button
+            className={styles.submitButton}
+            type="primary"
+            size="large"
+            htmlType="submit"
+            long
+            loading={login.isPending}
+          >
+            立即登录
           </Button>
         </Form>
 
+        <div hidden>
+          <Divider className={styles.divider}>OR</Divider>
+          <div className={styles.alternativeMethods} aria-label="其他登录方式">
+            <span className={styles.alternativeMethod} aria-disabled="true">
+              <IconDriveFile />
+              Ukey登录
+            </span>
+            <span className={styles.alternativeMethod} aria-disabled="true">
+              <IconLock />
+              AD/LDAP账户
+            </span>
+          </div>
+        </div>
+
         {import.meta.env.DEV ? (
-          <>
-            <Divider />
-            <Alert
-              type="warning"
-              content="开发预览模式不会携带平台令牌，仅适用于 ANI 开发鉴权模式。"
-            />
-            <Button type="text" long className="mt-3" onClick={skipLogin}>
-              跳过登录（仅开发模式）
-            </Button>
-          </>
+          <Button className={styles.developmentButton} type="text" size="mini" onClick={skipLogin}>
+            跳过登录（开发预览）
+          </Button>
         ) : null}
-      </Card>
-    </AuthCenterLayout>
+      </section>
+
+      <footer className={styles.footer}>Copyright © 2021-2025 广州常青云科技有限公司</footer>
+    </main>
   );
 }

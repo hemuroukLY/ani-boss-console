@@ -9,16 +9,16 @@
   color: var(--list-primary);
   font-size: 14px;
   line-height: 20px;
-}
 
-.name :global(a) {
-  color: inherit;
-  text-decoration: none;
-}
+  :global(a) {
+    color: inherit;
+    text-decoration: none;
+  }
 
-.name :global(a:hover) {
-  color: var(--list-primary-hover);
-  text-decoration: none;
+  :global(a:hover) {
+    color: var(--list-primary-hover);
+    text-decoration: none;
+  }
 }
 
 .nameId {
@@ -40,9 +40,9 @@
   padding: 0 4px;
   color: var(--list-primary);
   white-space: nowrap;
-}
 
-.rowActionButton:hover {
-  background: var(--list-primary-soft);
-  color: var(--list-primary-hover);
+  &:hover {
+    background: var(--list-primary-soft);
+    color: var(--list-primary-hover);
+  }
 }

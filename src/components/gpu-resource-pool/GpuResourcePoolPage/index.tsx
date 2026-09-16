@@ -27,7 +27,7 @@ import { GpuClusterPartitionFlow } from "../GpuClusterPartitionFlow";
 import { GpuInventoryTable } from "../GpuInventoryTable";
 import { GpuSummary } from "../GpuSummary";
 import { TenantGpuAllocationTable } from "../TenantGpuAllocationTable";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 interface QuotaFormValues {
   total: number;

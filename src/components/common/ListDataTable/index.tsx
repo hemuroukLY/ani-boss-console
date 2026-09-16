@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { DataTable, type DataTableProps } from "../DataTable";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 export type ListDataTableProps<T> = Omit<DataTableProps<T>, "className" | "noDataElement"> & {
   className?: string;

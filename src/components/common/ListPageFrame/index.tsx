@@ -1,6 +1,6 @@
 import { Card, Typography } from "@arco-design/web-react";
 import type { ReactNode } from "react";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 interface ListPageHeaderProps {
   title: ReactNode;

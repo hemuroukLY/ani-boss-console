@@ -1,7 +1,7 @@
 import { Card } from "@arco-design/web-react";
 import { cloneElement, type ReactElement, type ReactNode } from "react";
 import type { ListDataTableProps } from "../ListDataTable";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 interface TableSectionFrameProps<T> {
   header?: ReactNode;

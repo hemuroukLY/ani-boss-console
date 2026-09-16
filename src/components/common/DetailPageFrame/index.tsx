@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, Card, Tabs, Tooltip } from "@arco-design/web-react";
 import { IconLeft } from "@arco-design/web-react/icon";
 import { useState, type ReactNode } from "react";
-import styles from "./index.module.css";
+import styles from "./index.module.less";
 
 export interface DetailBreadcrumbItem {
   label: ReactNode;
