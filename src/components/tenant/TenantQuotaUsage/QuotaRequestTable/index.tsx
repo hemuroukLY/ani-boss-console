@@ -1,5 +1,5 @@
 import { Button, Tag, Typography } from "@arco-design/web-react";
-import { DataTable, DataTableRowActionButton, DataTableRowActions } from "@/components/common";
+import { DataTable } from "@/components/common";
 import type { TenantQuotaRequest } from "@/components/tenant/model";
 import { formatDateTimeMinute } from "@/lib/date";
 import { formatNumber } from "../formatters";
@@ -38,6 +38,21 @@ export function QuotaRequestTable({
         pagination={false}
         data={requests}
         noDataElement="暂无配额申请"
+        rowActions={[
+          {
+            key: "approve",
+            label: "通过",
+            visible: (request) => request.status === "pending",
+            onClick: onApprove,
+          },
+          {
+            key: "reject",
+            label: "驳回",
+            intent: "danger",
+            visible: (request) => request.status === "pending",
+            onClick: onReject,
+          },
+        ]}
         columns={[
           {
             title: "申请时间",
@@ -76,24 +91,6 @@ export function QuotaRequestTable({
               const meta = requestStatusMeta[request.status];
               return <Tag color={meta.color}>{meta.label}</Tag>;
             },
-          },
-          {
-            title: "操作",
-            width: 150,
-            fixed: "right",
-            render: (_, request: TenantQuotaRequest) =>
-              request.status === "pending" ? (
-                <DataTableRowActions>
-                  <DataTableRowActionButton onClick={() => onApprove(request)}>
-                    通过
-                  </DataTableRowActionButton>
-                  <DataTableRowActionButton status="danger" onClick={() => onReject(request)}>
-                    驳回
-                  </DataTableRowActionButton>
-                </DataTableRowActions>
-              ) : (
-                "-"
-              ),
           },
         ]}
       />

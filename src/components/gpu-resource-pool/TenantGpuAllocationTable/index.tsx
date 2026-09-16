@@ -1,11 +1,5 @@
 import { Card } from "@arco-design/web-react";
-import {
-  DataTableNameCell,
-  DataTableRowActionButton,
-  DataTableRowActions,
-  ListDataTable,
-  type ListColumn,
-} from "@/components/common";
+import { DataTableNameCell, ListDataTable, type ListColumn } from "@/components/common";
 import type { TenantGpuAllocation } from "@/api/gpu-inventory";
 
 interface TenantGpuAllocationTableProps {
@@ -32,21 +26,6 @@ export function TenantGpuAllocationTable({
     { title: "已用", dataIndex: "used", width: 90 },
     { title: "处理中", dataIndex: "reserved", width: 90 },
     { title: "可创建", dataIndex: "available", width: 90 },
-    {
-      title: "操作",
-      width: 260,
-      fixed: "right",
-      render: (_, tenant) => (
-        <DataTableRowActions>
-          <DataTableRowActionButton onClick={() => onEditReservation(tenant)}>
-            调整资源预留
-          </DataTableRowActionButton>
-          <DataTableRowActionButton onClick={() => onEditQuota(tenant)}>
-            调整配额上限
-          </DataTableRowActionButton>
-        </DataTableRowActions>
-      ),
-    },
   ];
 
   return (
@@ -55,6 +34,18 @@ export function TenantGpuAllocationTable({
         tableLabel="租户 GPU 分配台账"
         rowKey="tenantId"
         columns={columns}
+        rowActions={[
+          {
+            key: "edit-reservation",
+            label: "调整资源预留",
+            onClick: onEditReservation,
+          },
+          {
+            key: "edit-quota",
+            label: "调整配额上限",
+            onClick: onEditQuota,
+          },
+        ]}
         data={data}
         loading={loading}
         pagination={false}

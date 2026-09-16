@@ -4,8 +4,6 @@ import clsx from "clsx";
 import {
   DataTable,
   DetailPageFrame,
-  DataTableRowActionButton,
-  DataTableRowActions,
   type DetailInfoCard,
   type DetailTab,
   type ListColumn,
@@ -170,35 +168,6 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
       width: 150,
       render: (value: string) => formatDate(value),
     },
-    {
-      title: "操作",
-      width: 190,
-      fixed: "right",
-      render: () => (
-        <DataTableRowActions>
-          <DataTableRowActionButton
-            disabled={billing.status !== "overdue" && billing.balanceUsd >= 0}
-            onClick={() =>
-              confirmAction(
-                "mark_settled",
-                "标记结清",
-                "确认该账单已完成线下结算并标记结清？",
-                "账单已结清",
-              )
-            }
-          >
-            标记结清
-          </DataTableRowActionButton>
-          <DataTableRowActionButton
-            onClick={() =>
-              showResult(applyTenantBillingAction(tenant.id, "export_statement"), "对账单已导出")
-            }
-          >
-            导出对账单
-          </DataTableRowActionButton>
-        </DataTableRowActions>
-      ),
-    },
   ];
 
   const operationColumns: ListColumn<TenantBillingOperation>[] = [
@@ -270,6 +239,30 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
           <DataTable
             rowKey="id"
             columns={invoiceColumns}
+            rowActions={[
+              {
+                key: "mark-settled",
+                label: "标记结清",
+                disabled: () => billing.status !== "overdue" && billing.balanceUsd >= 0,
+                onClick: () =>
+                  confirmAction(
+                    "mark_settled",
+                    "标记结清",
+                    "确认该账单已完成线下结算并标记结清？",
+                    "账单已结清",
+                  ),
+              },
+              {
+                key: "export-statement",
+                label: "导出对账单",
+                onClick: () => {
+                  showResult(
+                    applyTenantBillingAction(tenant.id, "export_statement"),
+                    "对账单已导出",
+                  );
+                },
+              },
+            ]}
             data={billing.invoices}
             pagination={false}
             noDataElement="暂无账单"

@@ -1,6 +1,6 @@
 import { Tag } from "@arco-design/web-react";
 import type { PlatformAuditLogItem, PlatformAuditVerb } from "@/api/audit";
-import { DataTableRowActionButton, type ListColumn } from "@/components/common";
+import type { ListColumn } from "@/components/common";
 import { formatDateTime } from "@/lib/date";
 
 export const auditVerbOptions: Array<{ label: string; value: PlatformAuditVerb | "all" }> = [
@@ -29,9 +29,7 @@ export function isSuccessfulAudit(item: PlatformAuditLogItem) {
   return item.responseCode >= 200 && item.responseCode < 400;
 }
 
-export function getPlatformAuditColumns(
-  onView: (item: PlatformAuditLogItem) => void,
-): ListColumn<PlatformAuditLogItem>[] {
+export function getPlatformAuditColumns(): ListColumn<PlatformAuditLogItem>[] {
   return [
     {
       title: "时间",
@@ -69,14 +67,6 @@ export function getPlatformAuditColumns(
           </Tag>
         );
       },
-    },
-    {
-      title: "详情",
-      key: "__actions",
-      width: 100,
-      render: (_, item) => (
-        <DataTableRowActionButton onClick={() => onView(item)}>查看</DataTableRowActionButton>
-      ),
     },
   ];
 }

@@ -81,12 +81,6 @@ const columns: ListColumn<GpuInventoryDevice>[] = [
     width: 320,
     render: (_, device) => formatOwnership(device),
   },
-  {
-    title: "操作",
-    width: 100,
-    fixed: "right",
-    render: () => "-",
-  },
 ];
 
 interface GpuInventoryTableProps {

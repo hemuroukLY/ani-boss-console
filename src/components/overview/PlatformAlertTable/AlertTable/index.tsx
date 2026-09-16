@@ -1,5 +1,5 @@
 import { Tag, Typography } from "@arco-design/web-react";
-import { DataTable, DataTableRowActionButton, DataTableRowActions } from "@/components/common";
+import { DataTable } from "@/components/common";
 import type { AlertItem } from "@/components/overview/model";
 import { formatMonthDayTime } from "@/lib/date";
 import { LevelTag } from "../../LevelTag";
@@ -16,6 +16,20 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
       data={rows}
       pagination={false}
       noDataElement="暂无平台告警"
+      rowActions={[
+        {
+          key: "handle",
+          label: "处理",
+          visible: (item) => item.status === "待处理",
+          onClick: (item) => onUpdate(item.id, "已处理"),
+        },
+        {
+          key: "ignore",
+          label: "忽略",
+          visible: (item) => item.status === "待处理",
+          onClick: (item) => onUpdate(item.id, "已忽略"),
+        },
+      ]}
       columns={[
         {
           title: "级别",
@@ -63,22 +77,6 @@ export function AlertTable({ rows, onUpdate }: AlertTableProps) {
           render: (_: unknown, item: AlertItem) => (
             <Tag color={item.status === "待处理" ? "orange" : "green"}>{item.status}</Tag>
           ),
-        },
-        {
-          title: "操作",
-          width: 170,
-          fixed: "right" as const,
-          render: (_: unknown, item: AlertItem) =>
-            item.status === "待处理" ? (
-              <DataTableRowActions>
-                <DataTableRowActionButton onClick={() => onUpdate(item.id, "已处理")}>
-                  处理
-                </DataTableRowActionButton>
-                <DataTableRowActionButton onClick={() => onUpdate(item.id, "已忽略")}>
-                  忽略
-                </DataTableRowActionButton>
-              </DataTableRowActions>
-            ) : null,
         },
       ]}
     />

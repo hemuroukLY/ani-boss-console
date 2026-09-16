@@ -7,8 +7,6 @@ import {
   ListDataTable,
   DataTableNameCell,
   ListPageHeader,
-  DataTableRowActionButton,
-  DataTableRowActions,
   TableSectionFrame,
   type ListColumn,
 } from "@/components/common";
@@ -273,21 +271,6 @@ export const Route = createFileRoute("/ops-pool/")({
         width: 160,
         render: (value: string) => formatDateTimeMinute(value),
       },
-      {
-        title: "操作",
-        width: 200,
-        fixed: "right",
-        render: (_, region) => (
-          <DataTableRowActions>
-            <DataTableRowActionButton onClick={() => refreshRegion(region)}>
-              刷新容量
-            </DataTableRowActionButton>
-            <DataTableRowActionButton onClick={() => confirmStatusChange(region)}>
-              {region.status === "enabled" ? "停用" : "启用"}
-            </DataTableRowActionButton>
-          </DataTableRowActions>
-        ),
-      },
     ];
 
     return (
@@ -333,6 +316,19 @@ export const Route = createFileRoute("/ops-pool/")({
           <ListDataTable
             rowKey="id"
             columns={columns}
+            rowActions={[
+              {
+                key: "refresh",
+                label: "刷新容量",
+                onClick: refreshRegion,
+              },
+              {
+                key: "status",
+                label: (region) => (region.status === "enabled" ? "停用" : "启用"),
+                widthLabel: "停用",
+                onClick: confirmStatusChange,
+              },
+            ]}
             data={regions}
             pagination={false}
             emptyText="还没有区域容量数据"

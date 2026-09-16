@@ -1,4 +1,4 @@
-import { Button, Input, Menu, Modal, Select } from "@arco-design/web-react";
+import { Button, Input, Modal, Select } from "@arco-design/web-react";
 import { IconPlus, IconRefresh } from "@arco-design/web-react/icon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -21,12 +21,9 @@ import {
 } from "@/api/platform-admins";
 import {
   DataTableNameCell,
-  DataTableRowActionButton,
-  DataTableRowActions,
   ListDataTable,
   ListPageFrame,
   ListPageHeader,
-  ListRowMore,
   ListToolbar,
   type ListColumn,
 } from "@/components/common";
@@ -267,42 +264,6 @@ export function PlatformAdministratorsPage() {
       width: 180,
       render: (_, administrator) => formatDateTime(administrator.lastLoginAt),
     },
-    {
-      key: "__actions",
-      title: "操作",
-      width: 150,
-      fixed: "right",
-      render: (_, administrator) => {
-        const menu = (
-          <Menu
-            onClickMenuItem={(key) => {
-              if (key === "password") setPasswordTarget(administrator);
-              if (key === "status") confirmStatusChange(administrator);
-              if (key === "delete") confirmDelete(administrator);
-            }}
-          >
-            <Menu.Item key="password" disabled={administrator.source !== "local"}>
-              重置密码
-            </Menu.Item>
-            <Menu.Item key="status">
-              {administrator.status === "active" ? "禁用账号" : "启用账号"}
-            </Menu.Item>
-            <Menu.Item key="delete">删除账号</Menu.Item>
-          </Menu>
-        );
-        return (
-          <DataTableRowActions>
-            <DataTableRowActionButton
-              disabled={!canManage || operationPending}
-              onClick={() => setRoleTarget(administrator)}
-            >
-              修改角色
-            </DataTableRowActionButton>
-            <ListRowMore droplist={menu} disabled={!canManage || operationPending} />
-          </DataTableRowActions>
-        );
-      },
-    },
   ];
 
   const overview = overviewQuery.data || [];
@@ -402,9 +363,7 @@ export function PlatformAdministratorsPage() {
               </div>
             }
             tools={
-              <span className="text-xs text-gray-500">
-                共 {listQuery.data?.length ?? 0} 个账号
-              </span>
+              <span className="text-xs text-gray-500">共 {listQuery.data?.length ?? 0} 个账号</span>
             }
           />
         }
@@ -412,6 +371,36 @@ export function PlatformAdministratorsPage() {
         <ListDataTable
           rowKey="id"
           columns={columns}
+          rowActions={[
+            {
+              key: "change-role",
+              label: "修改角色",
+              disabled: () => !canManage || operationPending,
+              onClick: setRoleTarget,
+            },
+            {
+              key: "reset-password",
+              label: "重置密码",
+              disabled: (administrator) =>
+                !canManage || operationPending || administrator.source !== "local",
+              onClick: setPasswordTarget,
+            },
+            {
+              key: "status",
+              label: (administrator) =>
+                administrator.status === "active" ? "禁用账号" : "启用账号",
+              widthLabel: "禁用账号",
+              disabled: () => !canManage || operationPending,
+              onClick: confirmStatusChange,
+            },
+            {
+              key: "delete",
+              label: "删除账号",
+              intent: "danger",
+              disabled: () => !canManage || operationPending,
+              onClick: confirmDelete,
+            },
+          ]}
           data={listQuery.data || []}
           loading={listQuery.isPending}
           pagination={{

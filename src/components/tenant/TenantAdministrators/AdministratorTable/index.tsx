@@ -1,10 +1,5 @@
-import { Menu, Tag } from "@arco-design/web-react";
-import {
-  DataTable,
-  DataTableRowActionButton,
-  DataTableRowActions,
-  ListRowMore,
-} from "@/components/common";
+import { Tag } from "@arco-design/web-react";
+import { DataTable } from "@/components/common";
 import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
 import { tenantAdminStatusMeta, type TenantAdmin } from "@/components/tenant/model";
 import { formatDate, formatDateTimeMinute } from "@/lib/date";
@@ -29,73 +24,91 @@ export function AdministratorTable({
   onOpenPassword,
   onConfirmAction,
 }: AdministratorTableProps) {
-  const renderMoreMenu = (admin: TenantAdmin) => (
-    <Menu
-      onClickMenuItem={(key) => {
-        if (key === "resend-invite") {
-          onConfirmAction(
-            admin,
-            "resend_invite",
-            "重发邀请",
-            `确认向 ${admin.email} 重新发送邀请？`,
-            "邀请已重新发送",
-          );
-        } else if (key === "accept-invite") {
-          onConfirmAction(
-            admin,
-            "accept_invite",
-            "模拟接受邀请",
-            `确认模拟 ${admin.email} 接受邀请并同步为租户成员？`,
-            "邀请已接受，管理员已激活",
-          );
-        } else if (key === "impersonate") {
-          onConfirmAction(
-            admin,
-            "impersonate",
-            "运维模拟登录",
-            `确认以 ${admin.email} 的身份进入租户 Console？`,
-            "模拟登录会话已创建",
-          );
-        } else if (key === "reset-password") {
-          onOpenPassword(admin);
-        } else if (key === "transfer-owner") {
-          onConfirmAction(
-            admin,
-            "transfer_owner",
-            "移交所有者",
-            `确认将租户所有者移交给 ${admin.email}？现有所有者将降为租户管理员。`,
-            "租户所有者已移交",
-          );
-        } else if (key === "change-role") {
-          onOpenRole(admin);
-        }
-      }}
-    >
-      {admin.status === "invited" ? (
-        <>
-          <Menu.Item key="resend-invite">重发邀请</Menu.Item>
-          <Menu.Item key="accept-invite">模拟接受</Menu.Item>
-        </>
-      ) : null}
-      {admin.status === "active" ? (
-        <>
-          <Menu.Item key="impersonate">模拟登录</Menu.Item>
-          <Menu.Item key="reset-password">重置密码</Menu.Item>
-          {admin.role !== "租户所有者" ? (
-            <Menu.Item key="transfer-owner">移交所有者</Menu.Item>
-          ) : null}
-        </>
-      ) : null}
-      <Menu.Item key="change-role">改角色</Menu.Item>
-    </Menu>
-  );
-
   return (
     <DataTable
       rowKey="id"
       pagination={false}
       data={admins}
       noDataElement="暂无管理员"
+      rowActions={[
+        {
+          key: "status",
+          label: (admin) => (admin.status === "disabled" ? "启用" : "禁用"),
+          widthLabel: "启用",
+          onClick: (admin) =>
+            onConfirmAction(
+              admin,
+              admin.status === "disabled" ? "enable" : "disable",
+              admin.status === "disabled" ? "启用管理员" : "禁用管理员",
+              `确认${admin.status === "disabled" ? "启用" : "禁用"} ${admin.email}？`,
+              admin.status === "disabled" ? "管理员已启用" : "管理员已禁用",
+              admin.status !== "disabled",
+            ),
+        },
+        {
+          key: "resend-invite",
+          label: "重发邀请",
+          visible: (admin) => admin.status === "invited",
+          onClick: (admin) =>
+            onConfirmAction(
+              admin,
+              "resend_invite",
+              "重发邀请",
+              `确认向 ${admin.email} 重新发送邀请？`,
+              "邀请已重新发送",
+            ),
+        },
+        {
+          key: "accept-invite",
+          label: "模拟接受",
+          visible: (admin) => admin.status === "invited",
+          onClick: (admin) =>
+            onConfirmAction(
+              admin,
+              "accept_invite",
+              "模拟接受邀请",
+              `确认模拟 ${admin.email} 接受邀请并同步为租户成员？`,
+              "邀请已接受，管理员已激活",
+            ),
+        },
+        {
+          key: "impersonate",
+          label: "模拟登录",
+          visible: (admin) => admin.status === "active",
+          onClick: (admin) =>
+            onConfirmAction(
+              admin,
+              "impersonate",
+              "运维模拟登录",
+              `确认以 ${admin.email} 的身份进入租户 Console？`,
+              "模拟登录会话已创建",
+            ),
+        },
+        {
+          key: "reset-password",
+          label: "重置密码",
+          visible: (admin) => admin.status === "active",
+          onClick: onOpenPassword,
+        },
+        {
+          key: "transfer-owner",
+          label: "移交所有者",
+          visible: (admin) => admin.status === "active" && admin.role !== "租户所有者",
+          onClick: (admin) =>
+            onConfirmAction(
+              admin,
+              "transfer_owner",
+              "移交所有者",
+              `确认将租户所有者移交给 ${admin.email}？现有所有者将降为租户管理员。`,
+              "租户所有者已移交",
+            ),
+        },
+        {
+          key: "change-role",
+          label: "改角色",
+          onClick: onOpenRole,
+        },
+      ]}
       columns={[
         {
           title: "管理员",
@@ -135,47 +148,6 @@ export function AdministratorTable({
           dataIndex: "invitedAt",
           width: 120,
           render: (value: string) => formatDate(value),
-        },
-        {
-          title: "操作",
-          width: 150,
-          fixed: "right",
-          render: (_, admin: TenantAdmin) => (
-            <DataTableRowActions>
-              {admin.status === "disabled" ? (
-                <DataTableRowActionButton
-                  onClick={() =>
-                    onConfirmAction(
-                      admin,
-                      "enable",
-                      "启用管理员",
-                      `确认启用 ${admin.email}？`,
-                      "管理员已启用",
-                    )
-                  }
-                >
-                  启用
-                </DataTableRowActionButton>
-              ) : (
-                <DataTableRowActionButton
-                  status="danger"
-                  onClick={() =>
-                    onConfirmAction(
-                      admin,
-                      "disable",
-                      "禁用管理员",
-                      `确认禁用 ${admin.email}？`,
-                      "管理员已禁用",
-                      true,
-                    )
-                  }
-                >
-                  禁用
-                </DataTableRowActionButton>
-              )}
-              <ListRowMore droplist={renderMoreMenu(admin)} />
-            </DataTableRowActions>
-          ),
         },
       ]}
     />

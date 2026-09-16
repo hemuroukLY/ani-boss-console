@@ -1,4 +1,4 @@
-import { Button, Menu, Modal, Tag, Typography } from "@arco-design/web-react";
+import { Button, Modal, Tag, Typography } from "@arco-design/web-react";
 import { IconDownload } from "@arco-design/web-react/icon";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -8,9 +8,6 @@ import {
   DataTableNameCell,
   ListPageFrame,
   ListPageHeader,
-  DataTableRowActionButton,
-  DataTableRowActions,
-  ListRowMore,
   type ListColumn,
 } from "@/components/common";
 import { CreditAdjustmentModal } from "@/components/tenant/TenantBillingSummary/CreditAdjustmentModal";
@@ -185,45 +182,6 @@ export function TenantBillingList() {
       width: 160,
       render: (value: string) => formatDateTimeMinute(value),
     },
-    {
-      title: "操作",
-      width: 190,
-      fixed: "right",
-      render: (_, item) => (
-        <DataTableRowActions>
-          <DataTableRowActionButton
-            onClick={() =>
-              confirmAction(
-                item,
-                "refresh_usage",
-                "刷新用量",
-                `确认刷新 ${item.tenantName} ${item.period} 账期的用量与费用？`,
-                "用量与费用已刷新",
-              )
-            }
-          >
-            刷新用量
-          </DataTableRowActionButton>
-          <ListRowMore
-            droplist={
-              <Menu onClickMenuItem={(action) => handleMoreAction(action, item)}>
-                <Menu.Item key="adjust_credit">授信调账</Menu.Item>
-                <Menu.Item key="generate_invoice" disabled={item.usageCostUsd <= 0}>
-                  生成账单
-                </Menu.Item>
-                <Menu.Item
-                  key="mark_settled"
-                  disabled={item.status !== "overdue" && item.balanceUsd >= 0}
-                >
-                  标记结清
-                </Menu.Item>
-                <Menu.Item key="export_statement">导出对账单</Menu.Item>
-              </Menu>
-            }
-          />
-        </DataTableRowActions>
-      ),
-    },
   ];
 
   return (
@@ -252,6 +210,42 @@ export function TenantBillingList() {
         <ListDataTable
           rowKey="id"
           columns={columns}
+          rowActions={[
+            {
+              key: "refresh-usage",
+              label: "刷新用量",
+              onClick: (item) =>
+                confirmAction(
+                  item,
+                  "refresh_usage",
+                  "刷新用量",
+                  `确认刷新 ${item.tenantName} ${item.period} 账期的用量与费用？`,
+                  "用量与费用已刷新",
+                ),
+            },
+            {
+              key: "adjust-credit",
+              label: "授信调账",
+              onClick: (item) => handleMoreAction("adjust_credit", item),
+            },
+            {
+              key: "generate-invoice",
+              label: "生成账单",
+              disabled: (item) => item.usageCostUsd <= 0,
+              onClick: (item) => handleMoreAction("generate_invoice", item),
+            },
+            {
+              key: "mark-settled",
+              label: "标记结清",
+              disabled: (item) => item.status !== "overdue" && item.balanceUsd >= 0,
+              onClick: (item) => handleMoreAction("mark_settled", item),
+            },
+            {
+              key: "export-statement",
+              label: "导出对账单",
+              onClick: (item) => handleMoreAction("export_statement", item),
+            },
+          ]}
           data={tenantBillings}
           pagination={{
             page,

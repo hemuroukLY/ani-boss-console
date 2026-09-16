@@ -1,13 +1,7 @@
-import { Link, Menu, Modal, Popconfirm, Tag, Typography } from "@arco-design/web-react";
+import { Link, Modal, Tag, Typography } from "@arco-design/web-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  ListDataTable,
-  DataTableNameCell,
-  DataTableRowActionButton,
-  DataTableRowActions,
-  ListRowMore,
-} from "@/components/common";
+import { ListDataTable, DataTableNameCell } from "@/components/common";
 import { tenantStatusMeta, type Tenant } from "@/components/tenant/model";
 import { formatDateTimeMinute } from "@/lib/date";
 
@@ -92,56 +86,49 @@ export function TenantTable({
       width: 170,
       render: (value: string) => formatDateTimeMinute(value),
     },
-    {
-      title: "操作",
-      width: 150,
-      fixed: "right" as const,
-      render: (_: unknown, tenant: Tenant) => {
-        const moreMenu = (
-          <Menu
-            onClickMenuItem={(key) => {
-              if (key === "quota") {
-                onQuota(tenant);
-              } else if (key === "admins") {
-                onAdmins(tenant);
-              } else if (key === "disable") {
-                Modal.confirm({
-                  title: `禁用 ${tenant.name} 后不可还原，确认继续？`,
-                  okButtonProps: { status: "danger" },
-                  onOk: () => onDisable(tenant),
-                });
-              }
-            }}
-          >
-            <Menu.Item key="quota">配额</Menu.Item>
-            <Menu.Item key="admins">管理员</Menu.Item>
-            {tenant.status !== "disabled" ? <Menu.Item key="disable">禁用</Menu.Item> : null}
-          </Menu>
-        );
-
-        return (
-          <DataTableRowActions>
-            {tenant.status !== "disabled" ? (
-              <Popconfirm
-                title={`确认${tenant.status === "suspended" ? "解冻" : "冻结"}租户 ${tenant.name}？`}
-                onOk={() => onToggleStatus(tenant)}
-              >
-                <DataTableRowActionButton>
-                  {tenant.status === "suspended" ? "解冻" : "冻结"}
-                </DataTableRowActionButton>
-              </Popconfirm>
-            ) : null}
-            <ListRowMore droplist={moreMenu} />
-          </DataTableRowActions>
-        );
-      },
-    },
   ];
 
   return (
     <ListDataTable
       rowKey="id"
       columns={columns}
+      rowActions={[
+        {
+          key: "toggle-status",
+          label: (tenant) => (tenant.status === "suspended" ? "解冻" : "冻结"),
+          widthLabel: "解冻",
+          visible: (tenant) => tenant.status !== "disabled",
+          onClick: (tenant) => {
+            Modal.confirm({
+              title: `确认${tenant.status === "suspended" ? "解冻" : "冻结"}租户 ${tenant.name}？`,
+              onOk: () => onToggleStatus(tenant),
+            });
+          },
+        },
+        {
+          key: "quota",
+          label: "配额",
+          onClick: onQuota,
+        },
+        {
+          key: "admins",
+          label: "管理员",
+          onClick: onAdmins,
+        },
+        {
+          key: "disable",
+          label: "禁用",
+          intent: "danger",
+          visible: (tenant) => tenant.status !== "disabled",
+          onClick: (tenant) => {
+            Modal.confirm({
+              title: `禁用 ${tenant.name} 后不可还原，确认继续？`,
+              okButtonProps: { status: "danger" },
+              onOk: () => onDisable(tenant),
+            });
+          },
+        },
+      ]}
       data={data}
       pagination={{
         page,

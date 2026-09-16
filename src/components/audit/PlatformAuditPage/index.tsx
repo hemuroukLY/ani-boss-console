@@ -65,7 +65,7 @@ export function PlatformAuditPage() {
   });
 
   const items = auditQuery.data?.items || [];
-  const columns = useMemo(() => getPlatformAuditColumns(setDetailItem), []);
+  const columns = useMemo(() => getPlatformAuditColumns(), []);
   const canGoNext = !auditQuery.isPlaceholderData && Boolean(auditQuery.data?.nextAfter);
   const reachableTotal = page * pageSize + Math.max(items.length, 1) + (canGoNext ? 1 : 0);
 
@@ -179,6 +179,13 @@ export function PlatformAuditPage() {
         <ListDataTable
           rowKey="auditId"
           columns={columns}
+          rowActions={[
+            {
+              key: "view",
+              label: "查看",
+              onClick: setDetailItem,
+            },
+          ]}
           data={items}
           loading={auditQuery.isPending || auditQuery.isFetching}
           pagination={{
@@ -186,9 +193,6 @@ export function PlatformAuditPage() {
             pageSize,
             total: reachableTotal,
             pageSizeOptions: [20, 50, 100],
-            showJumper: false,
-            showTotal: () =>
-              `第 ${page + 1} 页 · 本页 ${items.length} 条${auditQuery.data ? ` · 当前窗口约 ${auditQuery.data.totalApprox} 条` : ""}`,
             onPageChange: changePage,
             onPageSizeChange: (value) => {
               setPageSize(value);

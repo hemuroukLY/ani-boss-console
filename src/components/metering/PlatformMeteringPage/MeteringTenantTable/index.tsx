@@ -2,8 +2,6 @@ import { Input } from "@arco-design/web-react";
 import { IconSearch } from "@arco-design/web-react/icon";
 import { useMemo, useState } from "react";
 import {
-  DataTableRowActionButton,
-  DataTableRowActions,
   ListDataTable,
   ListToolbar,
   TableSectionFrame,
@@ -75,18 +73,6 @@ export function MeteringTenantTable({
         );
       },
     },
-    {
-      title: "操作",
-      width: 120,
-      fixed: "right",
-      render: (_, tenant) => (
-        <DataTableRowActions>
-          <DataTableRowActionButton onClick={() => onViewDetail(tenant.id)}>
-            查看明细
-          </DataTableRowActionButton>
-        </DataTableRowActions>
-      ),
-    },
   ];
 
   return (
@@ -120,6 +106,13 @@ export function MeteringTenantTable({
       <ListDataTable
         rowKey="id"
         columns={columns}
+        rowActions={[
+          {
+            key: "view-detail",
+            label: "查看明细",
+            onClick: (tenant) => onViewDetail(tenant.id),
+          },
+        ]}
         data={filteredRows}
         loading={loading}
         pagination={false}

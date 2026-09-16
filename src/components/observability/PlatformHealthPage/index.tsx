@@ -1,11 +1,10 @@
 import { Alert, Button, Tooltip } from "@arco-design/web-react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
 import { fetchPlatformComponents, platformQueryKeys, type PlatformComponent } from "@/api/platform";
 import {
   DataTableNameCell,
-  DataTableRowActions,
   ListDataTable,
   ListPageHeader,
   StatusBadge,
@@ -54,6 +53,7 @@ function formatObservedAt(value?: string) {
 }
 
 export function PlatformHealthPage() {
+  const navigate = useNavigate();
   const componentsQuery = useQuery({
     meta: {
       errorNotification: {
@@ -126,28 +126,6 @@ export function PlatformHealthPage() {
       title: "观测状态",
       width: 110,
       render: (_, component) => <ScrapeBadge component={component} />,
-    },
-    {
-      title: "操作",
-      width: 240,
-      fixed: "right",
-      render: (_, component) => (
-        <DataTableRowActions>
-          <Link to="/health-metrics" className="text-blue-600 no-underline">
-            查看指标
-          </Link>
-          <Link
-            to="/health-logs"
-            search={{ component: component.name }}
-            className="text-blue-600 no-underline"
-          >
-            查看日志
-          </Link>
-          <Link to="/health-traces" className="text-blue-600 no-underline">
-            查看链路
-          </Link>
-        </DataTableRowActions>
-      ),
     },
   ];
 
@@ -259,6 +237,27 @@ export function PlatformHealthPage() {
         <ListDataTable
           rowKey={(component) => `${component.group}:${component.namespace}:${component.name}`}
           columns={columns}
+          rowActions={[
+            {
+              key: "metrics",
+              label: "查看指标",
+              onClick: () => void navigate({ to: "/health-metrics" }),
+            },
+            {
+              key: "logs",
+              label: "查看日志",
+              onClick: (component) =>
+                void navigate({
+                  to: "/health-logs",
+                  search: { component: component.name },
+                }),
+            },
+            {
+              key: "traces",
+              label: "查看链路",
+              onClick: () => void navigate({ to: "/health-traces" }),
+            },
+          ]}
           data={[...components].sort((left, right) => {
             const rank: Record<string, number> = { stopped: 0, degraded: 1, running: 3 };
             return (rank[left.status] ?? 2) - (rank[right.status] ?? 2);

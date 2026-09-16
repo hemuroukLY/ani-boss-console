@@ -1,4 +1,4 @@
-import { Button, Input, Progress, Select } from "@arco-design/web-react";
+import { Input, Progress, Select } from "@arco-design/web-react";
 import { useMemo, useState } from "react";
 import {
   DataTableNameCell,
@@ -107,16 +107,6 @@ export function RegistryQuotaPage() {
       width: 120,
       render: (_, quota) => `${Math.max(0, quota.maxGi - quota.usedGi).toFixed(1)} Gi`,
     },
-    {
-      title: "操作",
-      width: 130,
-      fixed: "right",
-      render: () => (
-        <Button type="text" size="small" disabled>
-          调整配额
-        </Button>
-      ),
-    },
   ];
 
   return (
@@ -174,6 +164,15 @@ export function RegistryQuotaPage() {
         <ListDataTable
           rowKey="id"
           columns={columns}
+          rowActions={[
+            {
+              key: "adjust-quota",
+              label: "调整配额",
+              disabled: () => true,
+              tooltip: "调整接口待接入",
+              onClick: () => undefined,
+            },
+          ]}
           data={filteredQuotas}
           pagination={false}
           scroll={{ x: 1200 }}

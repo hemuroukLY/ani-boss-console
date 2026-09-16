@@ -5,7 +5,6 @@ import {
   Grid,
   Input,
   InputNumber,
-  Menu,
   Modal,
   Select,
   Space,
@@ -21,9 +20,6 @@ import {
   ListPageFrame,
   ListPageHeader,
   DataTableNameCell,
-  DataTableRowActionButton,
-  DataTableRowActions,
-  ListRowMore,
   type ListColumn,
 } from "@/components/common";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
@@ -231,49 +227,6 @@ export function QuotaPolicyList() {
       width: 160,
       render: (value: string) => formatDateTimeMinute(value),
     },
-    {
-      title: "操作",
-      width: 190,
-      fixed: "right",
-      render: (_, item) => {
-        const moreMenu = (
-          <Menu
-            onClickMenuItem={(key) => {
-              if (key === "publish") {
-                publishPackage(item);
-              } else if (key === "delete") {
-                Modal.confirm({
-                  title: `确定删除套餐“${item.name}”吗？`,
-                  content: "有关联租户时不可删除。",
-                  okButtonProps: { status: "danger" },
-                  onOk: () => deletePackage(item),
-                });
-              }
-            }}
-          >
-            {item.status === "draft" ? <Menu.Item key="publish">发布</Menu.Item> : null}
-            <Menu.Item key="delete" disabled={boundCount(item.planCode) > 0}>
-              删除
-            </Menu.Item>
-          </Menu>
-        );
-
-        return (
-          <DataTableRowActions>
-            <DataTableRowActionButton
-              disabled={item.status !== "enabled"}
-              onClick={() => {
-                setAssigningPackage(item);
-                setTargetTenantId(tenants.find((tenant) => tenant.status !== "disabled")?.id ?? "");
-              }}
-            >
-              分配/改绑
-            </DataTableRowActionButton>
-            <ListRowMore droplist={moreMenu} />
-          </DataTableRowActions>
-        );
-      },
-    },
   ];
 
   return (
@@ -302,6 +255,37 @@ export function QuotaPolicyList() {
         <ListDataTable
           rowKey="id"
           columns={columns}
+          rowActions={[
+            {
+              key: "assign",
+              label: "分配/改绑",
+              disabled: (item) => item.status !== "enabled",
+              onClick: (item) => {
+                setAssigningPackage(item);
+                setTargetTenantId(tenants.find((tenant) => tenant.status !== "disabled")?.id ?? "");
+              },
+            },
+            {
+              key: "publish",
+              label: "发布",
+              visible: (item) => item.status === "draft",
+              onClick: publishPackage,
+            },
+            {
+              key: "delete",
+              label: "删除",
+              intent: "danger",
+              disabled: (item) => boundCount(item.planCode) > 0,
+              onClick: (item) => {
+                Modal.confirm({
+                  title: `确定删除套餐“${item.name}”吗？`,
+                  content: "有关联租户时不可删除。",
+                  okButtonProps: { status: "danger" },
+                  onOk: () => deletePackage(item),
+                });
+              },
+            },
+          ]}
           data={packages}
           pagination={{
             page,
