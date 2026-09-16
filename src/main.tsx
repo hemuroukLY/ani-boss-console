@@ -1,4 +1,5 @@
 import "@arco-design/web-react/dist/css/arco.css";
+import "@/styles/tailwind.css";
 import "@/styles/global.less";
 import { ConfigProvider } from "@arco-design/web-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
