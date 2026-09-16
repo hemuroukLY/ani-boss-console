@@ -102,9 +102,10 @@ async function fetchAllCursorPages<T>(path: string, params: object): Promise<T[]
 export async function fetchPlatformAdministrators(
   filters: PlatformAdministratorListFilters = {},
 ): Promise<PlatformAdministratorListItem[]> {
+  const { roleId, ...params } = filters;
   const items = await fetchAllCursorPages<PlatformAdministratorListItemResponse>(
     "/platform-admins",
-    filters,
+    { ...params, role_id: roleId },
   );
   return items.map(mapListItem);
 }

@@ -20,7 +20,7 @@ export interface PlatformAdministratorDetail extends PlatformAdministratorListIt
 }
 
 export interface PlatformAdministratorListFilters {
-  role?: PlatformAdministratorRole;
+  roleId?: string;
   status?: PlatformAdministratorStatus;
   source?: "local" | "oidc";
   search?: string;

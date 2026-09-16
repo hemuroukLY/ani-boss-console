@@ -1,4 +1,4 @@
-import { Alert, Button, Input, Menu, Modal, Select } from "@arco-design/web-react";
+import { Button, Input, Menu, Modal, Select } from "@arco-design/web-react";
 import { IconPlus, IconRefresh } from "@arco-design/web-react/icon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -17,7 +17,6 @@ import {
   type CreatePlatformAdministratorInput,
   type PlatformAdministratorListFilters,
   type PlatformAdministratorListItem,
-  type PlatformAdministratorRole,
   type PlatformAdministratorStatus,
 } from "@/api/platform-admins";
 import {
@@ -59,7 +58,7 @@ export function PlatformAdministratorsPage() {
   const queryClient = useQueryClient();
   const authState = useAuthState();
   const [keyword, setKeyword] = useState("");
-  const [role, setRole] = useState<"all" | PlatformAdministratorRole>("all");
+  const [roleId, setRoleId] = useState("all");
   const [status, setStatus] = useState<"all" | PlatformAdministratorStatus>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -73,11 +72,11 @@ export function PlatformAdministratorsPage() {
 
   const filters = useMemo<PlatformAdministratorListFilters>(() => {
     const result: PlatformAdministratorListFilters = {};
-    if (role !== "all") result.role = role;
+    if (roleId !== "all") result.roleId = roleId;
     if (status !== "all") result.status = status;
     if (deferredKeyword) result.search = deferredKeyword;
     return result;
-  }, [deferredKeyword, role, status]);
+  }, [deferredKeyword, roleId, status]);
 
   const overviewQuery = useQuery({
     meta: {
@@ -351,11 +350,6 @@ export function PlatformAdministratorsPage() {
               }
             />
 
-            <Alert
-              type="warning"
-              content="联调提示：前端已按 Services OpenAPI 接入 /platform-admins*；ANI 当前网关尚未注册对应处理器，请后端补齐后联调。"
-            />
-
             <section className="grid flex-none grid-cols-4 gap-3.5 max-[1100px]:grid-cols-2">
               <Metric label="全部账号" value={metricValue(overview.length)} hint="平台登录身份" />
               <Metric label="活跃" value={metricValue(activeCount)} hint="可登录管理端" />
@@ -379,17 +373,17 @@ export function PlatformAdministratorsPage() {
                   style={{ width: 320 }}
                 />
                 <Select
-                  value={role}
+                  value={roleId}
                   onChange={(value) => {
-                    setRole(value as "all" | PlatformAdministratorRole);
+                    setRoleId(value);
                     setPage(1);
                   }}
                   style={{ width: 180 }}
                 >
                   <Select.Option value="all">全部角色</Select.Option>
-                  {Object.entries(platformAdministratorRoleLabels).map(([value, label]) => (
-                    <Select.Option key={value} value={value}>
-                      {label}
+                  {(rolesQuery.data || []).map((roleOption) => (
+                    <Select.Option key={roleOption.id} value={roleOption.id}>
+                      {platformAdministratorRoleLabels[roleOption.name]}
                     </Select.Option>
                   ))}
                 </Select>
@@ -409,7 +403,7 @@ export function PlatformAdministratorsPage() {
             }
             tools={
               <span className="text-xs text-gray-500">
-                共 {listQuery.data?.length ?? 0} 个账号 · 列表邮箱和 MFA 待后端补充
+                共 {listQuery.data?.length ?? 0} 个账号
               </span>
             }
           />
