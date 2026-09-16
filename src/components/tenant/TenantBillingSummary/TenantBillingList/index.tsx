@@ -1,7 +1,8 @@
-import { Button, Menu, Message, Modal, Tag, Typography } from "@arco-design/web-react";
+import { Button, Menu, Modal, Tag, Typography } from "@arco-design/web-react";
 import { IconDownload } from "@arco-design/web-react/icon";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { showMessage } from "@/lib/feedback";
 import {
   ListDataTable,
   DataTableNameCell,
@@ -36,10 +37,10 @@ export function TenantBillingList() {
     success: string,
   ) => {
     if (result.ok) {
-      Message.success(result.message ?? success);
+      showMessage({ type: "success", content: result.message ?? success });
       return true;
     }
-    Message.error(result.reason ?? "操作失败");
+    showMessage({ type: "error", content: result.reason ?? "操作失败" });
     return false;
   };
 
@@ -60,7 +61,7 @@ export function TenantBillingList() {
   const submitAdjustment = () => {
     if (!adjustingBilling) return;
     if (!adjustmentAmount) {
-      Message.warning("请输入非零调账金额");
+      showMessage({ type: "warning", content: "请输入非零调账金额" });
       return;
     }
     if (
@@ -235,7 +236,12 @@ export function TenantBillingList() {
             extra={
               <Button
                 icon={<IconDownload />}
-                onClick={() => Message.success(`已导出 ${tenantBillings.length} 条计费记录`)}
+                onClick={() =>
+                  showMessage({
+                    type: "success",
+                    content: `已导出 ${tenantBillings.length} 条计费记录`,
+                  })
+                }
               >
                 导出计费记录
               </Button>

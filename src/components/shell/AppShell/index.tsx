@@ -1,4 +1,4 @@
-import { Avatar, Button, Menu, Message, Typography } from "@arco-design/web-react";
+import { Avatar, Button, Menu, Typography } from "@arco-design/web-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { IconMenuFold, IconMenuUnfold, IconNotification } from "@arco-design/web-react/icon";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useState, type ReactNode } from "react";
 import { logoutPlatform } from "@/api/auth";
 import { clearAuthSession, useAuthState } from "@/components/auth/store";
+import { showMessage } from "@/lib/feedback";
 import { PlatformOverviewProvider } from "@/components/overview/PlatformOverviewProvider";
 import { TenantManagementProvider } from "@/components/tenant/TenantManagementProvider";
 import {
@@ -113,7 +114,7 @@ export function AppShell() {
     try {
       await logoutPlatform();
     } catch {
-      Message.warning("服务端退出失败，本地登录状态已清除");
+      showMessage({ type: "warning", content: "服务端退出失败，本地登录状态已清除" });
     } finally {
       clearAuthSession();
       queryClient.clear();

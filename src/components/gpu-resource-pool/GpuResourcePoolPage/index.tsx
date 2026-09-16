@@ -1,14 +1,4 @@
-import {
-  Alert,
-  Button,
-  Card,
-  Empty,
-  Form,
-  InputNumber,
-  Message,
-  Modal,
-  Tabs,
-} from "@arco-design/web-react";
+import { Alert, Button, Card, Empty, Form, InputNumber, Modal, Tabs } from "@arco-design/web-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -21,8 +11,8 @@ import {
   type TenantGpuAllocation,
 } from "@/api/gpu-inventory";
 import { ListPageHeader } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
-import { getApiErrorMessage } from "@/lib/api-error";
+import { showMessage } from "@/lib/feedback";
+import { validateForm } from "@/lib/form";
 import { GpuClusterPartitionFlow } from "../GpuClusterPartitionFlow";
 import { GpuInventoryTable } from "../GpuInventoryTable";
 import { GpuSummary } from "../GpuSummary";
@@ -47,32 +37,37 @@ export function GpuResourcePoolPage() {
   const [reservationForm] = Form.useForm<ReservationFormValues>();
 
   const inventoryQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "gpu-inventory",
+        action: "GPU 设备库存加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.inventory,
     queryFn: fetchGpuInventory,
   });
   const occupancyQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "gpu-occupancy",
+        action: "GPU 占用汇总加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.occupancy,
     queryFn: fetchGpuOccupancy,
   });
   const tenantsQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "tenant-gpu-allocations",
+        action: "租户 GPU 台账加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.tenants,
     queryFn: fetchTenantGpuAllocations,
-  });
-
-  useListErrorNotification({
-    id: "gpu-resource-occupancy",
-    title: "GPU 占用汇总加载失败",
-    error: occupancyQuery.error,
-  });
-  useListErrorNotification({
-    id: "gpu-resource-tenants",
-    title: "租户 GPU 台账加载失败",
-    error: tenantsQuery.error,
-  });
-  useListErrorNotification({
-    id: "gpu-resource-inventory",
-    title: "GPU 设备库存加载失败",
-    error: inventoryQuery.error,
   });
 
   const refreshTenantLedger = () =>
@@ -81,27 +76,37 @@ export function GpuResourcePoolPage() {
     });
 
   const quotaMutation = useMutation({
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "GPU 配额上限更新",
+        successText: "GPU 配额上限已更新",
+        errorFallback: "GPU 配额上限更新失败，请稍后重试",
+      },
+    },
     mutationFn: updateTenantGpuQuota,
     onSuccess: async () => {
       await refreshTenantLedger();
-      Message.success("GPU 配额上限已更新");
       setQuotaTarget(null);
       quotaForm.resetFields();
     },
-    onError: (error) => Message.error(getApiErrorMessage(error)),
   });
 
   const reservationMutation = useMutation({
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "GPU 资源预留更新",
+        successText: "GPU 资源预留已更新",
+        errorFallback: "GPU 资源预留更新失败，请稍后重试",
+      },
+    },
     mutationFn: updateTenantGpuReservation,
-    onSuccess: async (reservation) => {
+    onSuccess: async () => {
       await refreshTenantLedger();
-      Message.success(
-        reservation.tightened ? "资源预留已按当前占用自动收紧" : "GPU 资源预留已更新",
-      );
       setReservationTarget(null);
       reservationForm.resetFields();
     },
-    onError: (error) => Message.error(getApiErrorMessage(error)),
   });
 
   const refreshAll = async () => {
@@ -120,24 +125,25 @@ export function GpuResourcePoolPage() {
     setReservationTarget(tenant);
   };
 
-  const submitQuota = () => {
-    quotaForm.validate().then(({ total }) => {
-      if (!quotaTarget) return;
-      if (total < quotaTarget.allocatedGpuCount) {
-        Message.warning(`配额上限不能低于当前资源预留 ${quotaTarget.allocatedGpuCount} 张`);
-        return;
-      }
-      quotaMutation.mutate({ tenantId: quotaTarget.tenantId, total });
-    });
+  const submitQuota = async () => {
+    const { total } = await validateForm<QuotaFormValues>(quotaForm);
+    if (!quotaTarget) return;
+    if (total < quotaTarget.allocatedGpuCount) {
+      showMessage({
+        type: "warning",
+        content: `配额上限不能低于当前资源预留 ${quotaTarget.allocatedGpuCount} 张`,
+      });
+      return;
+    }
+    quotaMutation.mutate({ tenantId: quotaTarget.tenantId, total });
   };
 
-  const submitReservation = () => {
-    reservationForm.validate().then(({ allocatedGpuCount }) => {
-      if (!reservationTarget) return;
-      reservationMutation.mutate({
-        tenantId: reservationTarget.tenantId,
-        allocatedGpuCount,
-      });
+  const submitReservation = async () => {
+    const { allocatedGpuCount } = await validateForm<ReservationFormValues>(reservationForm);
+    if (!reservationTarget) return;
+    reservationMutation.mutate({
+      tenantId: reservationTarget.tenantId,
+      allocatedGpuCount,
     });
   };
 
@@ -172,7 +178,7 @@ export function GpuResourcePoolPage() {
 
       <GpuSummary
         occupancy={occupancyQuery.data}
-        occupancyPending={occupancyQuery.isPending || occupancyQuery.isError}
+        occupancyPending={occupancyQuery.isPending || !occupancyQuery.data}
       />
 
       <Tabs

@@ -9,8 +9,8 @@ import {
   type PlatformMeteringUsageParams,
 } from "@/api/platform";
 import { DataTable, type ListColumn } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDate, formatDateHour, formatUtcDate } from "@/lib/date";
+import { withId } from "@/lib/id";
 import { MeteringTrend } from "../../MeteringTrend";
 import { formatUsage, toGpuHours } from "../usePlatformGpuMetering";
 
@@ -54,6 +54,13 @@ export function TenantMeteringDrawer({
   }, [endTime, groupBy, resourceType, startTime, tenantId]);
 
   const detailQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: withId("platform-metering-tenant", tenantId, resourceType, groupBy),
+        action: `${metricLabel}租户明细加载`,
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: params
       ? platformQueryKeys.meteringUsage(params)
       : (["platform", "metering-usage", "tenant-detail-disabled"] as const),
@@ -63,12 +70,6 @@ export function TenantMeteringDrawer({
       return fetchPlatformMeteringUsage(params);
     },
     staleTime: 60_000,
-  });
-
-  useListErrorNotification({
-    id: "platform-metering-tenant-detail",
-    title: `${metricLabel} 租户明细加载失败`,
-    error: detailQuery.error,
   });
 
   const rows = useMemo<TenantMeteringDetailRow[]>(

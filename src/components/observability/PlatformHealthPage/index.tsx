@@ -14,7 +14,6 @@ import {
   type StatusBadgeTone,
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDateTime } from "@/lib/date";
 
 const groupNames: Record<string, string> = {
@@ -56,13 +55,15 @@ function formatObservedAt(value?: string) {
 
 export function PlatformHealthPage() {
   const componentsQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-components",
+        action: "平台组件状态加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformQueryKeys.components,
     queryFn: fetchPlatformComponents,
-  });
-  useListErrorNotification({
-    id: "platform-components",
-    title: "平台组件状态加载失败",
-    error: componentsQuery.error,
   });
 
   const groups = componentsQuery.data?.groups || [];
@@ -72,10 +73,9 @@ export function PlatformHealthPage() {
   const stoppedCount = components.filter((item) => item.status === "stopped").length;
   const otherCount = components.length - runningCount - degradedCount - stoppedCount;
   const total = components.length;
-  const overall = componentsQuery.isPending
-    ? "加载中"
-    : componentsQuery.isError
-      ? "-"
+  const overall =
+    componentsQuery.isPending || !componentsQuery.data
+      ? "加载中"
       : total === 0
         ? "-"
         : stoppedCount > 0
@@ -187,18 +187,18 @@ export function PlatformHealthPage() {
         <Metric label="整体状态" value={overall} hint={`${total} 个组件`} tone={overallTone} />
         <Metric
           label="运行中"
-          value={componentsQuery.isPending || componentsQuery.isError ? "-" : String(runningCount)}
+          value={componentsQuery.data ? String(runningCount) : "-"}
           hint="副本已全部就绪"
         />
         <Metric
           label="降级"
-          value={componentsQuery.isPending || componentsQuery.isError ? "-" : String(degradedCount)}
+          value={componentsQuery.data ? String(degradedCount) : "-"}
           hint="部分副本未就绪"
           tone="warning"
         />
         <Metric
           label="已停止"
-          value={componentsQuery.isPending || componentsQuery.isError ? "-" : String(stoppedCount)}
+          value={componentsQuery.data ? String(stoppedCount) : "-"}
           hint="期望副本为 0"
           tone="danger"
         />

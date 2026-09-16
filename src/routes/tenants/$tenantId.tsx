@@ -1,12 +1,4 @@
-import {
-  Button,
-  Descriptions,
-  Message,
-  Popconfirm,
-  Result,
-  Space,
-  Tag,
-} from "@arco-design/web-react";
+import { Button, Descriptions, Popconfirm, Result, Space, Tag } from "@arco-design/web-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { DetailPageFrame, type DetailInfoCard, type DetailTab } from "@/components/common";
 import { TenantAdministrators } from "@/components/tenant/TenantAdministrators";
@@ -18,6 +10,7 @@ import { TenantQuotaUsage } from "@/components/tenant/TenantQuotaUsage";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import { tenantStatusMeta } from "@/components/tenant/model";
 import { formatDateTimeMinute } from "@/lib/date";
+import { showMessage } from "@/lib/feedback";
 
 export const Route = createFileRoute("/tenants/$tenantId")({
   component: function TenantDetailRoute() {
@@ -52,16 +45,21 @@ export const Route = createFileRoute("/tenants/$tenantId")({
 
     const handleToggleStatus = () => {
       if (tenant.status === "suspended" && tenant.balanceUsd < 0) {
-        Message.warning("账户仍有欠费，请在生命周期页签中处理解冻");
+        showMessage({ type: "warning", content: "账户仍有欠费，请在生命周期页签中处理解冻" });
         return;
       }
       const nextStatus = toggleTenantStatus(tenant.id);
       if (!nextStatus) return;
-      Message.success(`租户 ${tenant.name} 已${nextStatus === "active" ? "解冻" : "冻结"}`);
+      showMessage({
+        type: "success",
+        content: `租户 ${tenant.name} 已${nextStatus === "active" ? "解冻" : "冻结"}`,
+      });
     };
 
     const handleDisable = () => {
-      if (disableTenant(tenant.id)) Message.success(`租户 ${tenant.name} 已禁用`);
+      if (disableTenant(tenant.id)) {
+        showMessage({ type: "success", content: `租户 ${tenant.name} 已禁用` });
+      }
     };
 
     const infoCards: DetailInfoCard[] = [

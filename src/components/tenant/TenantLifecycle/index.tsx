@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Message } from "@arco-design/web-react";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant } from "@/components/tenant/model";
+import { showMessage } from "@/lib/feedback";
 import { ArrearsPolicyModal } from "./ArrearsPolicyModal";
 import { ConvertTrialModal } from "./ConvertTrialModal";
 import { DisableTenantModal } from "./DisableTenantModal";
@@ -33,10 +33,10 @@ export function TenantLifecycle({ tenant }: TenantLifecycleProps) {
 
   const showResult = (result: { ok: boolean; reason?: string; message?: string }) => {
     if (result.ok) {
-      Message.success(result.message || "操作成功");
+      showMessage({ type: "success", content: result.message || "操作成功" });
       return true;
     }
-    Message.error(result.reason || "操作失败");
+    showMessage({ type: "error", content: result.reason || "操作失败" });
     return false;
   };
 

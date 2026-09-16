@@ -1,7 +1,8 @@
-import { Button, Message, Modal, Space, Tag, Typography } from "@arco-design/web-react";
+import { Button, Modal, Space, Tag, Typography } from "@arco-design/web-react";
 import { useState } from "react";
 import { tenantRegions, type Tenant, type TenantSsoStatus } from "@/components/tenant/model";
 import { formatCurrentDateTime, formatDateTimeMinute } from "@/lib/date";
+import { showMessage } from "@/lib/feedback";
 import { RegionChangeModal } from "./RegionChangeModal";
 import { SsoConfigurationModal } from "./SsoConfigurationModal";
 
@@ -41,7 +42,7 @@ export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecur
 
   const saveSso = () => {
     if (ssoEnabled && !ssoProvider) {
-      Message.warning("请选择 IdP 提供商");
+      showMessage({ type: "warning", content: "请选择 IdP 提供商" });
       return;
     }
     onUpdate({
@@ -51,17 +52,20 @@ export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecur
       ssoLastTestAt: ssoEnabled ? ssoLastTestAt : undefined,
     });
     setSsoVisible(false);
-    Message.success("企业 SSO 配置已保存");
+    showMessage({ type: "success", content: "企业 SSO 配置已保存" });
   };
 
   const testSso = () => {
     if (!ssoEnabled) {
-      Message.warning("请先在弹窗中启用企业 SSO");
+      showMessage({ type: "warning", content: "请先在弹窗中启用企业 SSO" });
       return;
     }
     setSsoStatus("connected");
     setSsoLastTestAt(formatCurrentDateTime());
-    Message.success(`${ssoProvider} 连接测试成功，请保存配置后生效`);
+    showMessage({
+      type: "success",
+      content: `${ssoProvider} 连接测试成功，请保存配置后生效`,
+    });
   };
 
   const confirmMfaChange = () => {
@@ -74,7 +78,10 @@ export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecur
       okText: "确认生效",
       onOk: () => {
         onUpdate({ forceMfa: nextEnabled });
-        Message.success(`强制 MFA 已${nextEnabled ? "开启" : "关闭"}`);
+        showMessage({
+          type: "success",
+          content: `强制 MFA 已${nextEnabled ? "开启" : "关闭"}`,
+        });
       },
     });
   };
@@ -87,12 +94,12 @@ export function TenantIdentitySecurity({ tenant, onUpdate }: TenantIdentitySecur
   const saveRegion = () => {
     const selected = tenantRegions.find((item) => item.value === region);
     if (!selected) {
-      Message.warning("请选择区域");
+      showMessage({ type: "warning", content: "请选择区域" });
       return;
     }
     onUpdate({ region: selected.value, regionName: selected.label });
     setRegionVisible(false);
-    Message.success(`区域归属已变更为 ${selected.label}`);
+    showMessage({ type: "success", content: `区域归属已变更为 ${selected.label}` });
   };
 
   return (

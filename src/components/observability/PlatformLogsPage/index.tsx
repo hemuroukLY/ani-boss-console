@@ -14,7 +14,6 @@ import {
   ListToolbar,
   type ListColumn,
 } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDateTime } from "@/lib/date";
 import { usePlatformComponentLogs, type LogConnectionState } from "./usePlatformComponentLogs";
 
@@ -87,6 +86,13 @@ export function PlatformLogsPage({ initialComponent }: PlatformLogsPageProps) {
   const [level, setLevel] = useState("all");
   const [keyword, setKeyword] = useState("");
   const componentsQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-components",
+        action: "平台组件列表加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformQueryKeys.components,
     queryFn: fetchPlatformComponents,
   });
@@ -104,16 +110,6 @@ export function PlatformLogsPage({ initialComponent }: PlatformLogsPageProps) {
   const component = componentOverride ?? initialComponent ?? componentOptions[0]?.value ?? "";
 
   const stream = usePlatformComponentLogs(component);
-  useListErrorNotification({
-    id: "platform-log-components",
-    title: "组件列表加载失败",
-    error: componentsQuery.error,
-  });
-  useListErrorNotification({
-    id: "platform-component-log-stream",
-    title: "组件日志流连接异常",
-    error: stream.error,
-  });
 
   const displayLogs = useMemo(() => stream.logs.map(parseLog).reverse(), [stream.logs]);
   const filteredLogs = useMemo(() => {

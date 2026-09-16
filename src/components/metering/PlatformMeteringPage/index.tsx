@@ -3,7 +3,6 @@ import { IconDownload, IconRefresh } from "@arco-design/web-react/icon";
 import { useState } from "react";
 import { ListPageHeader } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatMonthDay } from "@/lib/date";
 import { MeteringTrend } from "../MeteringTrend";
 import { meteringDimensions, type MeteringDimension } from "../model";
@@ -17,13 +16,8 @@ export function PlatformMeteringPage() {
   const current =
     meteringDimensions.find((item) => item.key === dimension) ?? meteringDimensions[0];
   const { query, view, ranges } = usePlatformGpuMetering(current.resourceType);
-  useListErrorNotification({
-    id: `platform-${dimension}-metering`,
-    title: `${current.label} 计量数据加载失败`,
-    error: query.error,
-  });
   const totalChangeRate = view ? getChangeRate(view.currentTotal, view.previousTotal) : undefined;
-  const metricValue = (value?: string) => (query.isPending || query.isError ? "-" : value || "-");
+  const metricValue = (value?: string) => (query.isPending || !query.data ? "-" : value || "-");
 
   return (
     <div className="space-y-4">

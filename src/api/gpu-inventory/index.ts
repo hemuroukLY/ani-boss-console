@@ -1,7 +1,6 @@
 import { runIdempotentOperation } from "@/api/idempotency";
 import { ApiError, coreRequest } from "@/api/request";
 import { createIdempotencyScope } from "@/lib/idempotency";
-import { getApiErrorMessage } from "@/lib/api-error";
 import type {
   ApiRuntimeProfile,
   CreateGpuPartitionInput,
@@ -398,13 +397,15 @@ export async function fetchLatestGpuPartitionTask(): Promise<GpuPartitionTask | 
 }
 
 export function getGpuPartitionErrorMessage(error: unknown): string {
-  if (!(error instanceof ApiError)) return getApiErrorMessage(error);
+  if (!(error instanceof ApiError)) {
+    return error instanceof Error && error.message.trim() ? error.message : "请求失败，请稍后重试";
+  }
   if (error.status === 403) return "需要平台管理员身份才能配置集群 GPU 切分";
   if (error.code === "NO_IDLE_WHOLECARD_GPUS") return "集群内没有可切分的空闲整卡节点";
   if (error.code === "UNAVAILABLE" || error.code === "NOT_CONFIGURED") {
     return "GPU 切分服务暂不可用，请稍后重试";
   }
-  return getApiErrorMessage(error);
+  return error.message.trim() || "请求失败，请稍后重试";
 }
 
 export type {

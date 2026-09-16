@@ -1,6 +1,7 @@
-import { Button, Drawer, Message, Space, Steps } from "@arco-design/web-react";
+import { Button, Drawer, Space, Steps } from "@arco-design/web-react";
 import { useState } from "react";
 import { initialTenantDraft, type TenantDraft } from "@/components/tenant/model";
+import { showMessage } from "@/lib/feedback";
 import { StepContent } from "./StepContent";
 
 const steps = ["租户资料", "开通区域", "配额套餐", "初始管理员", "确认"];
@@ -31,15 +32,15 @@ export function TenantCreateDrawer({ visible, onCancel, onSubmit }: TenantCreate
 
   const validateCurrentStep = () => {
     if (current === 0 && (!draft.name.trim() || !draft.displayName.trim())) {
-      Message.warning("请填写租户标识和显示名");
+      showMessage({ type: "warning", content: "请填写租户标识和显示名" });
       return false;
     }
     if (current === 1 && !draft.region) {
-      Message.warning("请选择开通区域");
+      showMessage({ type: "warning", content: "请选择开通区域" });
       return false;
     }
     if (current === 3 && draft.adminEmail && !draft.adminEmail.includes("@")) {
-      Message.warning("请输入正确的管理员邮箱");
+      showMessage({ type: "warning", content: "请输入正确的管理员邮箱" });
       return false;
     }
     return true;

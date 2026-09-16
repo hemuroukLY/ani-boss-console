@@ -1,13 +1,4 @@
-import {
-  Button,
-  Dropdown,
-  Menu,
-  Message,
-  Modal,
-  Result,
-  Space,
-  Spin,
-} from "@arco-design/web-react";
+import { Button, Dropdown, Menu, Modal, Space, Spin } from "@arco-design/web-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -25,8 +16,8 @@ import {
 } from "@/api/platform-admins";
 import { getAccessTokenRoles, useAuthState } from "@/components/auth/store";
 import { DetailPageFrame, type DetailInfoCard, type DetailTab } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDateTime } from "@/lib/date";
+import { withId } from "@/lib/id";
 import { AccountOverview } from "./AccountOverview";
 import { OperationRecords } from "./OperationRecords";
 import { PermissionMatrix } from "./PermissionMatrix";
@@ -41,6 +32,14 @@ interface PlatformAdministratorDetailProps {
   userId: string;
 }
 
+async function runAdministratorOperation<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    throw new Error(getPlatformAdministratorErrorMessage(error));
+  }
+}
+
 export function PlatformAdministratorDetail({ userId }: PlatformAdministratorDetailProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -52,76 +51,107 @@ export function PlatformAdministratorDetail({ userId }: PlatformAdministratorDet
     getAccessTokenRoles(authState.tokens?.access_token).includes("platform-admin");
 
   const detailQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: withId("platform-administrator", userId),
+        action: "平台运营账号详情加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAdministratorQueryKeys.detail(userId),
     queryFn: () => fetchPlatformAdministrator(userId),
   });
   const rolesQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-administrator-roles",
+        action: "平台角色权限加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAdministratorQueryKeys.roles,
     queryFn: fetchPlatformAdministratorRoles,
   });
   const auditQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: withId("platform-administrator-audit", userId),
+        action: "账号操作记录加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAdministratorQueryKeys.auditLogs(userId),
     queryFn: () => fetchPlatformAdministratorAuditLogs(userId),
   });
 
-  useListErrorNotification({
-    id: `platform-administrator-detail-${userId}`,
-    title: "平台运营账号详情加载失败",
-    error: detailQuery.error,
-  });
-  useListErrorNotification({
-    id: `platform-administrator-detail-roles-${userId}`,
-    title: "平台角色权限加载失败",
-    error: rolesQuery.error,
-  });
-  useListErrorNotification({
-    id: `platform-administrator-audit-${userId}`,
-    title: "账号操作记录加载失败",
-    error: auditQuery.error,
-  });
-
   const invalidateAll = () =>
     queryClient.invalidateQueries({ queryKey: platformAdministratorQueryKeys.all });
-  const mutationError = (error: unknown) =>
-    Message.error(getPlatformAdministratorErrorMessage(error));
-
   const roleMutation = useMutation({
-    mutationFn: updatePlatformAdministratorRole,
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "账号角色更新",
+        successText: "账号角色已更新",
+        errorFallback: "账号角色更新失败，请稍后重试",
+      },
+    },
+    mutationFn: (input: Parameters<typeof updatePlatformAdministratorRole>[0]) =>
+      runAdministratorOperation(() => updatePlatformAdministratorRole(input)),
     onSuccess: async () => {
       await invalidateAll();
       setRoleVisible(false);
-      Message.success("账号角色已更新");
     },
-    onError: mutationError,
   });
   const passwordMutation = useMutation({
-    mutationFn: resetPlatformAdministratorPassword,
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "账号密码重置",
+        successText: "账号密码已重置",
+        errorFallback: "账号密码重置失败，请稍后重试",
+      },
+    },
+    mutationFn: (input: Parameters<typeof resetPlatformAdministratorPassword>[0]) =>
+      runAdministratorOperation(() => resetPlatformAdministratorPassword(input)),
     onSuccess: async () => {
       await invalidateAll();
       setPasswordVisible(false);
-      Message.success("账号密码已重置");
     },
-    onError: mutationError,
   });
   const statusMutation = useMutation({
-    mutationFn: ({ status }: { status: "active" | "disabled" }) =>
-      status === "active"
-        ? disablePlatformAdministrator(userId)
-        : enablePlatformAdministrator(userId),
-    onSuccess: async (_result, variables) => {
-      await invalidateAll();
-      Message.success(variables.status === "active" ? "账号已禁用" : "账号已启用");
+    meta: {
+      feedback: {
+        channel: "notification",
+        id: "platform-administrator-status",
+        action: "账号状态更新",
+        errorFallback: "账号状态更新失败，请稍后重试",
+      },
     },
-    onError: mutationError,
-  });
-  const deleteMutation = useMutation({
-    mutationFn: () => deletePlatformAdministrator(userId),
+    mutationFn: ({ status }: { status: "active" | "disabled" }) =>
+      runAdministratorOperation(() =>
+        status === "active"
+          ? disablePlatformAdministrator(userId)
+          : enablePlatformAdministrator(userId),
+      ),
     onSuccess: async () => {
       await invalidateAll();
-      Message.success("账号已删除");
+    },
+  });
+  const deleteMutation = useMutation({
+    meta: {
+      feedback: {
+        channel: "notification",
+        id: "platform-administrator-delete",
+        action: "平台运营账号删除",
+        successText: "账号已删除",
+        errorFallback: "账号删除失败，请稍后重试",
+      },
+    },
+    mutationFn: () => runAdministratorOperation(() => deletePlatformAdministrator(userId)),
+    onSuccess: async () => {
+      await invalidateAll();
       void navigate({ to: "/settings-platform-admins" });
     },
-    onError: mutationError,
   });
 
   const returnToList = () => {
@@ -139,11 +169,27 @@ export function PlatformAdministratorDetail({ userId }: PlatformAdministratorDet
   const detail = detailQuery.data;
   if (!detail) {
     return (
-      <Result
-        status={detailQuery.isError ? "error" : "404"}
-        title={detailQuery.isError ? "账号详情暂不可用" : "平台运营账号不存在"}
-        subTitle="请返回列表刷新后重试。"
-        extra={<Button onClick={returnToList}>返回平台运营账号列表</Button>}
+      <DetailPageFrame
+        breadcrumbs={[
+          { label: "平台设置" },
+          { label: "平台运营账号", onClick: returnToList },
+          { label: userId },
+        ]}
+        title={userId}
+        headerItems={[
+          { label: "角色", value: "-" },
+          { label: "来源", value: "-" },
+          { label: "最近登录", value: "-" },
+          { label: "创建时间", value: "-" },
+        ]}
+        cards={[
+          {
+            key: "overview",
+            title: "账号概览",
+            content: <div className="py-8 text-center text-gray-500">暂无账号详情</div>,
+          },
+        ]}
+        onBack={returnToList}
       />
     );
   }

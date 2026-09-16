@@ -1,9 +1,9 @@
-import { Message } from "@arco-design/web-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { OperationsMetrics } from "@/components/overview/OperationsMetrics";
 import { OperationsPanels } from "@/components/overview/OperationsPanels";
 import { OverviewPageHeader } from "@/components/overview/OverviewPageHeader";
 import { usePlatformOverview } from "@/components/overview/PlatformOverviewProvider/usePlatformOverview";
+import { showMessage } from "@/lib/feedback";
 
 export const Route = createFileRoute("/")({
   component: function OperationsOverviewRoute() {
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
     const pendingAlerts = alerts.filter((item) => item.status === "待处理");
 
     const openPendingFeature = (name: string) => {
-      Message.info(`${name}将在对应功能页中继续处理`);
+      showMessage({ type: "info", content: `${name}将在对应功能页中继续处理` });
     };
 
     return (

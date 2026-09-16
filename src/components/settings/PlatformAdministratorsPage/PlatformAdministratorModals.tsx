@@ -6,6 +6,7 @@ import type {
   PlatformAdministratorRole,
   PlatformAdministratorRoleDefinition,
 } from "@/api/platform-admins";
+import { validateForm } from "@/lib/form";
 import { platformAdministratorRoleLabels } from "../model";
 
 interface CreateFormValues extends CreatePlatformAdministratorInput {
@@ -71,8 +72,10 @@ export function PlatformAdministratorCreateModal({
     if (defaultRole?.id) form.setFieldsValue({ roleId: defaultRole.id });
   }, [form, roles, visible]);
 
-  const submit = () => {
-    form.validate().then(({ confirmPassword: _confirmPassword, ...values }) => onSubmit(values));
+  const submit = async () => {
+    const { confirmPassword: _confirmPassword, ...values } =
+      await validateForm<CreateFormValues>(form);
+    onSubmit(values);
   };
 
   return (
@@ -181,7 +184,10 @@ export function PlatformAdministratorRoleModal({
       mountOnEnter={false}
       afterClose={() => form.resetFields()}
       onCancel={onCancel}
-      onOk={() => form.validate().then(({ roleId }) => onSubmit(roleId))}
+      onOk={async () => {
+        const { roleId } = await validateForm<RoleFormValues>(form);
+        onSubmit(roleId);
+      }}
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -216,7 +222,10 @@ export function PlatformAdministratorPasswordModal({
       confirmLoading={loading}
       afterClose={() => form.resetFields()}
       onCancel={onCancel}
-      onOk={() => form.validate().then(({ newPassword }) => onSubmit(newPassword))}
+      onOk={async () => {
+        const { newPassword } = await validateForm<PasswordFormValues>(form);
+        onSubmit(newPassword);
+      }}
     >
       <Form form={form} layout="vertical">
         <Form.Item

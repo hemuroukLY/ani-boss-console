@@ -5,7 +5,6 @@ import {
   Grid,
   Input,
   InputNumber,
-  Message,
   Menu,
   Modal,
   Select,
@@ -16,6 +15,7 @@ import {
 import { IconDownload, IconPlus } from "@arco-design/web-react/icon";
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { showMessage } from "@/lib/feedback";
 import {
   ListDataTable,
   ListPageFrame,
@@ -116,31 +116,31 @@ export function QuotaPolicyList() {
 
   const publishPackage = (item: QuotaPackageRow) => {
     if (!publishCatalogPackage(item.planCode)) {
-      Message.error("套餐发布失败");
+      showMessage({ type: "error", content: "套餐发布失败" });
       return;
     }
-    Message.success(`套餐 ${item.name} 已发布`);
+    showMessage({ type: "success", content: `套餐 ${item.name} 已发布` });
   };
 
   const deletePackage = (item: QuotaPackageRow) => {
     if (boundCount(item.planCode) > 0) {
-      Message.warning("有关联租户时不能删除套餐");
+      showMessage({ type: "warning", content: "有关联租户时不能删除套餐" });
       return;
     }
     if (!unregisterQuotaPackage(item.planCode)) {
-      Message.warning("有关联租户时不能删除套餐");
+      showMessage({ type: "warning", content: "有关联租户时不能删除套餐" });
       return;
     }
-    Message.success(`套餐 ${item.name} 已删除`);
+    showMessage({ type: "success", content: `套餐 ${item.name} 已删除` });
   };
 
   const createPackage = () => {
     if (!draft.name.trim() || !draft.planCode.trim()) {
-      Message.warning("请填写套餐名称和编码");
+      showMessage({ type: "warning", content: "请填写套餐名称和编码" });
       return;
     }
     if (packages.some((item) => item.planCode.toLowerCase() === draft.planCode.toLowerCase())) {
-      Message.warning("套餐编码已存在");
+      showMessage({ type: "warning", content: "套餐编码已存在" });
       return;
     }
     const item: QuotaPackageRow = {
@@ -164,26 +164,26 @@ export function QuotaPolicyList() {
         limits: { ...item.limits },
       })
     ) {
-      Message.warning("套餐编码已存在");
+      showMessage({ type: "warning", content: "套餐编码已存在" });
       return;
     }
     setCreateVisible(false);
     setDraft(initialDraft);
-    Message.success(`套餐 ${item.name} 已创建并发布`);
+    showMessage({ type: "success", content: `套餐 ${item.name} 已创建并发布` });
   };
 
   const assignPackage = () => {
     if (!assigningPackage || !targetTenantId) {
-      Message.warning("请选择目标租户");
+      showMessage({ type: "warning", content: "请选择目标租户" });
       return;
     }
     if (!rebindTenantQuotaPackage(targetTenantId, assigningPackage.planCode)) {
-      Message.error("套餐改绑失败，请确认套餐已发布");
+      showMessage({ type: "error", content: "套餐改绑失败，请确认套餐已发布" });
       return;
     }
     setAssigningPackage(null);
     setTargetTenantId("");
-    Message.success("套餐已改绑，租户当前配额上限保持不变");
+    showMessage({ type: "success", content: "套餐已改绑，租户当前配额上限保持不变" });
   };
 
   const columns: ListColumn<QuotaPackageRow>[] = [
@@ -285,7 +285,10 @@ export function QuotaPolicyList() {
             subtitle="管理租户配额套餐；套餐发布后限额只读，变更请新建套餐。"
             extra={
               <Space>
-                <Button icon={<IconDownload />} onClick={() => Message.success("配额套餐已导出")}>
+                <Button
+                  icon={<IconDownload />}
+                  onClick={() => showMessage({ type: "success", content: "配额套餐已导出" })}
+                >
                   导出
                 </Button>
                 <Button type="primary" icon={<IconPlus />} onClick={() => setCreateVisible(true)}>

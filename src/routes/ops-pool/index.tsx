@@ -1,4 +1,4 @@
-import { Button, Message, Modal, Progress, Switch } from "@arco-design/web-react";
+import { Button, Modal, Progress, Switch } from "@arco-design/web-react";
 import { IconRefresh } from "@arco-design/web-react/icon";
 import { createFileRoute } from "@tanstack/react-router";
 import clsx from "clsx";
@@ -14,6 +14,7 @@ import {
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
 import { formatCurrentDateTime, formatDateTimeMinute } from "@/lib/date";
+import { showMessage } from "@/lib/feedback";
 
 type RegionStatus = "enabled" | "disabled" | "planning";
 
@@ -129,12 +130,12 @@ export const Route = createFileRoute("/ops-pool/")({
         ...current,
         updatedAt: formatCurrentDateTime(),
       }));
-      Message.success(`${region.name}容量已刷新`);
+      showMessage({ type: "success", content: `${region.name}容量已刷新` });
     };
 
     const confirmTenantAccess = (region: PlatformRegion, open: boolean) => {
       if (open && region.status !== "enabled") {
-        Message.warning("仅已启用区域可开放租户开通");
+        showMessage({ type: "warning", content: "仅已启用区域可开放租户开通" });
         return;
       }
       Modal.confirm({
@@ -150,7 +151,10 @@ export const Route = createFileRoute("/ops-pool/")({
             openForTenant: open,
             updatedAt: formatCurrentDateTime(),
           }));
-          Message.success(open ? "已开放租户开通" : "已关闭租户开通");
+          showMessage({
+            type: "success",
+            content: open ? "已开放租户开通" : "已关闭租户开通",
+          });
         },
       });
     };
@@ -174,7 +178,7 @@ export const Route = createFileRoute("/ops-pool/")({
             openForTenant: enable ? current.openForTenant : false,
             updatedAt: formatCurrentDateTime(),
           }));
-          Message.success(enable ? "区域已启用" : "区域已停用");
+          showMessage({ type: "success", content: enable ? "区域已启用" : "区域已停用" });
         },
       });
     };
@@ -182,7 +186,7 @@ export const Route = createFileRoute("/ops-pool/")({
     const refreshAll = () => {
       const updatedAt = formatCurrentDateTime();
       setRegions((current) => current.map((region) => ({ ...region, updatedAt })));
-      Message.success("全部区域容量已刷新");
+      showMessage({ type: "success", content: "全部区域容量已刷新" });
     };
 
     const columns: ListColumn<PlatformRegion>[] = [

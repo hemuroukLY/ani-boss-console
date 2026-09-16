@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { streamPlatformComponentLogs, type PlatformComponentLog } from "@/api/platform";
-import { parseApiError } from "@/lib/api-error";
+import { ApiError } from "@/api/request";
+import { closeNotification, showNotification } from "@/lib/feedback";
+import { withId } from "@/lib/id";
 
 export type LogConnectionState = "idle" | "connecting" | "connected" | "reconnecting" | "failed";
 
@@ -27,6 +29,7 @@ export function usePlatformComponentLogs(component: string) {
     const seen = new Set<string>();
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
     let cancelled = false;
+    const feedbackId = withId("platform-component-logs", component);
 
     const connect = async (isReconnect: boolean) => {
       setConnection({ component, state: isReconnect ? "reconnecting" : "connecting" });
@@ -38,6 +41,7 @@ export function usePlatformComponentLogs(component: string) {
           signal: controller.signal,
           onConnected: () => {
             if (cancelled) return;
+            closeNotification(feedbackId);
             setConnection({ component, state: "connected" });
             setErrorState(undefined);
           },
@@ -58,7 +62,13 @@ export function usePlatformComponentLogs(component: string) {
       } catch (streamError) {
         if (cancelled || controller.signal.aborted) return;
         setErrorState({ component, error: streamError });
-        if (parseApiError(streamError).status === 404) {
+        showNotification({
+          id: feedbackId,
+          state: "error",
+          action: "组件日志流连接",
+          content: { error: streamError, fallback: "组件日志流连接失败" },
+        });
+        if (streamError instanceof ApiError && streamError.status === 404) {
           setConnection({ component, state: "failed" });
           return;
         }
@@ -71,6 +81,7 @@ export function usePlatformComponentLogs(component: string) {
     return () => {
       cancelled = true;
       controller.abort();
+      closeNotification(feedbackId);
       if (reconnectTimer) clearTimeout(reconnectTimer);
     };
   }, [component, restartKey]);

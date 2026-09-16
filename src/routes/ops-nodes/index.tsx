@@ -1,4 +1,4 @@
-import { Button, Input, Message, Select } from "@arco-design/web-react";
+import { Button, Input, Select } from "@arco-design/web-react";
 import { IconRefresh } from "@arco-design/web-react/icon";
 import { createFileRoute } from "@tanstack/react-router";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import {
 } from "@/components/common";
 import { Metric } from "@/components/overview/Metric";
 import { formatCurrentDateTime, formatDateTimeMinute } from "@/lib/date";
+import { showMessage } from "@/lib/feedback";
 
 type NodeStatus = "Ready" | "NotReady";
 
@@ -124,7 +125,7 @@ export const Route = createFileRoute("/ops-nodes/")({
       setNodes((current) =>
         current.map((node) => (node.status === "Ready" ? { ...node, heartbeat } : node)),
       );
-      Message.success("节点状态已刷新");
+      showMessage({ type: "success", content: "节点状态已刷新" });
     };
 
     const columns: ListColumn<InfrastructureNode>[] = [

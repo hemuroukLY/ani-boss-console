@@ -1,4 +1,4 @@
-import { Button, Descriptions, Message, Modal, Result, Tag } from "@arco-design/web-react";
+import { Button, Descriptions, Modal, Result, Tag } from "@arco-design/web-react";
 import { useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
 import {
@@ -11,6 +11,7 @@ import {
   type ListColumn,
 } from "@/components/common";
 import { useState } from "react";
+import { showMessage } from "@/lib/feedback";
 import { CreditAdjustmentModal } from "@/components/tenant/TenantBillingSummary/CreditAdjustmentModal";
 import { formatAmount, formatUsd } from "@/components/tenant/TenantBillingSummary/formatters";
 import type { TenantBillingAction } from "@/components/tenant/TenantManagementProvider";
@@ -60,10 +61,10 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
     success: string,
   ) => {
     if (result.ok) {
-      Message.success(result.message ?? success);
+      showMessage({ type: "success", content: result.message ?? success });
       return true;
     }
-    Message.error(result.reason ?? "操作失败");
+    showMessage({ type: "error", content: result.reason ?? "操作失败" });
     return false;
   };
 
@@ -82,7 +83,7 @@ export function TenantBillingDetail({ tenantId }: TenantBillingDetailProps) {
 
   const submitAdjustment = () => {
     if (!adjustmentAmount) {
-      Message.warning("请输入非零调账金额");
+      showMessage({ type: "warning", content: "请输入非零调账金额" });
       return;
     }
     if (

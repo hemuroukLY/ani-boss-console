@@ -1,17 +1,8 @@
-import {
-  Button,
-  Form,
-  Input,
-  Menu,
-  Message,
-  Modal,
-  Select,
-  Space,
-  Tag,
-} from "@arco-design/web-react";
+import { Button, Form, Input, Menu, Modal, Select, Space, Tag } from "@arco-design/web-react";
 import { IconDownload, IconPlus } from "@arco-design/web-react/icon";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { showMessage } from "@/lib/feedback";
 import {
   ListDataTable,
   DataTableNameCell,
@@ -51,10 +42,10 @@ export function TenantAdministratorList() {
 
   const showResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
-      Message.success(successMessage);
+      showMessage({ type: "success", content: successMessage });
       return true;
     }
-    Message.error(result.reason ?? "操作失败");
+    showMessage({ type: "error", content: result.reason ?? "操作失败" });
     return false;
   };
 
@@ -76,11 +67,11 @@ export function TenantAdministratorList() {
 
   const submitInvite = () => {
     if (!inviteTenantId) {
-      Message.warning("请选择目标租户");
+      showMessage({ type: "warning", content: "请选择目标租户" });
       return;
     }
     if (!inviteDraft.email.trim() || !inviteDraft.email.includes("@")) {
-      Message.warning("请输入有效邮箱");
+      showMessage({ type: "warning", content: "请输入有效邮箱" });
       return;
     }
     if (showResult(inviteTenantAdmin(inviteTenantId, inviteDraft), "管理员邀请已发送")) {
@@ -254,7 +245,7 @@ export function TenantAdministratorList() {
               <Space>
                 <Button
                   icon={<IconDownload />}
-                  onClick={() => Message.success("租户管理员数据已导出")}
+                  onClick={() => showMessage({ type: "success", content: "租户管理员数据已导出" })}
                 >
                   导出
                 </Button>

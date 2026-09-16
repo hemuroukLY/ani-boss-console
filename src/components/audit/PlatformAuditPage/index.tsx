@@ -1,4 +1,4 @@
-import { Alert, Button, DatePicker, Input, Message, Select, Space } from "@arco-design/web-react";
+import { Alert, Button, DatePicker, Input, Select, Space } from "@arco-design/web-react";
 import { IconDownload, IconRefresh } from "@arco-design/web-react/icon";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -10,8 +10,8 @@ import {
   type PlatformAuditVerb,
 } from "@/api/audit";
 import { ListDataTable, ListPageFrame, ListPageHeader, ListToolbar } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { getRecentDateTimeRange, toRfc3339DateTime } from "@/lib/date";
+import { showMessage } from "@/lib/feedback";
 import { PlatformAuditDetailDrawer } from "./PlatformAuditDetailDrawer";
 import { auditVerbOptions, downloadPlatformAuditCsv, getPlatformAuditColumns } from "./model";
 
@@ -47,6 +47,13 @@ export function PlatformAuditPage() {
   }, [cursors, keyword, page, pageSize, timeRange, verb]);
 
   const auditQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-audit-logs",
+        action: "平台审计日志加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAuditQueryKeys.list(queryParams || { timeFrom: "", timeTo: "", pageSize }),
     queryFn: () => {
       if (!queryParams) throw new Error("请选择有效的时间范围");
@@ -55,12 +62,6 @@ export function PlatformAuditPage() {
     enabled: Boolean(queryParams),
     placeholderData: page > 0 ? keepPreviousData : undefined,
     staleTime: 30_000,
-  });
-
-  useListErrorNotification({
-    id: "platform-audit-logs",
-    title: "平台审计日志加载失败",
-    error: auditQuery.error,
   });
 
   const items = auditQuery.data?.items || [];
@@ -92,7 +93,7 @@ export function PlatformAuditPage() {
   const exportCurrentPage = () => {
     if (!items.length) return;
     downloadPlatformAuditCsv(items);
-    Message.success(`已导出当前页 ${items.length} 条审计记录`);
+    showMessage({ type: "success", content: `已导出当前页 ${items.length} 条审计记录` });
   };
 
   return (
@@ -195,7 +196,7 @@ export function PlatformAuditPage() {
             },
           }}
           tableLabel="平台审计日志"
-          emptyText={auditQuery.isError ? "审计日志加载失败" : "暂无审计记录"}
+          emptyText="暂无审计记录"
         />
       </div>
 

@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { Message, Modal, Result } from "@arco-design/web-react";
+import { Modal, Result } from "@arco-design/web-react";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant } from "@/components/tenant/model";
 import { formatMonth } from "@/lib/date";
+import { showMessage } from "@/lib/feedback";
 import { BillingAccountOverview } from "./BillingAccountOverview";
 import { BillingRecords } from "./BillingRecords";
 import { CreditAdjustmentModal } from "./CreditAdjustmentModal";
@@ -24,10 +25,10 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
 
   const showResult = (result: { ok: boolean; reason?: string; message?: string }) => {
     if (result.ok) {
-      Message.success(result.message || "操作成功");
+      showMessage({ type: "success", content: result.message || "操作成功" });
       return true;
     }
-    Message.error(result.reason || "操作失败");
+    showMessage({ type: "error", content: result.reason || "操作失败" });
     return false;
   };
 
@@ -51,7 +52,7 @@ export function TenantBillingSummary({ tenant }: TenantBillingSummaryProps) {
 
   const confirmAdjustment = () => {
     if (!adjustmentAmount) {
-      Message.warning("调账金额不能为 0");
+      showMessage({ type: "warning", content: "调账金额不能为 0" });
       return;
     }
     if (

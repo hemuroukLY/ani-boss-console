@@ -1,4 +1,4 @@
-import { Button, Message } from "@arco-design/web-react";
+import { Button } from "@arco-design/web-react";
 import { IconPlus } from "@arco-design/web-react/icon";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -7,6 +7,7 @@ import { TenantCreateDrawer } from "@/components/tenant/TenantCreateDrawer";
 import { TenantTable } from "@/components/tenant/TenantTable";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant, TenantDraft } from "@/components/tenant/model";
+import { showMessage } from "@/lib/feedback";
 
 export const Route = createFileRoute("/tenants/")({
   component: function TenantListRoute() {
@@ -16,23 +17,26 @@ export const Route = createFileRoute("/tenants/")({
     const submitTenant = (draft: TenantDraft) => {
       const result = createTenant(draft);
       if (!result.ok || !result.tenant) {
-        Message.error(result.reason ?? "租户开通失败");
+        showMessage({ type: "error", content: result.reason ?? "租户开通失败" });
         return false;
       }
       setCreateVisible(false);
-      Message.success(`租户 ${result.tenant.name} 已开通`);
+      showMessage({ type: "success", content: `租户 ${result.tenant.name} 已开通` });
       return true;
     };
 
     const handleToggleTenantStatus = (tenant: Tenant) => {
       const nextStatus = toggleTenantStatus(tenant.id);
       if (!nextStatus) return;
-      Message.success(`租户 ${tenant.name} 已${nextStatus === "active" ? "解冻" : "冻结"}`);
+      showMessage({
+        type: "success",
+        content: `租户 ${tenant.name} 已${nextStatus === "active" ? "解冻" : "冻结"}`,
+      });
     };
 
     const handleDisableTenant = (tenant: Tenant) => {
       if (disableTenant(tenant.id)) {
-        Message.success(`租户 ${tenant.name} 已禁用`);
+        showMessage({ type: "success", content: `租户 ${tenant.name} 已禁用` });
       }
     };
 
@@ -54,9 +58,17 @@ export const Route = createFileRoute("/tenants/")({
             data={tenants}
             onToggleStatus={handleToggleTenantStatus}
             onDisable={handleDisableTenant}
-            onQuota={(tenant) => Message.info(`${tenant.name} 当前套餐：${tenant.quotaPackage}`)}
+            onQuota={(tenant) =>
+              showMessage({
+                type: "info",
+                content: `${tenant.name} 当前套餐：${tenant.quotaPackage}`,
+              })
+            }
             onAdmins={(tenant) =>
-              Message.info(`${tenant.name} 当前管理员：${tenant.adminCount} 人`)
+              showMessage({
+                type: "info",
+                content: `${tenant.name} 当前管理员：${tenant.adminCount} 人`,
+              })
             }
           />
         </ListPageFrame>

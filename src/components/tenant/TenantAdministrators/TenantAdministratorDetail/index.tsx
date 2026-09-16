@@ -3,7 +3,6 @@ import {
   Descriptions,
   Dropdown,
   Menu,
-  Message,
   Modal,
   Result,
   Space,
@@ -11,6 +10,7 @@ import {
 } from "@arco-design/web-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { showMessage } from "@/lib/feedback";
 import {
   DataTable,
   DetailPageFrame,
@@ -80,10 +80,10 @@ export function TenantAdministratorDetail({ adminId }: TenantAdministratorDetail
 
   const showResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
-      Message.success(successMessage);
+      showMessage({ type: "success", content: successMessage });
       return true;
     }
-    Message.error(result.reason ?? "操作失败");
+    showMessage({ type: "error", content: result.reason ?? "操作失败" });
     return false;
   };
 

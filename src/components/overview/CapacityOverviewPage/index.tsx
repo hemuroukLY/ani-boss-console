@@ -6,7 +6,6 @@ import {
   platformQueryKeys,
   type PlatformCapacityRegion,
 } from "@/api/platform";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { Metric } from "../Metric";
 import { OverviewPageHeader } from "../OverviewPageHeader";
 import { Panel } from "../Panel";
@@ -35,13 +34,15 @@ function regionUsagePercent(region: PlatformCapacityRegion) {
 export function CapacityOverviewPage() {
   const navigate = useNavigate();
   const capacityQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-capacity",
+        action: "平台容量加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformQueryKeys.capacity,
     queryFn: fetchPlatformCapacity,
-  });
-  useListErrorNotification({
-    id: "platform-capacity",
-    title: "平台容量加载失败",
-    error: capacityQuery.error,
   });
   const summary = capacityQuery.data?.summary;
   const regions = capacityQuery.data?.regions || [];
@@ -82,7 +83,7 @@ export function CapacityOverviewPage() {
         <div className="rounded-lg bg-white py-20 text-center text-sm text-gray-500">
           正在加载平台容量数据…
         </div>
-      ) : capacityQuery.isError ? null : regions.length === 0 ? (
+      ) : regions.length === 0 ? (
         <div className="rounded-lg bg-white py-16">
           <Empty description="暂无平台容量数据" />
         </div>

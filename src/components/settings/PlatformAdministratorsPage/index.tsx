@@ -1,4 +1,4 @@
-import { Alert, Button, Input, Menu, Message, Modal, Select } from "@arco-design/web-react";
+import { Alert, Button, Input, Menu, Modal, Select } from "@arco-design/web-react";
 import { IconPlus, IconRefresh } from "@arco-design/web-react/icon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -33,7 +33,6 @@ import {
 } from "@/components/common";
 import { getAccessTokenRoles, useAuthState } from "@/components/auth/store";
 import { Metric } from "@/components/overview/Metric";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDateTime } from "@/lib/date";
 import { PlatformAdministratorStatusBadge } from "../PlatformAdministratorStatusBadge";
 import { platformAdministratorRoleLabels, platformAdministratorSourceLabels } from "../model";
@@ -46,6 +45,14 @@ import {
 interface StatusOperationInput {
   userId: string;
   status: PlatformAdministratorStatus;
+}
+
+async function runAdministratorOperation<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    throw new Error(getPlatformAdministratorErrorMessage(error));
+  }
 }
 
 export function PlatformAdministratorsPage() {
@@ -73,84 +80,123 @@ export function PlatformAdministratorsPage() {
   }, [deferredKeyword, role, status]);
 
   const overviewQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-administrators",
+        action: "平台运营账号汇总加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAdministratorQueryKeys.list(),
     queryFn: () => fetchPlatformAdministrators(),
   });
   const listQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-administrators",
+        action: "平台运营账号列表加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAdministratorQueryKeys.list(filters),
     queryFn: () => fetchPlatformAdministrators(filters),
   });
   const rolesQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "platform-administrator-roles",
+        action: "平台角色加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: platformAdministratorQueryKeys.roles,
     queryFn: fetchPlatformAdministratorRoles,
   });
 
-  useListErrorNotification({
-    id: "platform-administrators-overview",
-    title: "平台运营账号汇总加载失败",
-    error: overviewQuery.error,
-  });
-  useListErrorNotification({
-    id: "platform-administrators-list",
-    title: "平台运营账号列表加载失败",
-    error: listQuery.error,
-  });
-  useListErrorNotification({
-    id: "platform-administrator-roles",
-    title: "平台角色加载失败",
-    error: rolesQuery.error,
-  });
-
   const invalidateAll = () =>
     queryClient.invalidateQueries({ queryKey: platformAdministratorQueryKeys.all });
-  const mutationError = (error: unknown) =>
-    Message.error(getPlatformAdministratorErrorMessage(error));
-
   const createMutation = useMutation({
-    mutationFn: createPlatformAdministrator,
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "平台运营账号创建",
+        successText: "平台运营账号已创建",
+        errorFallback: "平台运营账号创建失败，请稍后重试",
+      },
+    },
+    mutationFn: (input: CreatePlatformAdministratorInput) =>
+      runAdministratorOperation(() => createPlatformAdministrator(input)),
     onSuccess: async () => {
       await invalidateAll();
       setCreateVisible(false);
-      Message.success("平台运营账号已创建");
     },
-    onError: mutationError,
   });
   const roleMutation = useMutation({
-    mutationFn: updatePlatformAdministratorRole,
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "账号角色更新",
+        successText: "账号角色已更新",
+        errorFallback: "账号角色更新失败，请稍后重试",
+      },
+    },
+    mutationFn: (input: Parameters<typeof updatePlatformAdministratorRole>[0]) =>
+      runAdministratorOperation(() => updatePlatformAdministratorRole(input)),
     onSuccess: async () => {
       await invalidateAll();
       setRoleTarget(null);
-      Message.success("账号角色已更新");
     },
-    onError: mutationError,
   });
   const passwordMutation = useMutation({
-    mutationFn: resetPlatformAdministratorPassword,
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "账号密码重置",
+        successText: "账号密码已重置",
+        errorFallback: "账号密码重置失败，请稍后重试",
+      },
+    },
+    mutationFn: (input: Parameters<typeof resetPlatformAdministratorPassword>[0]) =>
+      runAdministratorOperation(() => resetPlatformAdministratorPassword(input)),
     onSuccess: async () => {
       await invalidateAll();
       setPasswordTarget(null);
-      Message.success("账号密码已重置");
     },
-    onError: mutationError,
   });
   const statusMutation = useMutation({
-    mutationFn: ({ userId, status: currentStatus }: StatusOperationInput) =>
-      currentStatus === "active"
-        ? disablePlatformAdministrator(userId)
-        : enablePlatformAdministrator(userId),
-    onSuccess: async (_result, variables) => {
-      await invalidateAll();
-      Message.success(variables.status === "active" ? "账号已禁用" : "账号已启用");
+    meta: {
+      feedback: {
+        channel: "notification",
+        id: "platform-administrator-status",
+        action: "账号状态更新",
+        errorFallback: "账号状态更新失败，请稍后重试",
+      },
     },
-    onError: mutationError,
-  });
-  const deleteMutation = useMutation({
-    mutationFn: deletePlatformAdministrator,
+    mutationFn: ({ userId, status: currentStatus }: StatusOperationInput) =>
+      runAdministratorOperation(() =>
+        currentStatus === "active"
+          ? disablePlatformAdministrator(userId)
+          : enablePlatformAdministrator(userId),
+      ),
     onSuccess: async () => {
       await invalidateAll();
-      Message.success("账号已删除");
     },
-    onError: mutationError,
+  });
+  const deleteMutation = useMutation({
+    meta: {
+      feedback: {
+        channel: "notification",
+        id: "platform-administrator-delete",
+        action: "平台运营账号删除",
+        successText: "账号已删除",
+        errorFallback: "账号删除失败，请稍后重试",
+      },
+    },
+    mutationFn: (userId: string) =>
+      runAdministratorOperation(() => deletePlatformAdministrator(userId)),
+    onSuccess: async () => {
+      await invalidateAll();
+    },
   });
 
   const operationPending =
@@ -261,7 +307,7 @@ export function PlatformAdministratorsPage() {
   ];
 
   const overview = overviewQuery.data || [];
-  const overviewUnavailable = overviewQuery.isPending || overviewQuery.isError;
+  const overviewUnavailable = overviewQuery.isPending || !overviewQuery.data;
   const activeCount = overview.filter((item) => item.status === "active").length;
   const superCount = overview.filter(
     (item) => item.status === "active" && item.role === "platform-admin",

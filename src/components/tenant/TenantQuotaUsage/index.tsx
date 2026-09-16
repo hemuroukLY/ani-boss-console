@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Message, Modal } from "@arco-design/web-react";
+import { Modal } from "@arco-design/web-react";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant, TenantQuotaRequest } from "@/components/tenant/model";
+import { showMessage } from "@/lib/feedback";
 import { CreateQuotaRequestModal } from "./CreateQuotaRequestModal";
 import { formatNumber } from "./formatters";
 import { QuotaOverview } from "./QuotaOverview";
@@ -33,11 +34,11 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
 
   const confirmPackageChange = () => {
     if (!rebindTenantQuotaPackage(tenant.id, selectedPlanCode)) {
-      Message.error("套餐改绑失败");
+      showMessage({ type: "error", content: "套餐改绑失败" });
       return;
     }
     setPackageModalVisible(false);
-    Message.success("套餐已改绑，当前配额上限保持不变");
+    showMessage({ type: "success", content: "套餐已改绑，当前配额上限保持不变" });
   };
 
   const confirmQuotaRequest = () => {
@@ -45,18 +46,18 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
       requestedGpuHours < tenant.quotaLimits.gpuHours ||
       requestedStorageGi < tenant.quotaLimits.storageGi
     ) {
-      Message.warning("扩容申请不能低于当前配额上限");
+      showMessage({ type: "warning", content: "扩容申请不能低于当前配额上限" });
       return;
     }
     if (
       requestedGpuHours === tenant.quotaLimits.gpuHours &&
       requestedStorageGi === tenant.quotaLimits.storageGi
     ) {
-      Message.warning("请至少提高一项配额");
+      showMessage({ type: "warning", content: "请至少提高一项配额" });
       return;
     }
     if (!requestReason.trim() || !requestBy.trim()) {
-      Message.warning("请填写申请人和申请原因");
+      showMessage({ type: "warning", content: "请填写申请人和申请原因" });
       return;
     }
     const created = submitTenantQuotaRequest(tenant.id, {
@@ -66,11 +67,11 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
       by: requestBy.trim(),
     });
     if (!created) {
-      Message.error("配额申请提交失败");
+      showMessage({ type: "error", content: "配额申请提交失败" });
       return;
     }
     setRequestModalVisible(false);
-    Message.success("配额申请已提交");
+    showMessage({ type: "success", content: "配额申请已提交" });
   };
 
   const approveRequest = (request: TenantQuotaRequest) => {
@@ -78,15 +79,16 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
       title: "通过配额申请",
       content: `确认将 GPU-Hours 上限调整为 ${formatNumber(request.requestedGpuHours)}、存储上限调整为 ${formatNumber(request.requestedStorageGi)} Gi？`,
       onOk: () => {
-        if (resolveTenantQuotaRequest(tenant.id, request.id, "approved"))
-          Message.success("配额申请已通过");
+        if (resolveTenantQuotaRequest(tenant.id, request.id, "approved")) {
+          showMessage({ type: "success", content: "配额申请已通过" });
+        }
       },
     });
   };
 
   const confirmRejectRequest = () => {
     if (!rejectingRequest || !rejectReason.trim()) {
-      Message.warning("请填写驳回原因");
+      showMessage({ type: "warning", content: "请填写驳回原因" });
       return;
     }
     if (
@@ -94,7 +96,7 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
     ) {
       setRejectingRequest(undefined);
       setRejectReason("");
-      Message.success("配额申请已驳回");
+      showMessage({ type: "success", content: "配额申请已驳回" });
     }
   };
 
@@ -107,7 +109,9 @@ export function TenantQuotaUsage({ tenant }: TenantQuotaUsageProps) {
             title: "刷新用量",
             content: "确认拉取并更新当前租户的最新资源用量？",
             onOk: () => {
-              if (refreshTenantUsage(tenant.id)) Message.success("用量已刷新");
+              if (refreshTenantUsage(tenant.id)) {
+                showMessage({ type: "success", content: "用量已刷新" });
+              }
             },
           })
         }

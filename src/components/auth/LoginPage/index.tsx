@@ -1,11 +1,12 @@
-import { Button, Divider, Form, Input, Message } from "@arco-design/web-react";
+import { Button, Divider, Form, Input } from "@arco-design/web-react";
 import { IconDriveFile, IconLock } from "@arco-design/web-react/icon";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import backgroundImageUrl from "@/assets/auth/background-01-cqy.png";
 import logoUrl from "@/assets/brand/logo.png";
 import { loginPlatform } from "@/api/auth";
-import { parseApiError } from "@/lib/api-error";
+import { ApiError } from "@/api/request";
+import { showMessage } from "@/lib/feedback";
 import { isAuthenticated, setAuthSession, setDevelopmentAuthBypass } from "../store";
 import styles from "./index.module.less";
 
@@ -21,13 +22,16 @@ function normalizeRedirect(redirect?: string) {
 }
 
 function getLoginErrorMessage(error: unknown) {
-  const apiError = parseApiError(error);
-  if (apiError.code === "INVALID_CREDENTIALS") return "用户名或密码错误";
-  if (apiError.code === "AUTH_NOT_CONFIGURED") return "平台登录服务尚未配置";
+  if (error instanceof ApiError && error.code === "INVALID_CREDENTIALS") {
+    return "用户名或密码错误";
+  }
+  if (error instanceof ApiError && error.code === "AUTH_NOT_CONFIGURED") {
+    return "平台登录服务尚未配置";
+  }
   if (typeof navigator !== "undefined" && !navigator.onLine) {
     return "网络异常，请稍后重试";
   }
-  return apiError.message || "登录失败，请稍后重试";
+  return error instanceof Error && error.message.trim() ? error.message : "登录失败，请稍后重试";
 }
 
 export function LoginPage({ redirect }: { redirect?: string }) {
@@ -38,18 +42,30 @@ export function LoginPage({ redirect }: { redirect?: string }) {
   }, [target]);
 
   const login = useMutation({
-    mutationFn: (values: PlatformLoginValues) => loginPlatform(values),
+    meta: {
+      feedback: {
+        channel: "message",
+        action: "登录",
+        successText: "登录成功",
+        errorFallback: "登录失败，请稍后重试",
+      },
+    },
+    mutationFn: async (values: PlatformLoginValues) => {
+      try {
+        return await loginPlatform(values);
+      } catch (error) {
+        throw new Error(getLoginErrorMessage(error));
+      }
+    },
     onSuccess: (tokens, values) => {
       setAuthSession(tokens, values.username);
-      Message.success("登录成功");
       window.location.replace(target);
     },
-    onError: (error) => Message.error(getLoginErrorMessage(error)),
   });
 
   const skipLogin = () => {
     setDevelopmentAuthBypass(true);
-    Message.info("已进入开发预览模式");
+    showMessage({ type: "info", content: "已进入开发预览模式" });
     window.location.replace(target);
   };
 

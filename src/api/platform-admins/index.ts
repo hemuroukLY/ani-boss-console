@@ -1,6 +1,5 @@
 import { runIdempotentRequest } from "@/api/idempotency";
-import { servicesRequest } from "@/api/request";
-import { getApiErrorMessage, parseApiError } from "@/lib/api-error";
+import { ApiError, servicesRequest } from "@/api/request";
 import { createIdempotencyScope } from "@/lib/idempotency";
 import type {
   CreatePlatformAdministratorInput,
@@ -249,10 +248,11 @@ const platformAdministratorErrorMessages: Record<string, string> = {
 };
 
 export function getPlatformAdministratorErrorMessage(error: unknown) {
-  const parsed = parseApiError(error);
+  const code = error instanceof ApiError ? error.code : undefined;
   return (
-    (parsed.code && platformAdministratorErrorMessages[parsed.code]) ||
-    getApiErrorMessage(error, "平台运营账号操作失败，请稍后重试")
+    (code && platformAdministratorErrorMessages[code]) ||
+    (error instanceof Error && error.message.trim()) ||
+    "平台运营账号操作失败，请稍后重试"
   );
 }
 

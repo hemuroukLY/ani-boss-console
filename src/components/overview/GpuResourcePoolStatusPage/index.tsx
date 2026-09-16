@@ -10,7 +10,6 @@ import {
   type GpuInventoryEvent,
 } from "@/api/gpu-inventory";
 import { ListPageFrame, ListPageHeader } from "@/components/common";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { formatDateTimeMinute } from "@/lib/date";
 import { GpuDeviceTable } from "../GpuDeviceTable";
 import { Metric } from "../Metric";
@@ -37,41 +36,48 @@ function eventMeta(event: GpuInventoryEvent) {
 export function GpuResourcePoolStatusPage() {
   const [activeTab, setActiveTab] = useState<StatusTab>("devices");
   const inventoryQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "gpu-inventory",
+        action: "GPU 设备库存加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.inventory,
     queryFn: fetchGpuInventory,
   });
   const occupancyQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "gpu-occupancy",
+        action: "GPU 资源池汇总加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.occupancy,
     queryFn: fetchGpuOccupancy,
   });
   const tenantsQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "tenant-gpu-allocations",
+        action: "GPU 预留额度汇总加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.tenants,
     queryFn: fetchTenantGpuAllocations,
   });
   const eventsQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "gpu-inventory-events",
+        action: "GPU 联动事件加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuResourcePoolQueryKeys.events,
     queryFn: fetchGpuInventoryEvents,
-  });
-
-  useListErrorNotification({
-    id: "gpu-status-inventory",
-    title: "GPU 设备列表加载失败",
-    error: inventoryQuery.error,
-  });
-  useListErrorNotification({
-    id: "gpu-status-occupancy",
-    title: "GPU 资源池汇总加载失败",
-    error: occupancyQuery.error,
-  });
-  useListErrorNotification({
-    id: "gpu-status-reservations",
-    title: "GPU 预留额度汇总加载失败",
-    error: tenantsQuery.error,
-  });
-  useListErrorNotification({
-    id: "gpu-status-events",
-    title: "GPU 联动事件加载失败",
-    error: eventsQuery.error,
   });
 
   const refreshAll = async () => {

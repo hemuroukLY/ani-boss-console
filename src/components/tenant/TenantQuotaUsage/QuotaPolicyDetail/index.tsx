@@ -3,7 +3,6 @@ import {
   Button,
   Descriptions,
   Form,
-  Message,
   Modal,
   Popconfirm,
   Result,
@@ -14,6 +13,7 @@ import {
 } from "@arco-design/web-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { showMessage } from "@/lib/feedback";
 import {
   DataTable,
   DetailPageFrame,
@@ -87,33 +87,33 @@ export function QuotaPolicyDetail({ planCode }: QuotaPolicyDetailProps) {
 
   const publish = () => {
     if (!publishQuotaPackage(quotaPackage.planCode)) {
-      Message.error("套餐发布失败");
+      showMessage({ type: "error", content: "套餐发布失败" });
       return;
     }
-    Message.success(`套餐 ${quotaPackage.name} 已发布`);
+    showMessage({ type: "success", content: `套餐 ${quotaPackage.name} 已发布` });
   };
 
   const remove = () => {
     if (!unregisterQuotaPackage(quotaPackage.planCode)) {
-      Message.warning("有关联租户时不能删除套餐");
+      showMessage({ type: "warning", content: "有关联租户时不能删除套餐" });
       return;
     }
-    Message.success(`套餐 ${quotaPackage.name} 已删除`);
+    showMessage({ type: "success", content: `套餐 ${quotaPackage.name} 已删除` });
     returnToList();
   };
 
   const assign = () => {
     if (!targetTenantId) {
-      Message.warning("请选择目标租户");
+      showMessage({ type: "warning", content: "请选择目标租户" });
       return;
     }
     if (!rebindTenantQuotaPackage(targetTenantId, quotaPackage.planCode)) {
-      Message.error("套餐改绑失败，请确认套餐已发布");
+      showMessage({ type: "error", content: "套餐改绑失败，请确认套餐已发布" });
       return;
     }
     setAssignVisible(false);
     setTargetTenantId("");
-    Message.success("套餐已改绑，租户当前配额上限保持不变");
+    showMessage({ type: "success", content: "套餐已改绑，租户当前配额上限保持不变" });
   };
 
   const tenantColumns: ListColumn<Tenant>[] = [

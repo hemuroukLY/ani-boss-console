@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { Button, Message, Modal, Typography } from "@arco-design/web-react";
+import { Button, Modal, Typography } from "@arco-design/web-react";
 import type { TenantAdminAction } from "@/components/tenant/TenantManagementProvider";
 import { useTenantManagement } from "@/components/tenant/TenantManagementProvider/useTenantManagement";
 import type { Tenant, TenantAdmin, TenantAdminRole } from "@/components/tenant/model";
+import { showMessage } from "@/lib/feedback";
 import { AdministratorPasswordModal } from "./AdministratorPasswordModal";
 import { AdministratorRoleModal } from "./AdministratorRoleModal";
 import { AdministratorTable } from "./AdministratorTable";
@@ -28,16 +29,16 @@ export function TenantAdministrators({ tenant }: TenantAdministratorsProps) {
 
   const showActionResult = (result: { ok: boolean; reason?: string }, successMessage: string) => {
     if (result.ok) {
-      Message.success(successMessage);
+      showMessage({ type: "success", content: successMessage });
       return true;
     }
-    Message.error(result.reason || "操作失败");
+    showMessage({ type: "error", content: result.reason || "操作失败" });
     return false;
   };
 
   const confirmInvite = () => {
     if (!inviteDraft.email.trim() || !inviteDraft.email.includes("@")) {
-      Message.warning("请输入有效邮箱");
+      showMessage({ type: "warning", content: "请输入有效邮箱" });
       return;
     }
     const result = inviteTenantAdmin(tenant.id, inviteDraft);

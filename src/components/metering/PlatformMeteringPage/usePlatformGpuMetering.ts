@@ -6,6 +6,7 @@ import {
   type PlatformMeteringUsageItem,
 } from "@/api/platform";
 import { formatMonthDay, getUtcMonthToDateRanges, listUtcDateKeys } from "@/lib/date";
+import { withId } from "@/lib/id";
 import type { MeteringTenantRow } from "../model";
 
 const SECONDS_PER_HOUR = 3600;
@@ -67,6 +68,13 @@ function buildTenantRows(
 export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceType) {
   const ranges = useMemo(() => getUtcMonthToDateRanges(), []);
   const query = useQuery({
+    meta: {
+      errorNotification: {
+        id: withId("platform-metering", resourceType),
+        action: "平台计量数据加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: ["platform", "metering-dashboard", resourceType, ranges],
     enabled: Boolean(resourceType),
     queryFn: async () => {

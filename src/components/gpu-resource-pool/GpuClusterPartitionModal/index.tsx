@@ -21,8 +21,8 @@ import {
   type GpuPartitionSkippedNode,
   type GpuPartitionTask,
 } from "@/api/gpu-inventory";
-import { useListErrorNotification } from "@/hooks/useListErrorNotification";
 import { hasElapsed } from "@/lib/date";
+import { withId } from "@/lib/id";
 
 const POLL_INTERVAL_MS = 2500;
 const POLL_TIMEOUT_MS = 3 * 60 * 1000;
@@ -86,6 +86,13 @@ export function GpuClusterPartitionModal({
 
   const eligibleDevices = useMemo(() => devices.filter(eligibleForPartition), [devices]);
   const latestTaskQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: "gpu-partition-latest",
+        action: "GPU 切分任务恢复",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuPartitionQueryKeys.latest,
     queryFn: fetchLatestGpuPartitionTask,
   });
@@ -99,6 +106,13 @@ export function GpuClusterPartitionModal({
   const trackedTaskId = activeTaskId || recoveredTask?.id;
 
   const taskQuery = useQuery({
+    meta: {
+      errorNotification: {
+        id: withId("gpu-partition-task", trackedTaskId),
+        action: "GPU 切分任务进度加载",
+        fallback: "请求失败，请稍后重试",
+      },
+    },
     queryKey: gpuPartitionQueryKeys.detail(trackedTaskId || "-"),
     queryFn: () => fetchGpuPartitionTask(trackedTaskId || ""),
     enabled: Boolean(trackedTaskId),
@@ -110,22 +124,25 @@ export function GpuClusterPartitionModal({
   });
 
   const partitionMutation = useMutation({
-    mutationFn: createGpuPartition,
+    meta: {
+      feedback: {
+        channel: "notification",
+        id: "gpu-partition-create",
+        action: "GPU 集群切分任务提交",
+        errorFallback: "GPU 集群切分任务提交失败，请稍后重试",
+      },
+    },
+    mutationFn: async (input: { shares: GpuPartitionShares }) => {
+      try {
+        return await createGpuPartition(input);
+      } catch (error) {
+        throw new Error(getGpuPartitionErrorMessage(error));
+      }
+    },
     onSuccess: (task) => {
       setAcceptedTask(task);
       setActiveTaskId(task.id);
     },
-  });
-
-  useListErrorNotification({
-    id: "gpu-partition-latest-task",
-    title: "GPU 切分任务恢复失败",
-    error: latestTaskQuery.error,
-  });
-  useListErrorNotification({
-    id: "gpu-partition-task-detail",
-    title: "GPU 切分任务进度加载失败",
-    error: taskQuery.error,
   });
 
   const task = taskQuery.data || acceptedTask || recoveredTask;
@@ -155,7 +172,7 @@ export function GpuClusterPartitionModal({
           重新配置并重试
         </Button>
       ) : null}
-      {timedOut || taskQuery.isError ? (
+      {timedOut ? (
         <Button loading={taskQuery.isFetching} onClick={() => void taskQuery.refetch()}>
           刷新进度
         </Button>
@@ -292,9 +309,6 @@ export function GpuClusterPartitionModal({
             type="info"
             content="当前仅支持集群级 2、4、8 等分；暂不支持单卡切分、不等显存、任意份数和算力比例分配。"
           />
-          {partitionMutation.error ? (
-            <Alert type="error" content={getGpuPartitionErrorMessage(partitionMutation.error)} />
-          ) : null}
         </Space>
       )}
     </Modal>
