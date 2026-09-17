@@ -65,7 +65,7 @@ function buildTenantRows(
   );
 }
 
-export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceType) {
+export function usePlatformGpuMetering(resourceType: PlatformMeteringResourceType) {
   const ranges = useMemo(() => getUtcMonthToDateRanges(), []);
   const query = useQuery({
     meta: {
@@ -76,9 +76,7 @@ export function usePlatformGpuMetering(resourceType?: PlatformMeteringResourceTy
       },
     },
     queryKey: ["platform", "metering-dashboard", resourceType, ranges],
-    enabled: Boolean(resourceType),
     queryFn: async () => {
-      if (!resourceType) throw new Error("当前计量维度尚未接入");
       const common = { resourceType } as const;
       const [currentTenants, previousTenants, currentDays, trendDays] = await Promise.all([
         fetchPlatformMeteringUsage({

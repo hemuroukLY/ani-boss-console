@@ -74,27 +74,30 @@ export interface NavigationGroup {
   key: string;
   label: string;
   icon: ReactNode;
-  children: readonly NavigationLeaf[];
+  children: readonly NavigationItem[];
 }
 
 export type NavigationItem = NavigationLeaf | NavigationGroup;
+
+export interface TopNavigationItem {
+  label: string;
+  to: AppRoute;
+  icon: ReactNode;
+}
 
 export function isNavigationGroup(item: NavigationItem): item is NavigationGroup {
   return "children" in item;
 }
 
-export const topNavigation: ReadonlyArray<{
-  label: string;
-  to: AppRoute;
-}> = [
-  { label: "平台运营总览", to: "/" },
-  { label: "租户管理", to: "/tenants" },
-  { label: "资源池与基础设施", to: "/ops-pool" },
-  { label: "运维与可观测", to: "/health" },
-  { label: "平台计量与结算", to: "/metering" },
-  { label: "安全审计与合规", to: "/audit" },
-  { label: "平台设置", to: "/settings-platform-admins" },
-  { label: "平台集成与通知", to: "/integration-webhook" },
+export const topNavigation: readonly TopNavigationItem[] = [
+  { label: "平台运营总览", to: "/overview-capacity", icon: <IconDashboard /> },
+  { label: "租户管理", to: "/tenants", icon: <IconUserGroup /> },
+  { label: "资源池与基础设施", to: "/ops-pool", icon: <IconCloud /> },
+  { label: "运维与可观测", to: "/health", icon: <IconTool /> },
+  { label: "平台计量与结算", to: "/metering", icon: <IconCalendarClock /> },
+  { label: "安全审计与合规", to: "/audit", icon: <IconSafe /> },
+  { label: "平台设置", to: "/settings-platform-admins", icon: <IconSettings /> },
+  { label: "平台集成与通知", to: "/integration-webhook", icon: <IconApps /> },
 ];
 
 export const overviewNavigation: readonly NavigationLeaf[] = [
@@ -228,3 +231,85 @@ export const integrationNavigation: readonly NavigationLeaf[] = [
   { label: "企业通知集成", to: "/integration-notify", icon: <IconEmail /> },
   { label: "运营系统对接", to: "/integration-ops-system", icon: <IconApps /> },
 ];
+
+const visibleAppRoutes = new Set<AppRoute>([
+  "/overview-capacity",
+  "/overview-gpu",
+  "/ops-gpu",
+  "/health",
+  "/health-logs",
+  "/metering",
+  "/audit",
+  "/settings-platform-admins",
+]);
+
+function filterVisibleNavigation(items: readonly NavigationItem[]): NavigationItem[] {
+  const visibleItems: NavigationItem[] = [];
+
+  items.forEach((item) => {
+    if (!isNavigationGroup(item)) {
+      if (visibleAppRoutes.has(item.to)) visibleItems.push(item);
+      return;
+    }
+
+    const children = filterVisibleNavigation(item.children);
+    if (children.length > 0) visibleItems.push({ ...item, children });
+  });
+
+  return visibleItems;
+}
+
+const completeAppNavigation: readonly NavigationGroup[] = [
+  {
+    key: "platform-overview",
+    label: topNavigation[0].label,
+    icon: topNavigation[0].icon,
+    children: overviewNavigation,
+  },
+  {
+    key: "tenant-management",
+    label: topNavigation[1].label,
+    icon: topNavigation[1].icon,
+    children: tenantNavigation,
+  },
+  {
+    key: "infrastructure-operations",
+    label: topNavigation[2].label,
+    icon: topNavigation[2].icon,
+    children: infrastructureNavigation,
+  },
+  {
+    key: "operations-observability",
+    label: topNavigation[3].label,
+    icon: topNavigation[3].icon,
+    children: observabilityNavigation,
+  },
+  {
+    key: "platform-metering",
+    label: topNavigation[4].label,
+    icon: topNavigation[4].icon,
+    children: meteringNavigation,
+  },
+  {
+    key: "security-audit",
+    label: topNavigation[5].label,
+    icon: topNavigation[5].icon,
+    children: auditNavigation,
+  },
+  {
+    key: "platform-settings",
+    label: topNavigation[6].label,
+    icon: topNavigation[6].icon,
+    children: settingsNavigation,
+  },
+  {
+    key: "platform-integrations",
+    label: topNavigation[7].label,
+    icon: topNavigation[7].icon,
+    children: integrationNavigation,
+  },
+];
+
+export const appNavigation: readonly NavigationGroup[] = completeAppNavigation
+  .map((group) => ({ ...group, children: filterVisibleNavigation(group.children) }))
+  .filter((group) => group.children.length > 0);

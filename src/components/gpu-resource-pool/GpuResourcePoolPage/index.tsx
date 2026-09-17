@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Empty, Form, InputNumber, Modal, Tabs } from "@arco-design/web-react";
+import { Alert, Button, Form, InputNumber, Modal, Tabs } from "@arco-design/web-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -205,20 +205,6 @@ export function GpuResourcePoolPage() {
               loading={inventoryQuery.isPending}
               extra={<GpuClusterPartitionFlow devices={inventory} />}
             />
-          </div>
-        </TabPane>
-        <TabPane key="scheduling-queues" title="调度队列">
-          <div className={styles.tabPanel}>
-            <Card title="调度队列" className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0">
-              <Empty className="py-12" description="ANI 暂未提供 BOSS 平台级 GPU 调度队列接口" />
-            </Card>
-          </div>
-        </TabPane>
-        <TabPane key="events" title="事件">
-          <div className={styles.tabPanel}>
-            <Card title="事件" className="overflow-hidden rounded-lg [&_.arco-card-body]:p-0">
-              <Empty className="py-12" description="ANI 暂未提供 GPU 资源池事件接口" />
-            </Card>
           </div>
         </TabPane>
       </Tabs>

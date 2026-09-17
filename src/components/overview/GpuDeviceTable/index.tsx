@@ -2,6 +2,8 @@ import { Tag } from "@arco-design/web-react";
 import type { GpuInventoryDevice, GpuInventoryStatus } from "@/api/gpu-inventory";
 import { ListDataTable, type ListColumn } from "@/components/common";
 
+const TABLE_SCROLL_X = 1780;
+
 const statusMeta: Record<GpuInventoryStatus, { label: string; color: string }> = {
   available: { label: "空闲未分配", color: "green" },
   in_use: { label: "已占用", color: "arcoblue" },
@@ -26,20 +28,20 @@ function formatProfile(device: GpuInventoryDevice) {
 }
 
 const columns: ListColumn<GpuInventoryDevice>[] = [
-  { title: "设备 ID", dataIndex: "id", width: 220 },
+  { title: "设备 ID", dataIndex: "id", width: 320 },
   {
     title: "节点 / 设备",
-    width: 180,
+    width: 200,
     render: (_, device) => `${device.nodeName} / GPU-${device.gpuIndex}`,
   },
   {
     title: "型号 / 显存",
-    width: 180,
+    width: 300,
     render: (_, device) => `${device.gpuType || "-"} · ${formatMemory(device.memoryTotalMb)}`,
   },
   {
     title: "切分形态",
-    width: 180,
+    width: 320,
     render: (_, device) => formatProfile(device),
   },
   {
@@ -54,12 +56,12 @@ const columns: ListColumn<GpuInventoryDevice>[] = [
   {
     title: "租户",
     dataIndex: "tenantId",
-    width: 180,
+    width: 240,
     render: (tenantId?: string) => tenantId || "-",
   },
   {
     title: "占用对象 / 原因",
-    width: 220,
+    width: 280,
     render: (_, device) => device.instanceId || device.reason || "-",
   },
 ];
@@ -78,6 +80,7 @@ export function GpuDeviceTable({ data, loading }: GpuDeviceTableProps) {
       loading={loading}
       pagination={false}
       columns={columns}
+      scroll={{ x: TABLE_SCROLL_X }}
       emptyText="暂无 GPU 设备"
     />
   );

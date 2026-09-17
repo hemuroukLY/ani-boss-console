@@ -25,7 +25,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const isLoginPage = useRouterState({
       select: (state) => state.location.pathname.startsWith("/login"),
     });
-    return isLoginPage ? <Outlet /> : <AppLayout />;
+    return isLoginPage ? (
+      <Outlet />
+    ) : (
+      <AppLayout>
+        <Outlet />
+      </AppLayout>
+    );
   },
   notFoundComponent: () => <div className="status-page">页面不存在</div>,
 });
