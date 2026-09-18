@@ -69,7 +69,7 @@ const COMPONENT_CONFIG = {
   },
 };
 
-const router = createRouter({ routeTree, context: { queryClient } });
+const router = createRouter({ routeTree, trailingSlash: "never", context: { queryClient } });
 
 declare module "@tanstack/react-router" {
   interface Register {
